@@ -11,3 +11,10 @@ imagem_base64.txt
 *.tsbuildinfo
 next-env.d.ts
 coverage/
+
+# Arquivos de ferramentas de IA (não versionar)
+AGENTS.md
+CLAUDE.md
+.claude/
+.superpowers/
+docs/superpowers/
