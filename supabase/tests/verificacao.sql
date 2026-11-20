@@ -32,6 +32,9 @@ begin
   select count(*) into n from public.medicamentos m where not exists (select 1 from public.precos p where p.medicamento_id = m.id);
   if n < 1 then raise exception 'seed deveria ter ao menos 1 medicamento sem preço'; end if;
 
+  select count(*) into n from public.precos where atualizado_em < now() - interval '7 days';
+  if n < 1 then raise exception 'seed deveria ter ao menos 1 preço desatualizado (> 7 dias)'; end if;
+
   select count(*) into n from public.bulas;
   if n <> total then raise exception 'cada medicamento deveria ter bula (% bulas para % medicamentos)', n, total; end if;
 end $$;
