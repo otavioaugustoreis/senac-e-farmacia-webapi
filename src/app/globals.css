@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-marca-950: #0b2e1d;
+  --color-marca-900: #114029;
+  --color-marca-800: #1a5236;
+  --color-marca-700: #1f6342;
+  --color-marca-600: #27794f;
+  --color-marca-500: #34956a;
+  --color-menta-100: #e9f6ee;
+  --color-menta-50: #f4faf6;
+  --color-creme: #fff8ec;
+  --color-alerta: #f59e0b;
+  --color-tinta: #14221a;
+  --color-suave: #5b6b62;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --radius-card: 1.25rem;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: #f7f8f7;
+  color: var(--color-tinta);
+}
