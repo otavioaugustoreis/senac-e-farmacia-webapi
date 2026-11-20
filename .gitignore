@@ -7,3 +7,4 @@ out/
 *.log
 .DS_Store
 supabase/.temp/
+imagem_base64.txt
