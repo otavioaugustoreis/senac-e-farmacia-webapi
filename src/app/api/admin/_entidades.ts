@@ -1,4 +1,4 @@
-import { criarCasosAdmin, type CasosAdmin } from "@/application/casos-de-uso/admin";
+import { criarCasosAdmin, exigirAdmin, type CasosAdmin } from "@/application/casos-de-uso/admin";
 import { NaoEncontradoError } from "@/domain/erros";
 import type { UsuarioAtual } from "@/domain/usuario";
 import { obterContainer } from "@/infrastructure/container";
@@ -31,12 +31,17 @@ function operacoes(c: CasosAdmin): Record<string, OperacoesEntidade> {
   };
 }
 
-/** Resolve a entidade da URL e o usuário da sessão; entidade desconhecida → 404. */
+/**
+ * Confirma que é admin (401/403) antes de olhar a entidade ou o corpo;
+ * depois resolve a entidade da URL (desconhecida → 404).
+ */
 export async function prepararAdmin(entidade: string) {
   const { repos, usuarioAtual } = await obterContainer();
+  const usuario = await usuarioAtual();
+  exigirAdmin(usuario);
   const ops = operacoes(criarCasosAdmin(repos))[entidade];
   if (!ops) throw new NaoEncontradoError("Recurso não encontrado");
-  return { ops, usuario: await usuarioAtual() };
+  return { ops, usuario };
 }
 
 export function exigirOperacao<T>(op: T | undefined): T {

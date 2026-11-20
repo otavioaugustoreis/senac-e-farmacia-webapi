@@ -16,7 +16,6 @@ export async function POST(request: Request, { params }: Params) {
   return tratar(async () => {
     const { ops, usuario } = await prepararAdmin((await params).entidade);
     const salvar = exigirOperacao(ops.salvar);
-    const corpo = usuario?.role === "admin" ? await lerJson(request) : {};
-    return json((await salvar(usuario, corpo)) ?? { ok: true });
+    return json((await salvar(usuario, await lerJson(request))) ?? { ok: true });
   });
 }

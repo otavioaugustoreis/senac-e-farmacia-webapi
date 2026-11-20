@@ -29,6 +29,33 @@ describe("destinoSeguro", () => {
     expect(resultado).toBe("/");
   });
 
+  it("troca caminho com tabulação que o navegador transforma em // pela página inicial", () => {
+    // Arrange
+    const next = "/\t/evil.com";
+    // Act
+    const resultado = destinoSeguro(next);
+    // Assert
+    expect(resultado).toBe("/");
+  });
+
+  it("troca caminho com barra invertida pela página inicial", () => {
+    // Arrange
+    const next = "/\\evil.com";
+    // Act
+    const resultado = destinoSeguro(next);
+    // Assert
+    expect(resultado).toBe("/");
+  });
+
+  it("mantém caminho interno com parâmetros", () => {
+    // Arrange
+    const next = "/busca?q=dipirona";
+    // Act
+    const resultado = destinoSeguro(next);
+    // Assert
+    expect(resultado).toBe("/busca?q=dipirona");
+  });
+
   it("troca valor ausente pela página inicial", () => {
     // Arrange
     const next = null;

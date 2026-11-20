@@ -39,6 +39,23 @@ begin
   if n <> total then raise exception 'cada medicamento deveria ter bula (% bulas para % medicamentos)', n, total; end if;
 end $$;
 
+-- Salvar um preço (mesmo sem mudar o valor) confirma o preço e renova a data;
+-- definir a data explicitamente (seed/scripts) é respeitado.
+do $$
+declare
+  alvo bigint;
+  data_salva timestamptz;
+begin
+  select id into alvo from public.precos order by atualizado_em limit 1;
+  update public.precos set valor = valor where id = alvo;
+  select atualizado_em into data_salva from public.precos where id = alvo;
+  if data_salva <> now() then raise exception 'salvar preço sem mudar valor deveria renovar atualizado_em'; end if;
+
+  update public.precos set atualizado_em = now() - interval '3 days' where id = alvo;
+  select atualizado_em into data_salva from public.precos where id = alvo;
+  if data_salva <> now() - interval '3 days' then raise exception 'data explícita deveria ser respeitada'; end if;
+end $$;
+
 -- RLS: usuário autenticado comum não escreve no catálogo
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}';

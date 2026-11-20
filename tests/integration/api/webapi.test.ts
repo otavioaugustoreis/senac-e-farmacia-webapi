@@ -167,6 +167,35 @@ describe("/api/admin", () => {
     expect(resposta.status).toBe(403);
   });
 
+  it("devolve 401 ao criar cupom sem login (antes de validar o corpo)", async () => {
+    // Arrange
+    const request = jsonReq("/api/admin/cupons", "POST", {});
+    // Act
+    const resposta = await postAdmin(request, ctx({ entidade: "cupons" }));
+    // Assert
+    expect(resposta.status).toBe(401);
+  });
+
+  it("devolve 403 ao criar cupom como usuário comum", async () => {
+    // Arrange
+    usuario = usuarioComum;
+    const request = jsonReq("/api/admin/cupons", "POST", { farmaciaId: 1, codigo: "X", desconto: "5%", validade: "2026-12-31" });
+    // Act
+    const resposta = await postAdmin(request, ctx({ entidade: "cupons" }));
+    // Assert
+    expect(resposta.status).toBe(403);
+  });
+
+  it("devolve 403 para operação não suportada por usuário comum", async () => {
+    // Arrange
+    usuario = usuarioComum;
+    const request = req("/api/admin/reportes/1", { method: "DELETE" });
+    // Act
+    const resposta = await deleteAdmin(request, ctx({ entidade: "reportes", id: "1" }));
+    // Assert
+    expect(resposta.status).toBe(403);
+  });
+
   it("devolve 400 para preço zero do admin", async () => {
     // Arrange
     usuario = admin;
