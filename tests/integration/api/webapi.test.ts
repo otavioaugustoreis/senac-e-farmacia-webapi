@@ -84,9 +84,9 @@ describe("GET /api/medicamentos/:id", () => {
 describe("GET /api/categorias e /api/cupons", () => {
   it("devolve categorias e cupons vigentes", async () => {
     // Arrange
-    const [rc, ru] = [req("/api/categorias"), req("/api/cupons")];
+    const rotas = [getCategorias, getCupons];
     // Act
-    const [categorias, cupons] = await Promise.all([getCategorias(rc), getCupons(ru)]);
+    const [categorias, cupons] = await Promise.all(rotas.map((rota) => rota()));
     // Assert
     expect(categorias.status).toBe(200);
     expect(await categorias.json()).toHaveLength(1);
