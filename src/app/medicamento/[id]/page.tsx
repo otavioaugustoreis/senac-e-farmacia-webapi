@@ -158,7 +158,7 @@ export default async function MedicamentoPage({ params }: Props) {
             {d.alternativas.length === 0 ? (
               <p className="mt-3 text-sm text-suave">Nenhuma alternativa cadastrada.</p>
             ) : (
-              <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-1">
+              <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 lg:grid-cols-2">
                 {d.alternativas.map((a) => <CartaoMedicamento key={a.id} medicamento={a} />)}
               </div>
             )}

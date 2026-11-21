@@ -46,7 +46,7 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
           <p className="mt-1 text-sm text-suave">Confira a grafia ou busque pelo princípio ativo (ex.: “paracetamol”).</p>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-5 xl:grid-cols-5">
           {resultados.map((m) => <CartaoMedicamento key={m.id} medicamento={m} />)}
         </div>
       )}

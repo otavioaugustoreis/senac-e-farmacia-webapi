@@ -22,7 +22,7 @@ export default async function CuponsPage() {
       {cupons.length === 0 ? (
         <p className="mt-6 rounded-2xl bg-white p-8 text-center text-suave ring-1 ring-black/5">Nenhum cupom vigente no momento.</p>
       ) : (
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {[...porFarmacia].map(([farmacia, lista]) => (
             <section key={farmacia} className="rounded-[var(--radius-card)] bg-creme p-5">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-suave">{farmacia}</h2>

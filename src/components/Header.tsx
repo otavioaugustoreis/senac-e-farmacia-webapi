@@ -24,10 +24,10 @@ export function Header({ menuUsuario, categorias }: Props) {
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] bg-marca-900 px-4 py-3 text-white sm:px-6 sm:py-4">
         <Logo claro />
 
-        <form action="/busca" role="search" className="order-3 flex w-full items-center gap-2 md:order-none md:w-auto md:flex-1">
+        <form action="/busca" role="search" autoComplete="off" className="order-3 flex w-full items-center gap-2 md:order-none md:w-auto md:flex-1">
           <label className="relative hidden lg:block">
             <span className="sr-only">Categoria</span>
-            <select name="categoria" defaultValue=""
+            <select name="categoria" defaultValue="" autoComplete="off"
               className="h-10 appearance-none rounded-full bg-menta-100 pl-4 pr-9 text-sm font-medium text-marca-900 outline-none">
               <option value="">Todas as categorias</option>
               {categorias.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
