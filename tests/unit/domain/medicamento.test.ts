@@ -3,7 +3,7 @@ import { alternativasDe, validarMedicamento, type Medicamento } from "@/domain/m
 import { DomainError } from "@/domain/erros";
 
 const med = (id: number, principioAtivo: string, tipo: Medicamento["tipo"] = "generico"): Medicamento => ({
-  id, nomeComercial: `M${id}`, principioAtivo, categoria: null, tipo, fabricante: "X", apresentacao: "10 comprimidos",
+  id, nomeComercial: `M${id}`, principioAtivo, categoria: null, tipo, fabricante: "X", apresentacao: "10 comprimidos", imagem: null,
 });
 
 describe("alternativasDe", () => {
@@ -36,6 +36,24 @@ describe("validarMedicamento", () => {
     const acao = () => validarMedicamento(input);
     // Assert
     expect(acao).toThrow("Informe o princípio ativo");
+  });
+
+  it("rejeita foto com endereço que não é https", () => {
+    // Arrange
+    const input = { nomeComercial: "Novalgina", principioAtivo: "Dipirona", tipo: "referencia" as const, imagemUrl: "http://site.com/foto.jpg" };
+    // Act
+    const acao = () => validarMedicamento(input);
+    // Assert
+    expect(acao).toThrow("A foto precisa de um endereço https");
+  });
+
+  it("aceita medicamento sem foto", () => {
+    // Arrange
+    const input = { nomeComercial: "Novalgina", principioAtivo: "Dipirona", tipo: "referencia" as const, imagemUrl: "" };
+    // Act
+    const acao = () => validarMedicamento(input);
+    // Assert
+    expect(acao).not.toThrow();
   });
 
   it("rejeita tipo desconhecido", () => {

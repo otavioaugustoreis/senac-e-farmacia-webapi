@@ -57,10 +57,14 @@ export const CONFIG: Record<Entidade, ConfigEntidade> = {
       { nome: "categoriaId", rotulo: "Categoria", tipo: "select", fonte: "categorias" },
       { nome: "fabricante", rotulo: "Fabricante", tipo: "texto" },
       { nome: "apresentacao", rotulo: "Apresentação", tipo: "texto" },
+      { nome: "imagemUrl", rotulo: "Endereço da foto (https)", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
+      { nome: "imagemCredito", rotulo: "Crédito (autor · licença)", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
+      { nome: "imagemFonte", rotulo: "Página de origem da foto", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
       ...CAMPOS_BULA,
     ],
     colunas: [
       { rotulo: "Nome", valor: (i) => i.nomeComercial },
+      { rotulo: "Foto", valor: (i) => (i.imagem ? "Sim" : "—") },
       { rotulo: "Princípio ativo", valor: (i) => i.principioAtivo },
       { rotulo: "Tipo", valor: (i) => ROTULO_TIPO[i.tipo as keyof typeof ROTULO_TIPO] ?? i.tipo },
       { rotulo: "Categoria", valor: (i) => i.categoria?.nome ?? "—" },
@@ -69,10 +73,12 @@ export const CONFIG: Record<Entidade, ConfigEntidade> = {
     paraFormulario: (i) => ({
       id: s(i.id), nomeComercial: s(i.nomeComercial), principioAtivo: s(i.principioAtivo), tipo: s(i.tipo || "generico"),
       categoriaId: s(i.categoria?.id), fabricante: s(i.fabricante), apresentacao: s(i.apresentacao),
+      imagemUrl: s(i.imagem?.url), imagemCredito: s(i.imagem?.credito), imagemFonte: s(i.imagem?.fonte),
     }),
     paraCorpo: (v) => ({
       id: v.id || undefined, nomeComercial: v.nomeComercial, principioAtivo: v.principioAtivo, tipo: v.tipo,
       categoriaId: v.categoriaId || null, fabricante: v.fabricante, apresentacao: v.apresentacao,
+      imagemUrl: v.imagemUrl, imagemCredito: v.imagemCredito, imagemFonte: v.imagemFonte,
       bula: {
         paraQueServe: v["bula.paraQueServe"], contraindicacoes: v["bula.contraindicacoes"],
         efeitosColaterais: v["bula.efeitosColaterais"], advertencias: v["bula.advertencias"], linkAnvisa: v["bula.linkAnvisa"],

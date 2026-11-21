@@ -34,6 +34,9 @@ export const paraMedicamento = (c: Corpo): MedicamentoComBulaInput => {
     tipo: texto(c.tipo) as TipoMedicamento,
     fabricante: texto(c.fabricante),
     apresentacao: texto(c.apresentacao),
+    imagemUrl: texto(c.imagemUrl),
+    imagemCredito: texto(c.imagemCredito),
+    imagemFonte: texto(c.imagemFonte),
     bula: b
       ? {
           paraQueServe: texto(b.paraQueServe), contraindicacoes: texto(b.contraindicacoes),

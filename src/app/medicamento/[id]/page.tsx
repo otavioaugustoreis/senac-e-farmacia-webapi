@@ -8,7 +8,8 @@ import { NaoEncontradoError } from "@/domain/erros";
 import { obterContainer } from "@/infrastructure/container";
 import { CartaoMedicamento } from "@/components/CartaoMedicamento";
 import { ReportarPreco } from "@/components/ReportarPreco";
-import { CaixaMedicamento, SeloTipo } from "@/components/visual";
+import { SeloTipo } from "@/components/visual";
+import { FotoMedicamento } from "@/components/FotoMedicamento";
 import { formatBRL, formatData } from "@/lib/format";
 
 type Props = { params: Promise<{ id: string }> };
@@ -54,10 +55,17 @@ export default async function MedicamentoPage({ params }: Props) {
         {m.categoria && <> / <Link href={`/busca?categoria=${m.categoria.id}`} className="underline">{m.categoria.nome}</Link></>}
       </nav>
 
-      <section className="grid gap-6 md:grid-cols-[280px_1fr]">
-        <div className="hidden md:block">
-          <CaixaMedicamento categoria={m.categoria?.nome} nome={m.nomeComercial} grande />
-        </div>
+      <section className="grid gap-6 md:grid-cols-[320px_1fr]">
+        {/* Com foto real: aparece também no celular. Sem foto: ilustração só no computador. */}
+        <figure className={m.imagem ? "" : "hidden md:block"}>
+          <FotoMedicamento medicamento={m} variante="destaque" />
+          {m.imagem && (
+            <figcaption className="mt-2 text-[11px] leading-snug text-suave">
+              Imagem ilustrativa, pode diferir da embalagem vendida no Brasil.{" "}
+              <a href={m.imagem.fonte} target="_blank" rel="noreferrer" className="underline">{m.imagem.credito}</a>
+            </figcaption>
+          )}
+        </figure>
         <div>
           <SeloTipo tipo={m.tipo} />
           <h1 className="mt-2 text-2xl font-bold leading-tight text-marca-900 sm:text-3xl">{m.nomeComercial}</h1>

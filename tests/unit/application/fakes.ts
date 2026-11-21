@@ -8,6 +8,7 @@ import type { ReportePreco } from "@/domain/reporte";
 import type { UsuarioAtual } from "@/domain/usuario";
 import { menorPreco } from "@/domain/preco";
 import { normalizarTexto } from "@/domain/texto";
+import { montarImagem } from "@/domain/medicamento";
 
 export interface Dados {
   categorias: Categoria[];
@@ -23,7 +24,7 @@ export const usuarioComum: UsuarioAtual = { id: "u1", email: "u@x.com", nome: "U
 export const admin: UsuarioAtual = { id: "a1", email: "user123@gmail.com", nome: "Admin", role: "admin" };
 
 export function med(id: number, nome: string, principioAtivo: string, tipo: Medicamento["tipo"]): Medicamento {
-  return { id, nomeComercial: nome, principioAtivo, categoria: { id: 1, nome: "Analgésicos" }, tipo, fabricante: "Lab", apresentacao: "10 comprimidos" };
+  return { id, nomeComercial: nome, principioAtivo, categoria: { id: 1, nome: "Analgésicos" }, tipo, fabricante: "Lab", apresentacao: "10 comprimidos", imagem: null };
 }
 
 export function farmacia(id: number, parceira = true): Farmacia {
@@ -68,7 +69,7 @@ export function criarFakes(d: Dados): Repositorios {
       async salvar(input) {
         const id = input.id ?? ++proximoId;
         const categoria = d.categorias.find((c) => c.id === input.categoriaId) ?? null;
-        const novo: Medicamento = { id, nomeComercial: input.nomeComercial, principioAtivo: input.principioAtivo, categoria, tipo: input.tipo, fabricante: input.fabricante, apresentacao: input.apresentacao };
+        const novo: Medicamento = { id, nomeComercial: input.nomeComercial, principioAtivo: input.principioAtivo, categoria, tipo: input.tipo, fabricante: input.fabricante, apresentacao: input.apresentacao, imagem: montarImagem(input.imagemUrl, input.imagemCredito, input.imagemFonte) };
         d.medicamentos = [...d.medicamentos.filter((m) => m.id !== id), novo];
         return id;
       },

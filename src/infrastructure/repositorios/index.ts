@@ -32,6 +32,7 @@ export function criarRepositorios(db: SupabaseClient): Repositorios {
         const linha = {
           nome_comercial: m.nomeComercial, principio_ativo: m.principioAtivo, categoria_id: m.categoriaId,
           tipo: m.tipo, fabricante: m.fabricante, apresentacao: m.apresentacao,
+          imagem_url: m.imagemUrl?.trim() || null, imagem_credito: m.imagemCredito?.trim() || null, imagem_fonte: m.imagemFonte?.trim() || null,
         };
         if (m.id) {
           verificar(await db.from("medicamentos").update(linha).eq("id", m.id));

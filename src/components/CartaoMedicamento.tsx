@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ROTULO_TIPO, type ResultadoBusca } from "@/domain/medicamento";
 import { formatBRL } from "@/lib/format";
-import { CaixaMedicamento } from "./visual";
+import { FotoMedicamento } from "./FotoMedicamento";
 
 interface Props {
   medicamento: ResultadoBusca;
@@ -14,7 +14,7 @@ export function CartaoMedicamento({ medicamento: m, precoReferencia, economiaPer
   return (
     <Link href={`/medicamento/${m.id}`} className="group flex flex-col">
       <div className="relative overflow-hidden rounded-2xl bg-[#f3f5f4] transition group-hover:bg-menta-100">
-        <CaixaMedicamento categoria={m.categoria?.nome} nome={m.nomeComercial} neutro />
+        <FotoMedicamento medicamento={m} />
         {economiaPercentual ? (
           <span className="absolute right-2.5 top-2.5 rounded-md bg-alerta px-1.5 py-0.5 text-[11px] font-bold text-white">{economiaPercentual}%</span>
         ) : null}

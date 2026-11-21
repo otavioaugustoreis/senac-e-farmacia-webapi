@@ -40,6 +40,7 @@ export function Footer() {
                 Preços de referência CMED <ExternalLink className="size-3.5" aria-hidden />
               </a>
             </li>
+            <li><Link href="/creditos" className="inline-block py-1.5 hover:underline">Créditos das imagens</Link></li>
           </ul>
         </div>
       </div>

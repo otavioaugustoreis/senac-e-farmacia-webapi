@@ -1,14 +1,18 @@
 import type { Bula } from "@/domain/bula";
 import { diaEmSaoPaulo, type Cupom } from "@/domain/cupom";
 import type { Farmacia, FarmaciaProxima } from "@/domain/farmacia";
-import type { Medicamento, ResultadoBusca, TipoMedicamento } from "@/domain/medicamento";
+import { montarImagem, type Medicamento, type ResultadoBusca, type TipoMedicamento } from "@/domain/medicamento";
 import type { Preco } from "@/domain/preco";
 import type { ReportePreco } from "@/domain/reporte";
 
 type Num = number | string | null;
 const num = (v: Num): number | null => (v === null || v === undefined ? null : Number(v));
 
-export interface LinhaBusca {
+interface ColunasImagem {
+  imagem_url?: string | null; imagem_credito?: string | null; imagem_fonte?: string | null;
+}
+
+export interface LinhaBusca extends ColunasImagem {
   id: number; nome_comercial: string; principio_ativo: string; tipo: TipoMedicamento;
   categoria_id: number | null; categoria: string | null; fabricante: string; apresentacao: string; menor_preco: Num;
 }
@@ -18,10 +22,11 @@ export function paraResultadoBusca(l: LinhaBusca): ResultadoBusca {
     id: l.id, nomeComercial: l.nome_comercial, principioAtivo: l.principio_ativo, tipo: l.tipo,
     categoria: l.categoria_id !== null && l.categoria ? { id: l.categoria_id, nome: l.categoria } : null,
     fabricante: l.fabricante, apresentacao: l.apresentacao, menorPreco: num(l.menor_preco),
+    imagem: montarImagem(l.imagem_url, l.imagem_credito, l.imagem_fonte),
   };
 }
 
-export interface LinhaMedicamento {
+export interface LinhaMedicamento extends ColunasImagem {
   id: number; nome_comercial: string; principio_ativo: string; tipo: TipoMedicamento;
   fabricante: string; apresentacao: string; categorias: { id: number; nome: string } | null;
 }
@@ -30,6 +35,7 @@ export function paraMedicamento(l: LinhaMedicamento): Medicamento {
   return {
     id: l.id, nomeComercial: l.nome_comercial, principioAtivo: l.principio_ativo, tipo: l.tipo,
     fabricante: l.fabricante, apresentacao: l.apresentacao, categoria: l.categorias ?? null,
+    imagem: montarImagem(l.imagem_url, l.imagem_credito, l.imagem_fonte),
   };
 }
 

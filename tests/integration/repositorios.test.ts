@@ -41,6 +41,27 @@ describe.skipIf(!url || !chave)("repositórios Supabase (leitura anônima)", () 
     expect(resultado.every((m) => m.categoria?.id === primeira.id)).toBe(true);
   });
 
+  it("traz a foto real com crédito para medicamento que tem imagem", async () => {
+    // Arrange
+    const { medicamentos } = repos();
+    // Act
+    const [detalhe, busca] = await Promise.all([medicamentos.obterPorId(4), medicamentos.buscar("tylenol")]);
+    // Assert
+    expect(detalhe?.imagem?.url).toMatch(/^https:\/\/(upload|thumb)\.wikimedia\.org\/[^?]+$/);
+    expect(detalhe?.imagem?.credito).toContain("Wikimedia Commons");
+    expect(detalhe?.imagem?.fonte).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
+    expect(busca[0].imagem?.url).toBe(detalhe?.imagem?.url);
+  });
+
+  it("devolve imagem nula para medicamento sem foto livre", async () => {
+    // Arrange
+    const { medicamentos } = repos();
+    // Act
+    const novalgina = await medicamentos.obterPorId(1);
+    // Assert
+    expect(novalgina?.imagem).toBeNull();
+  });
+
   it("devolve null para medicamento inexistente", async () => {
     // Arrange
     const { medicamentos } = repos();

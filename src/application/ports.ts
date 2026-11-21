@@ -13,6 +13,9 @@ export interface MedicamentoInput {
   tipo: TipoMedicamento;
   fabricante: string;
   apresentacao: string;
+  imagemUrl?: string | null;
+  imagemCredito?: string | null;
+  imagemFonte?: string | null;
 }
 
 export type BulaInput = Omit<Bula, "medicamentoId">;
