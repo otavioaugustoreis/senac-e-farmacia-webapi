@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="360" viewBox="40 790 230 360">
+<defs><linearGradient id="g_colecalciferol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7791F"/><stop offset="1" stop-color="#F6C453"/></linearGradient><linearGradient id="g_ibuprofeno" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E3A8A"/><stop offset="1" stop-color="#4F7BE8"/></linearGradient><linearGradient id="g_amoxicilina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6B21A8"/><stop offset="1" stop-color="#A970E0"/></linearGradient><linearGradient id="g_losartana_potássica" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#065F46"/><stop offset="1" stop-color="#34B38A"/></linearGradient><linearGradient id="g_azitromicina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9D174D"/><stop offset="1" stop-color="#E0629A"/></linearGradient><linearGradient id="g_besilato_de_anlodipino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E7490"/><stop offset="1" stop-color="#4CC3D9"/></linearGradient><linearGradient id="g_diclofenaco_potássico" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B45309"/><stop offset="1" stop-color="#F59E4B"/></linearGradient><linearGradient id="g_loratadina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3F6212"/><stop offset="1" stop-color="#8CC63F"/></linearGradient><linearGradient id="g_cloridrato_de_metformina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#374151"/><stop offset="1" stop-color="#8B95A5"/></linearGradient><linearGradient id="g_dipirona_monoidratada" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D4ED8"/><stop offset="1" stop-color="#6FA8F5"/></linearGradient><linearGradient id="g_omeprazol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E3A8A"/><stop offset="1" stop-color="#3B82F6"/></linearGradient><linearGradient id="g_paracetamol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B91C1C"/><stop offset="1" stop-color="#F26B6B"/></linearGradient></defs>
+<rect x="40" y="790" width="230" height="360" fill="#ffffff"/>
+<g id="item-13">
+<ellipse cx="155.0" cy="1078" rx="81.0" ry="7" fill="#000" opacity="0.08"/>
+<path d="M230.0,820 l12,-8 v250 l-12,8 z" fill="#B45309" opacity="0.55"/>
+<path d="M80.0,820 l12,-8 h150 l-12,8 z" fill="#B45309" opacity="0.35"/>
+<rect x="80.0" y="820" width="150" height="250" fill="#fff" stroke="#d9dde3"/>
+<rect x="80.0" y="820" width="150" height="130.0" fill="url(#g_diclofenaco_potássico)"/>
+<g transform="rotate(-30 155.0 854)"><rect x="133.0" y="846" width="44" height="16" rx="8" fill="#fff"/><rect x="155.0" y="846" width="22" height="16" rx="8" fill="#fff" opacity="0.6"/><rect x="155.0" y="846" width="8" height="16" fill="#fff" opacity="0.6"/></g>
+<text x="155.0" y="890" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#fff">diclofenaco</text>
+<text x="155.0" y="907" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#fff">potássico</text>
+<text x="155.0" y="938" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#fff" opacity="0.9">USO ORAL</text>
+<rect x="80.0" y="950.0" width="150" height="44" fill="#FFD400"/>
+<text x="104.0" y="984.0" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="34" font-weight="900" fill="#0B3C8C">G</text>
+<text x="128.0" y="969.0" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#0B3C8C">Medicamento</text>
+<text x="128.0" y="985.0" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#0B3C8C">Genérico</text>
+<rect x="80.0" y="994.0" width="150" height="40" fill="#E2231A"/>
+<rect x="80.0" y="1048" width="150" height="22" fill="#B45309"/>
+<text x="155.0" y="1104" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Diclofenaco Potássico</text>
+<text x="155.0" y="1121" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Medley</text>
+<text x="155.0" y="1140" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280">13</text>
+</g>
+</svg>

@@ -16,10 +16,13 @@ export function FotoMedicamento({ medicamento: m, variante = "cartao" }: Props) 
   if (!m.imagem) {
     return <CaixaMedicamento categoria={m.categoria?.nome} nome={m.nomeComercial} neutro={variante === "cartao"} grande={variante === "destaque"} />;
   }
+  // Ilustrações SVG da equipe aparecem inteiras (sem corte) e sem otimização de imagem.
+  const ilustracao = m.imagem.url.endsWith(".svg");
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl bg-[#f3f5f4] ${altura}`}>
-      <Image src={m.imagem.url} alt={`Foto ilustrativa de ${m.nomeComercial}`} fill sizes={TAMANHOS[variante]}
-        className="object-cover transition duration-300 group-hover:scale-105" />
+    <div className={`relative w-full overflow-hidden rounded-2xl ${ilustracao ? "bg-white ring-1 ring-black/5" : "bg-[#f3f5f4]"} ${altura}`}>
+      <Image src={m.imagem.url} alt={`Imagem ilustrativa de ${m.nomeComercial}`} fill sizes={TAMANHOS[variante]}
+        unoptimized={ilustracao}
+        className={`${ilustracao ? "object-contain p-3" : "object-cover"} transition duration-300 group-hover:scale-105`} />
     </div>
   );
 }

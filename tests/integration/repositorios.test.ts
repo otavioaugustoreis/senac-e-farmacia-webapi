@@ -41,25 +41,25 @@ describe.skipIf(!url || !chave)("repositórios Supabase (leitura anônima)", () 
     expect(resultado.every((m) => m.categoria?.id === primeira.id)).toBe(true);
   });
 
-  it("traz a foto real com crédito para medicamento que tem imagem", async () => {
+  it("traz a ilustração da equipe para cada medicamento, na busca e no detalhe", async () => {
     // Arrange
     const { medicamentos } = repos();
     // Act
     const [detalhe, busca] = await Promise.all([medicamentos.obterPorId(4), medicamentos.buscar("tylenol")]);
     // Assert
-    expect(detalhe?.imagem?.url).toMatch(/^https:\/\/(upload|thumb)\.wikimedia\.org\/[^?]+$/);
-    expect(detalhe?.imagem?.credito).toContain("Wikimedia Commons");
-    expect(detalhe?.imagem?.fonte).toMatch(/^https:\/\/commons\.wikimedia\.org\//);
+    expect(detalhe?.imagem?.url).toBe("/medicamentos/25-tylenol.svg");
+    expect(detalhe?.imagem?.credito).toBe("Ilustração: equipe E-Farmácia");
     expect(busca[0].imagem?.url).toBe(detalhe?.imagem?.url);
   });
 
-  it("devolve imagem nula para medicamento sem foto livre", async () => {
+  it("todos os medicamentos do catálogo têm imagem, inclusive a dipirona", async () => {
     // Arrange
     const { medicamentos } = repos();
     // Act
-    const novalgina = await medicamentos.obterPorId(1);
+    const [todos, novalgina] = await Promise.all([medicamentos.buscar(""), medicamentos.obterPorId(1)]);
     // Assert
-    expect(novalgina?.imagem).toBeNull();
+    expect(todos.every((m) => m.imagem?.url.startsWith("/medicamentos/"))).toBe(true);
+    expect(novalgina?.imagem?.url).toBe("/medicamentos/22-novalgina.svg");
   });
 
   it("devolve null para medicamento inexistente", async () => {

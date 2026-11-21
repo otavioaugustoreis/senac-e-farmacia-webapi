@@ -47,6 +47,24 @@ describe("validarMedicamento", () => {
     expect(acao).toThrow("A foto precisa de um endereço https");
   });
 
+  it("aceita imagem servida pelo próprio site", () => {
+    // Arrange
+    const input = { nomeComercial: "Tylenol", principioAtivo: "Paracetamol", tipo: "referencia" as const, imagemUrl: "/medicamentos/25-tylenol.svg" };
+    // Act
+    const acao = () => validarMedicamento(input);
+    // Assert
+    expect(acao).not.toThrow();
+  });
+
+  it("rejeita caminho que aponta para outro site (//)", () => {
+    // Arrange
+    const input = { nomeComercial: "Tylenol", principioAtivo: "Paracetamol", tipo: "referencia" as const, imagemUrl: "//outro.site/x.svg" };
+    // Act
+    const acao = () => validarMedicamento(input);
+    // Assert
+    expect(acao).toThrow(DomainError);
+  });
+
   it("aceita medicamento sem foto", () => {
     // Arrange
     const input = { nomeComercial: "Novalgina", principioAtivo: "Dipirona", tipo: "referencia" as const, imagemUrl: "" };

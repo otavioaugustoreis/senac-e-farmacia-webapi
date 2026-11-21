@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="360" viewBox="960 70 230 360">
+<defs><linearGradient id="g_colecalciferol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7791F"/><stop offset="1" stop-color="#F6C453"/></linearGradient><linearGradient id="g_ibuprofeno" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E3A8A"/><stop offset="1" stop-color="#4F7BE8"/></linearGradient><linearGradient id="g_amoxicilina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6B21A8"/><stop offset="1" stop-color="#A970E0"/></linearGradient><linearGradient id="g_losartana_potássica" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#065F46"/><stop offset="1" stop-color="#34B38A"/></linearGradient><linearGradient id="g_azitromicina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9D174D"/><stop offset="1" stop-color="#E0629A"/></linearGradient><linearGradient id="g_besilato_de_anlodipino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E7490"/><stop offset="1" stop-color="#4CC3D9"/></linearGradient><linearGradient id="g_diclofenaco_potássico" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B45309"/><stop offset="1" stop-color="#F59E4B"/></linearGradient><linearGradient id="g_loratadina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3F6212"/><stop offset="1" stop-color="#8CC63F"/></linearGradient><linearGradient id="g_cloridrato_de_metformina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#374151"/><stop offset="1" stop-color="#8B95A5"/></linearGradient><linearGradient id="g_dipirona_monoidratada" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D4ED8"/><stop offset="1" stop-color="#6FA8F5"/></linearGradient><linearGradient id="g_omeprazol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E3A8A"/><stop offset="1" stop-color="#3B82F6"/></linearGradient><linearGradient id="g_paracetamol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B91C1C"/><stop offset="1" stop-color="#F26B6B"/></linearGradient></defs>
+<rect x="960" y="70" width="230" height="360" fill="#ffffff"/>
+<g id="item-05">
+<ellipse cx="1075.0" cy="358" rx="81.0" ry="7" fill="#000" opacity="0.08"/>
+<path d="M1150.0,100 l12,-8 v250 l-12,8 z" fill="#6B21A8" opacity="0.55"/>
+<path d="M1000.0,100 l12,-8 h150 l-12,8 z" fill="#6B21A8" opacity="0.35"/>
+<rect x="1000.0" y="100" width="150" height="250" fill="#fff" stroke="#d9dde3"/>
+<rect x="1000.0" y="100" width="150" height="130.0" fill="url(#g_amoxicilina)"/>
+<g transform="rotate(-30 1075.0 134)"><rect x="1053.0" y="126" width="44" height="16" rx="8" fill="#fff"/><rect x="1075.0" y="126" width="22" height="16" rx="8" fill="#fff" opacity="0.6"/><rect x="1075.0" y="126" width="8" height="16" fill="#fff" opacity="0.6"/></g>
+<text x="1075.0" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#fff">amoxicilina</text>
+<text x="1075.0" y="218" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#fff" opacity="0.9">USO ORAL</text>
+<rect x="1000.0" y="230.0" width="150" height="6" fill="#6B21A8" opacity="0.5"/>
+<text x="1075.0" y="280.0" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="2" fill="#6B21A8">MEDICAMENTO</text>
+<rect x="1000.0" y="328" width="150" height="22" fill="#6B21A8"/>
+<text x="1075.0" y="384" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Amoxil</text>
+<text x="1075.0" y="403" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#6b7280">05</text>
+</g>
+</svg>

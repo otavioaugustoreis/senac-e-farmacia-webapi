@@ -48,9 +48,13 @@ export function validarMedicamento(input: {
   if (!input.nomeComercial?.trim()) throw new DomainError("Informe o nome comercial");
   if (!input.principioAtivo?.trim()) throw new DomainError("Informe o princípio ativo");
   if (!TIPOS_MEDICAMENTO.includes(input.tipo)) throw new DomainError("Tipo de medicamento inválido");
-  if (input.imagemUrl?.trim() && !input.imagemUrl.trim().startsWith("https://")) {
-    throw new DomainError("A foto precisa de um endereço https");
-  }
+  const url = input.imagemUrl?.trim();
+  if (url && !imagemPermitida(url)) throw new DomainError("A foto precisa de um endereço https");
+}
+
+/** Aceita https:// ou um arquivo do próprio site ("/medicamentos/x.svg"), nunca "//outro-site". */
+export function imagemPermitida(url: string): boolean {
+  return url.startsWith("https://") || (url.startsWith("/") && !url.startsWith("//") && !url.includes("\\"));
 }
 
 /** Monta a imagem só quando há URL; sem crédito informado, aponta para a fonte. */

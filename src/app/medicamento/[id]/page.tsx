@@ -61,8 +61,10 @@ export default async function MedicamentoPage({ params }: Props) {
           <FotoMedicamento medicamento={m} variante="destaque" />
           {m.imagem && (
             <figcaption className="mt-2 text-[11px] leading-snug text-suave">
-              Imagem ilustrativa, pode diferir da embalagem vendida no Brasil.{" "}
-              <a href={m.imagem.fonte} target="_blank" rel="noreferrer" className="underline">{m.imagem.credito}</a>
+              Imagem ilustrativa, pode diferir da embalagem real.{" "}
+              {m.imagem.fonte.startsWith("https://")
+                ? <a href={m.imagem.fonte} target="_blank" rel="noreferrer" className="underline">{m.imagem.credito}</a>
+                : m.imagem.credito}
             </figcaption>
           )}
         </figure>
