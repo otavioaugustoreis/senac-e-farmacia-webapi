@@ -18,3 +18,7 @@ CLAUDE.md
 .claude/
 .superpowers/
 docs/superpowers/
+
+# Arquivos locais
+image.png
+.codebase-memory/
