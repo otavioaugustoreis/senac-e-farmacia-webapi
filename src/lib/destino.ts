@@ -11,3 +11,9 @@ export function destinoSeguro(next: unknown): string {
   const url = new URL(d, BASE);
   return url.origin === BASE ? `${url.pathname}${url.search}${url.hash}` : "/";
 }
+
+/** Depois do login: o admin sem destino específico vai direto para o painel. */
+export function destinoAposLogin(next: unknown, papel: "user" | "admin"): string {
+  const destino = destinoSeguro(next);
+  return papel === "admin" && destino === "/" ? "/admin" : destino;
+}

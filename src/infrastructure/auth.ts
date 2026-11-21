@@ -13,11 +13,13 @@ function traduzir(mensagem: string): string {
   return "Não foi possível concluir. Tente novamente.";
 }
 
-export async function entrar(email: string, senha: string): Promise<ResultadoAuth> {
+export async function entrar(email: string, senha: string): Promise<ResultadoAuth & { papel?: "user" | "admin" }> {
   if (!email.trim() || !senha) return { ok: false, erro: "Informe e-mail e senha" };
   const db = await criarClienteServidor();
-  const { error } = await db.auth.signInWithPassword({ email: email.trim(), password: senha });
-  return error ? { ok: false, erro: traduzir(error.message) } : { ok: true };
+  const { data, error } = await db.auth.signInWithPassword({ email: email.trim(), password: senha });
+  if (error) return { ok: false, erro: traduzir(error.message) };
+  const { data: perfil } = await db.from("profiles").select("role").eq("id", data.user.id).maybeSingle();
+  return { ok: true, papel: perfil?.role === "admin" ? "admin" : "user" };
 }
 
 export async function cadastrar(nome: string, email: string, senha: string): Promise<ResultadoAuth> {
