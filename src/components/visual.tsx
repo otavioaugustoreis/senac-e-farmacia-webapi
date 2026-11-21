@@ -29,12 +29,14 @@ export function visualDaCategoria(nome: string | null | undefined): VisualCatego
 }
 
 /** "Embalagem" ilustrada do medicamento, colorida pela categoria (sem fotos de produto). */
-export function CaixaMedicamento({ categoria, nome, grande = false }: { categoria: string | null | undefined; nome: string; grande?: boolean }) {
+export function CaixaMedicamento({ categoria, nome, grande = false, neutro = false }: {
+  categoria: string | null | undefined; nome: string; grande?: boolean; neutro?: boolean;
+}) {
   const v = visualDaCategoria(categoria);
   const Icone = v.icone;
   return (
-    <div className={`grid place-items-center rounded-2xl ${grande ? "h-56" : "h-36"}`} style={{ background: v.fundo }} aria-hidden>
-      <div className={`relative flex flex-col items-center ${grande ? "scale-125" : ""}`}>
+    <div className={`grid place-items-center rounded-2xl ${grande ? "h-56" : "h-36 sm:h-44"}`} style={{ background: neutro ? "transparent" : v.fundo }} aria-hidden>
+      <div className={`relative flex flex-col items-center ${grande ? "scale-125" : neutro ? "scale-[1.3] sm:scale-150" : ""}`}>
         <div className="h-3 w-12 rounded-t-md" style={{ background: v.tampa }} />
         <div className="flex h-20 w-16 flex-col items-center justify-center gap-1 rounded-lg bg-white shadow-md ring-1 ring-black/5">
           <Icone className="size-5" style={{ color: v.tampa }} />

@@ -1,33 +1,53 @@
 import Link from "next/link";
-import { LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { LogOut, ShieldCheck, Ticket, UserRound } from "lucide-react";
 import type { UsuarioAtual } from "@/domain/usuario";
 import { sairAction } from "@/app/auth-actions";
 
+const circulo = "grid size-10 shrink-0 place-items-center rounded-full";
+
 export function MenuUsuario({ usuario }: { usuario: UsuarioAtual | null }) {
+  const cupons = (
+    <Link href="/cupons" aria-label="Cupons" className={`${circulo} hidden bg-white text-marca-900 hover:bg-menta-100 md:grid`}>
+      <Ticket className="size-4" aria-hidden />
+    </Link>
+  );
+
   if (!usuario) {
     return (
-      <Link href="/entrar" className="flex min-h-10 items-center gap-1.5 rounded-full bg-white px-4 font-semibold text-marca-900">
-        <UserRound className="size-4" aria-hidden /> Entrar
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link href="/entrar" className="flex items-center gap-2 rounded-full hover:bg-white/5 md:pr-2">
+          <span className={`${circulo} bg-white/15`}><UserRound className="size-5" aria-hidden /></span>
+          <span className="leading-tight">
+            <span className="block text-xs text-white/70">Olá!</span>
+            <span className="block font-semibold">Entrar</span>
+          </span>
+        </Link>
+        {cupons}
+      </div>
     );
   }
+
   const primeiroNome = (usuario.nome ?? usuario.email).split(/[\s@]/)[0];
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
+      <span className="flex items-center gap-2">
+        <span className={`${circulo} bg-alerta text-sm font-bold uppercase text-white`} aria-hidden>{primeiroNome.slice(0, 1)}</span>
+        <span className="hidden leading-tight sm:block">
+          <span className="block text-xs text-white/70">Olá!</span>
+          <span className="block max-w-[9rem] truncate font-semibold">{primeiroNome}</span>
+        </span>
+      </span>
       {usuario.role === "admin" && (
-        <Link href="/admin" className="hidden min-h-10 items-center gap-1 rounded-full bg-white/10 px-3 hover:bg-white/20 md:flex">
-          <ShieldCheck className="size-4" aria-hidden /> Admin
+        <Link href="/admin" aria-label="Painel administrativo" className={`${circulo} hidden bg-white/10 hover:bg-white/20 md:grid`}>
+          <ShieldCheck className="size-4" aria-hidden />
         </Link>
       )}
-      <span className="hidden px-2 text-white/80 lg:inline">Olá, <strong className="text-white">{primeiroNome}</strong></span>
       <form action={sairAction}>
-        <button className="flex min-h-10 items-center gap-1.5 rounded-full px-3 hover:bg-white/10" aria-label={`Sair (${primeiroNome})`}>
-          <span className="grid size-7 place-items-center rounded-full bg-white/15 text-xs font-bold uppercase lg:hidden" aria-hidden>
-            {primeiroNome.slice(0, 1)}
-          </span>
-          <LogOut className="size-4" aria-hidden /> <span className="hidden sm:inline">Sair</span>
+        <button aria-label="Sair" className={`${circulo} bg-white/10 hover:bg-white/20`}>
+          <LogOut className="size-4" aria-hidden />
         </button>
       </form>
+      {cupons}
     </div>
   );
 }
