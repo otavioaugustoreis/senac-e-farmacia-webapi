@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ChevronDown, MapPin, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import type { Categoria } from "@/domain/medicamento";
 import { Logo } from "./Logo";
 import { SeletorCategoria } from "./SeletorCategoria";
+import { LocalizacaoAtual } from "./LocalizacaoAtual";
 
 interface Props {
   menuUsuario: React.ReactNode;
@@ -35,13 +36,7 @@ export function Header({ menuUsuario, categorias }: Props) {
         </form>
 
         <nav aria-label="Atalhos" className="ml-auto flex items-center gap-2 text-sm">
-          <Link href="/farmacias" className="hidden items-center gap-2 rounded-full pr-2 hover:bg-white/5 md:flex">
-            <span className="grid size-10 place-items-center rounded-full ring-1 ring-white/30"><MapPin className="size-4" aria-hidden /></span>
-            <span className="leading-tight">
-              <span className="block text-xs text-white/70">Perto de você</span>
-              <span className="flex items-center gap-1 font-semibold">São Paulo <ChevronDown className="size-3.5" aria-hidden /></span>
-            </span>
-          </Link>
+          <LocalizacaoAtual />
           {menuUsuario}
         </nav>
       </div>

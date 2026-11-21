@@ -102,9 +102,10 @@ export function criarFakes(d: Dados): Repositorios {
       },
     },
     farmacias: {
-      async proximas(lat, lng) {
+      async proximas(lat, lng, raioKm) {
         return d.farmacias
           .map((f) => ({ ...f, distanciaKm: Math.hypot(f.lat - lat, f.lng - lng) * 111 }))
+          .filter((f) => f.distanciaKm <= raioKm)
           .sort((a, b) => a.distanciaKm - b.distanciaKm);
       },
       async listar() {

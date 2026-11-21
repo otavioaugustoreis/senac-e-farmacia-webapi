@@ -59,7 +59,6 @@ export default async function Home() {
                     </span>
                   </span>
                   <span className="mt-2.5 line-clamp-2 text-xs font-bold leading-tight text-tinta sm:text-sm">{c.nome}</span>
-                  <span className="font-serif text-sm italic text-suave">{vis.subtitulo}</span>
                 </Link>
               </li>
             );

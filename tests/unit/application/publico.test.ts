@@ -97,6 +97,29 @@ describe("farmaciasProximas", () => {
     expect(resultado.farmacias.length).toBeGreaterThan(0);
   });
 
+  it("amplia o raio e avisa quando não há farmácias perto da posição real (ex.: Campinas)", async () => {
+    // Arrange
+    const proximas = farmaciasProximas(criarFakes(cenario()));
+    const campinas = { lat: -22.9056, lng: -47.0608 };
+    // Act
+    const resultado = await proximas(campinas.lat, campinas.lng);
+    // Assert
+    expect(resultado.origem).toEqual({ ...campinas, padrao: false });
+    expect(resultado.ampliado).toBe(true);
+    expect(resultado.raioKm).toBeGreaterThan(15);
+    expect(resultado.farmacias.length).toBeGreaterThan(0);
+  });
+
+  it("não amplia o raio quando há farmácias perto", async () => {
+    // Arrange
+    const proximas = farmaciasProximas(criarFakes(cenario()));
+    // Act
+    const resultado = await proximas(-23.56, -46.65);
+    // Assert
+    expect(resultado.ampliado).toBe(false);
+    expect(resultado.raioKm).toBe(15);
+  });
+
   it("usa a posição informada quando é válida", async () => {
     // Arrange
     const proximas = farmaciasProximas(criarFakes(cenario()));
