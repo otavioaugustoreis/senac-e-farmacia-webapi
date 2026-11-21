@@ -2,33 +2,38 @@ import Link from "next/link";
 import { MapPin, Search, Ticket } from "lucide-react";
 import { Logo } from "./Logo";
 
-export function Header({ menuUsuario }: { menuUsuario?: React.ReactNode }) {
+export function Header({ menuUsuario }: { menuUsuario: React.ReactNode }) {
   return (
     <header className="pt-3">
       <p className="rounded-full bg-menta-100 px-4 py-1.5 text-center text-xs font-medium text-marca-800">
-        Dados de demonstração · Veja os <Link href="/cupons" className="underline underline-offset-2">cupons das farmácias parceiras</Link>
+        <span className="sm:hidden">Dados de demonstração · </span>
+        <span className="hidden sm:inline">Dados de demonstração · Veja os </span>
+        <Link href="/cupons" className="underline underline-offset-2">
+          <span className="sm:hidden">ver cupons</span>
+          <span className="hidden sm:inline">cupons das farmácias parceiras</span>
+        </Link>
       </p>
-      <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[var(--radius-card)] bg-marca-900 px-4 py-3 text-white">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-3 rounded-[var(--radius-card)] bg-marca-900 px-3 py-3 text-white sm:px-4">
         <Logo claro />
-        <form action="/busca" className="order-3 flex w-full items-center gap-2 rounded-full bg-white px-3 py-1.5 text-tinta sm:order-none sm:w-auto sm:flex-1">
-          <Search className="size-4 text-suave" aria-hidden />
+        <form action="/busca" role="search" className="order-3 flex w-full items-center gap-2 rounded-full bg-white px-4 text-tinta md:order-none md:w-auto md:flex-1">
+          <Search className="size-4 shrink-0 text-suave" aria-hidden />
           <input
             name="q"
-            placeholder="Busque por nome ou princípio ativo"
+            type="search"
+            enterKeyHint="search"
+            placeholder="Nome ou princípio ativo"
             aria-label="Buscar medicamento"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-suave"
+            className="h-11 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-suave md:h-10"
           />
         </form>
-        <nav className="ml-auto flex items-center gap-1 text-sm">
-          <Link href="/farmacias" className="flex items-center gap-1 rounded-full px-3 py-1.5 hover:bg-white/10">
-            <MapPin className="size-4" aria-hidden /> <span className="hidden md:inline">Perto de você</span>
+        <nav aria-label="Atalhos" className="ml-auto flex items-center gap-1 text-sm">
+          <Link href="/farmacias" className="hidden min-h-10 items-center gap-1.5 rounded-full px-3 hover:bg-white/10 md:flex">
+            <MapPin className="size-4" aria-hidden /> Perto de você
           </Link>
-          <Link href="/cupons" className="flex items-center gap-1 rounded-full px-3 py-1.5 hover:bg-white/10">
-            <Ticket className="size-4" aria-hidden /> <span className="hidden md:inline">Cupons</span>
+          <Link href="/cupons" className="hidden min-h-10 items-center gap-1.5 rounded-full px-3 hover:bg-white/10 md:flex">
+            <Ticket className="size-4" aria-hidden /> Cupons
           </Link>
-          {menuUsuario ?? (
-            <Link href="/entrar" className="rounded-full bg-white px-3 py-1.5 font-semibold text-marca-900">Entrar</Link>
-          )}
+          {menuUsuario}
         </nav>
       </div>
     </header>

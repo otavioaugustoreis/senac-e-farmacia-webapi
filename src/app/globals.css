@@ -25,4 +25,32 @@ html {
 body {
   background: #f7f8f7;
   color: var(--color-tinta);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No celular, campos com menos de 16px fazem o iPhone dar zoom ao tocar. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Faixas com rolagem lateral (categorias, filtros) sem barra visível */
+@utility sem-barra {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}
+
+/* Leaflet fica abaixo da navegação fixa */
+.leaflet-container {
+  z-index: 0;
 }

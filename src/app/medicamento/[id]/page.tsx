@@ -55,10 +55,12 @@ export default async function MedicamentoPage({ params }: Props) {
       </nav>
 
       <section className="grid gap-6 md:grid-cols-[280px_1fr]">
-        <CaixaMedicamento categoria={m.categoria?.nome} nome={m.nomeComercial} grande />
+        <div className="hidden md:block">
+          <CaixaMedicamento categoria={m.categoria?.nome} nome={m.nomeComercial} grande />
+        </div>
         <div>
           <SeloTipo tipo={m.tipo} />
-          <h1 className="mt-2 text-3xl font-bold text-marca-900">{m.nomeComercial}</h1>
+          <h1 className="mt-2 text-2xl font-bold leading-tight text-marca-900 sm:text-3xl">{m.nomeComercial}</h1>
           <p className="mt-1 text-suave">
             <span className="font-medium text-tinta">{m.principioAtivo}</span> · {m.apresentacao} · {m.fabricante}
           </p>
@@ -93,19 +95,19 @@ export default async function MedicamentoPage({ params }: Props) {
             ) : (
               <ul className="mt-3 divide-y divide-black/5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
                 {d.precos.map((p, i) => (
-                  <li key={p.id} className={`flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between ${i === 0 ? "bg-menta-50" : ""}`}>
-                    <div>
-                      <p className="font-semibold">
-                        {p.farmacia.nome}
-                        {i === 0 && <span className="ml-2 rounded-full bg-marca-800 px-2 py-0.5 text-[11px] font-semibold text-white">Menor preço</span>}
-                      </p>
-                      <p className="text-xs text-suave">
-                        Atualizado em {formatData(p.atualizadoEm)}
-                        {p.desatualizado && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">Desatualizado</span>}
-                      </p>
-                      <div className="mt-1"><ReportarPreco precoId={p.id} logado={logado} voltarPara={caminho} /></div>
+                  <li key={p.id} className={`p-4 ${i === 0 ? "bg-menta-50" : ""}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold leading-snug">{p.farmacia.nome}</p>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-suave">
+                          {i === 0 && <span className="rounded-full bg-marca-800 px-2 py-0.5 text-[11px] font-semibold text-white">Menor preço</span>}
+                          <span>Atualizado em {formatData(p.atualizadoEm)}</span>
+                          {p.desatualizado && <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">Desatualizado</span>}
+                        </p>
+                      </div>
+                      <p className="shrink-0 whitespace-nowrap text-xl font-bold text-marca-700">{formatBRL(p.valor)}</p>
                     </div>
-                    <p className="text-xl font-bold text-marca-700">{formatBRL(p.valor)}</p>
+                    <div className="mt-1"><ReportarPreco precoId={p.id} logado={logado} voltarPara={caminho} /></div>
                   </li>
                 ))}
               </ul>

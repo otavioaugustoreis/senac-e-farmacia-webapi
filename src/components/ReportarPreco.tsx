@@ -12,7 +12,7 @@ export function ReportarPreco({ precoId, logado, voltarPara }: { precoId: number
 
   if (!logado) {
     return (
-      <Link href={`/entrar?next=${encodeURIComponent(voltarPara)}`} className="inline-flex items-center gap-1 text-xs text-suave underline hover:text-marca-700">
+      <Link href={`/entrar?next=${encodeURIComponent(voltarPara)}`} className="inline-flex min-h-9 items-center gap-1 text-xs text-suave underline hover:text-marca-700">
         <Flag className="size-3" aria-hidden /> Reportar preço incorreto
       </Link>
     );
@@ -20,7 +20,7 @@ export function ReportarPreco({ precoId, logado, voltarPara }: { precoId: number
   if (estado === "enviado") return <span className="text-xs font-medium text-marca-700">Obrigado! Vamos verificar.</span>;
   if (estado === "fechado") {
     return (
-      <button onClick={() => setEstado("aberto")} className="inline-flex items-center gap-1 text-xs text-suave underline hover:text-marca-700">
+      <button onClick={() => setEstado("aberto")} className="inline-flex min-h-9 items-center gap-1 text-xs text-suave underline hover:text-marca-700">
         <Flag className="size-3" aria-hidden /> Reportar preço incorreto
       </button>
     );

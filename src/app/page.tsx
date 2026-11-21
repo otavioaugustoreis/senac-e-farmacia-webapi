@@ -11,50 +11,54 @@ export default async function Home() {
   const v = await montarVitrine(repos)(new Date());
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10 sm:space-y-12">
       {/* Hero */}
-      <section className="grid gap-6 overflow-hidden rounded-[var(--radius-card)] bg-marca-900 p-6 text-white sm:p-10 lg:grid-cols-[1.3fr_1fr]">
+      <section className="grid gap-6 overflow-hidden rounded-[var(--radius-card)] bg-marca-900 p-5 text-white sm:p-10 lg:grid-cols-[1.3fr_1fr]">
         <div className="flex flex-col justify-center">
-          <h1 className="text-3xl font-bold leading-tight sm:text-5xl">Compare preços e consulte a bula num só lugar</h1>
-          <p className="mt-4 max-w-lg text-white/80">
+          <h1 className="text-[1.75rem] font-bold leading-tight sm:text-5xl">Compare preços e consulte a bula num só lugar</h1>
+          <p className="mt-3 max-w-lg text-sm text-white/80 sm:mt-4 sm:text-base">
             Pesquise pelo nome comercial ou pelo princípio ativo, veja genéricos e similares mais baratos e encontre farmácias perto de você.
           </p>
-          <form action="/busca" className="mt-6 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 text-tinta">
+          <form action="/busca" role="search" className="mt-5 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 text-tinta sm:mt-6">
             <Search className="size-5 shrink-0 text-suave" aria-hidden />
-            <input name="q" aria-label="Buscar medicamento" placeholder="Ex.: dipirona, losartana, Tylenol" className="w-full min-w-0 bg-transparent text-sm outline-none" />
-            <button className="flex shrink-0 items-center gap-1 rounded-full bg-marca-800 px-4 py-2 text-sm font-semibold text-white hover:bg-marca-700">
+            <input name="q" type="search" enterKeyHint="search" aria-label="Buscar medicamento" placeholder="Ex.: dipirona"
+              className="h-10 w-full min-w-0 bg-transparent text-sm outline-none" />
+            <button className="flex h-10 shrink-0 items-center gap-1 rounded-full bg-marca-800 px-4 text-sm font-semibold text-white hover:bg-marca-700">
               Buscar <ArrowRight className="size-4" aria-hidden />
             </button>
           </form>
         </div>
         <div className="grid place-items-center">
-          <div className="grid w-full max-w-sm grid-cols-2 gap-3">
+          <dl className="grid w-full max-w-sm grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-3">
             <Numero valor={String(v.numeros.medicamentos)} rotulo="medicamentos" />
             <Numero valor={String(v.numeros.farmacias)} rotulo="farmácias" />
-            <div className="col-span-2 rounded-2xl bg-white p-5 text-tinta">
-              <p className="text-4xl font-bold text-marca-700">
+            <div className="flex flex-col-reverse rounded-2xl bg-white p-3 text-tinta sm:col-span-2 sm:p-5">
+              <dt className="text-xs text-suave sm:text-sm">
+                <span className="sm:hidden">economia média</span>
+                <span className="hidden sm:inline">de economia média do genérico ou similar em relação ao de referência</span>
+              </dt>
+              <dd className="text-2xl font-bold text-marca-700 sm:text-4xl">
                 {v.numeros.economiaMediaPercentual !== null ? `${v.numeros.economiaMediaPercentual}%` : "—"}
-              </p>
-              <p className="text-sm text-suave">de economia média do genérico ou similar em relação ao de referência</p>
+              </dd>
             </div>
-          </div>
+          </dl>
         </div>
       </section>
 
-      {/* Categorias */}
+      {/* Categorias: faixa com rolagem lateral no celular, grade no computador */}
       <section aria-labelledby="titulo-categorias">
-        <h2 id="titulo-categorias" className="sr-only">Categorias</h2>
-        <ul className="grid grid-cols-4 gap-4 sm:grid-cols-8">
+        <h2 id="titulo-categorias" className="mb-3 text-lg font-bold text-marca-900 sm:sr-only">Categorias</h2>
+        <ul className="sem-barra -mx-3 flex snap-x gap-3 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-8 sm:gap-4 sm:overflow-visible sm:px-0">
           {v.categorias.map((c) => {
             const vis = visualDaCategoria(c.nome);
             const Icone = vis.icone;
             return (
-              <li key={c.id}>
+              <li key={c.id} className="w-[5.5rem] shrink-0 snap-start sm:w-auto">
                 <Link href={`/busca?categoria=${c.id}`} className="group flex flex-col items-center text-center">
                   <span className="grid size-16 place-items-center rounded-full transition group-hover:scale-105 sm:size-20" style={{ background: vis.fundo }}>
                     <Icone className="size-7" style={{ color: vis.tampa }} aria-hidden />
                   </span>
-                  <span className="mt-2 text-xs font-semibold leading-tight sm:text-sm">{c.nome}</span>
+                  <span className="mt-2 line-clamp-2 text-xs font-semibold leading-tight sm:text-sm">{c.nome}</span>
                   <span className="font-serif text-xs italic text-suave sm:text-sm">{vis.subtitulo}</span>
                 </Link>
               </li>
@@ -115,9 +119,9 @@ export default async function Home() {
 
 function Numero({ valor, rotulo }: { valor: string; rotulo: string }) {
   return (
-    <div className="rounded-2xl bg-white/10 p-5">
-      <p className="text-3xl font-bold">{valor}</p>
-      <p className="text-sm text-white/70">{rotulo}</p>
+    <div className="flex flex-col-reverse rounded-2xl bg-white/10 p-3 sm:p-5">
+      <dt className="text-xs text-white/70 sm:text-sm">{rotulo}</dt>
+      <dd className="text-2xl font-bold sm:text-3xl">{valor}</dd>
     </div>
   );
 }

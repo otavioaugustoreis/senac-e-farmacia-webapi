@@ -33,7 +33,7 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
       </h1>
       <p className="text-sm text-suave">{resultados.length} {resultados.length === 1 ? "medicamento" : "medicamentos"}</p>
 
-      <nav aria-label="Filtrar por categoria" className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <nav aria-label="Filtrar por categoria" className="sem-barra -mx-3 mt-4 flex gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         <Chip ativo={!filtro} href={link()}>Todas</Chip>
         {categorias.map((c) => (
           <Chip key={c.id} ativo={filtro === c.id} href={link(c.id)}>{c.nome}</Chip>
@@ -57,7 +57,7 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
 function Chip({ ativo, href, children }: { ativo: boolean; href: string; children: React.ReactNode }) {
   return (
     <Link href={href} aria-current={ativo ? "page" : undefined}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium ring-1 ${ativo ? "bg-marca-800 text-white ring-marca-800" : "bg-white text-tinta ring-black/10 hover:ring-marca-600"}`}>
+      className={`flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-medium ring-1 ${ativo ? "bg-marca-800 text-white ring-marca-800" : "bg-white text-tinta ring-black/10 hover:ring-marca-600"}`}>
       {children}
     </Link>
   );

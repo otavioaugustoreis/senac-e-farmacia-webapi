@@ -78,7 +78,7 @@ export default function MapaFarmacias() {
         </p>
       )}
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-        <div className="h-[420px] overflow-hidden rounded-[var(--radius-card)] ring-1 ring-black/5 lg:h-[560px]">
+        <div className="h-[55dvh] max-h-[480px] min-h-[300px] overflow-hidden rounded-[var(--radius-card)] ring-1 ring-black/5 lg:h-[560px] lg:max-h-none">
           <MapContainer center={[origem.lat, origem.lng]} zoom={14} scrollWheelZoom={false} className="h-full w-full">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -100,7 +100,7 @@ export default function MapaFarmacias() {
             ))}
           </MapContainer>
         </div>
-        <ul className="max-h-[560px] space-y-2 overflow-y-auto">
+        <ul className="space-y-2 lg:max-h-[560px] lg:overflow-y-auto">
           {farmacias.length === 0 && <li className="rounded-2xl bg-white p-4 text-suave">Nenhuma farmácia num raio de 15 km.</li>}
           {farmacias.map((f) => (
             <li key={f.id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">

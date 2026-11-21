@@ -114,10 +114,10 @@ export function GerenciadorEntidade({ entidade }: { entidade: Entidade }) {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-marca-900">{cfg.titulo}</h1>
-        <div className="flex gap-2">
-          <input value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder="Filtrar…" aria-label="Filtrar" className={`${campoCss} w-48`} />
+        <div className="flex w-full gap-2 sm:w-auto">
+          <input type="search" value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder="Filtrar…" aria-label="Filtrar" className={`${campoCss} min-w-0 flex-1 sm:w-48 sm:flex-none`} />
           {editavel && (
-            <button onClick={() => abrir()} className="flex items-center gap-1 rounded-full bg-marca-800 px-4 py-2 text-sm font-semibold text-white hover:bg-marca-700">
+            <button onClick={() => abrir()} className="flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-marca-800 px-4 text-sm font-semibold text-white hover:bg-marca-700">
               <Plus className="size-4" aria-hidden /> Novo
             </button>
           )}
@@ -155,7 +155,49 @@ export function GerenciadorEntidade({ entidade }: { entidade: Entidade }) {
         </form>
       )}
 
-      <div className="mt-4 overflow-x-auto rounded-[var(--radius-card)] bg-white ring-1 ring-black/5">
+      {itens !== null && visiveis.length > 0 && (
+        <p className="mt-4 text-xs text-suave">{visiveis.length} {visiveis.length === 1 ? "registro" : "registros"}</p>
+      )}
+
+      {/* Celular: cartões */}
+      {itens !== null && visiveis.length > 0 && (
+        <ul className="mt-2 space-y-2 md:hidden">
+          {visiveis.map((item) => (
+            <li key={item.id} className={`rounded-2xl bg-white p-4 ring-1 ring-black/5 ${item.resolvido ? "opacity-60" : ""}`}>
+              <p className="font-semibold leading-snug">{cfg.colunas[0].valor(item)}</p>
+              <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                {cfg.colunas.slice(1).map((c) => (
+                  <div key={c.rotulo} className="contents">
+                    <dt className="text-suave">{c.rotulo}</dt>
+                    <dd className="min-w-0 break-words">{c.valor(item)}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-3 flex gap-2">
+                {entidade === "reportes" ? (
+                  !item.resolvido && (
+                    <button onClick={() => resolver(item)} className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-full bg-menta-100 px-3 text-sm font-semibold text-marca-800">
+                      <CheckCircle2 className="size-4" aria-hidden /> Marcar como resolvido
+                    </button>
+                  )
+                ) : (
+                  <>
+                    <button onClick={() => abrir(item)} className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-full bg-menta-100 text-sm font-semibold text-marca-800">
+                      <Pencil className="size-4" aria-hidden /> Editar
+                    </button>
+                    <button onClick={() => excluir(item)} className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-full bg-red-50 text-sm font-semibold text-red-700">
+                      <Trash2 className="size-4" aria-hidden /> Excluir
+                    </button>
+                  </>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Computador: tabela (e mensagens de carregando/vazio em qualquer tela) */}
+      <div className={`mt-2 overflow-x-auto rounded-[var(--radius-card)] bg-white ring-1 ring-black/5 ${itens !== null && visiveis.length > 0 ? "hidden md:block" : ""}`}>
         {itens === null ? (
           <p className="p-6 text-sm text-suave">Carregando…</p>
         ) : visiveis.length === 0 ? (
