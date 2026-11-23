@@ -31,14 +31,14 @@ const YOU_PIN = L.divIcon({
 
 function FitBounds({ origin, pharmacies, isFiltering }: { origin: { lat: number; lng: number }; pharmacies: NearbyPharmacy[]; isFiltering: boolean }) {
   const map = useMap();
-  const keyName = `${origin.lat},${origin.lng}|${isFiltering}|${pharmacies.map((f) => f.id).join(",")}`;
+  const boundsKey = `${origin.lat},${origin.lng}|${isFiltering}|${pharmacies.map((f) => f.id).join(",")}`;
   useEffect(() => {
     const target = pharmacies.slice(0, 5).map((f) => [f.lat, f.lng] as [number, number]);
     const points: [number, number][] = isFiltering && target.length > 0 ? target : [[origin.lat, origin.lng], ...target];
     if (points.length === 1) map.setView(points[0], 15);
     else map.fitBounds(points, { padding: [40, 40], maxZoom: 15 });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- a chave resume origem, filtro e ids
-  }, [map, keyName]);
+  }, [map, boundsKey]);
   return null;
 }
 

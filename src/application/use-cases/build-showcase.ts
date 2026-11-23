@@ -30,9 +30,9 @@ export const buildShowcase = (repos: Pick<Repositories, "medicines" | "pharmacie
     const referenceByIngredient = new Map<string, number>();
     for (const m of all) {
       if (m.type !== "referencia" || m.lowestPrice === null) continue;
-      const keyName = normalizeText(m.activeIngredient);
-      const current = referenceByIngredient.get(keyName);
-      if (current === undefined || m.lowestPrice < current) referenceByIngredient.set(keyName, m.lowestPrice);
+      const ingredientKey = normalizeText(m.activeIngredient);
+      const current = referenceByIngredient.get(ingredientKey);
+      if (current === undefined || m.lowestPrice < current) referenceByIngredient.set(ingredientKey, m.lowestPrice);
     }
 
     const items: ShowcaseItem[] = all

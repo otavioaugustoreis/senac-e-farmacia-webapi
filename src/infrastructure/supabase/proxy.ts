@@ -1,19 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SESSION_COOKIE_OPTIONS } from "./cookie-options";
 
 export async function refreshSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const keyName = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !keyName) return response;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) return response;
 
-  const supabase = createServerClient(url, keyName, {
+  const supabase = createServerClient(url, anonKey, {
+    cookieOptions: SESSION_COOKIE_OPTIONS,
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (list) => {
         list.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
-        list.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        list.forEach(({ name, value, options }) => response.cookies.set(name, value, { ...options, ...SESSION_COOKIE_OPTIONS }));
       },
     },
   });
