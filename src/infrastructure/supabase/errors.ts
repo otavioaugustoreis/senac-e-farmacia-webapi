@@ -1,7 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { DomainError, ForbiddenError } from "@/domain/errors";
 
-/** Converte erros do PostgREST em erros do domínio (RLS → Proibido; restrições → validação). */
 export function failure(error: PostgrestError): never {
   if (error.code === "42501") throw new ForbiddenError();
   if (error.code === "23505") throw new DomainError("Já existe um registro com esses dados");

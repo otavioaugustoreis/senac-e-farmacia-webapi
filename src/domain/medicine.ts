@@ -15,7 +15,6 @@ export interface Category {
   name: string;
 }
 
-/** Foto real com licença livre; `credito` e `fonte` são obrigatórios para exibir. */
 export interface MedicineImageInfo {
   url: string;
   credit: string;
@@ -52,12 +51,10 @@ export function validateMedicine(input: {
   if (url && !isImageAllowed(url)) throw new DomainError("A foto precisa de um endereço https");
 }
 
-/** Aceita https:// ou um arquivo do próprio site ("/medicamentos/x.svg"), nunca "//outro-site". */
 export function isImageAllowed(url: string): boolean {
   return url.startsWith("https://") || (url.startsWith("/") && !url.startsWith("//") && !url.includes("\\"));
 }
 
-/** Monta a imagem só quando há URL; sem crédito informado, aponta para a fonte. */
 export function buildImage(url?: string | null, credit?: string | null, source?: string | null): MedicineImageInfo | null {
   if (!url?.trim()) return null;
   return { url: url.trim(), credit: credit?.trim() || "Imagem ilustrativa", source: source?.trim() || url.trim() };

@@ -31,10 +31,6 @@ function operations(c: AdminUseCases): Record<string, EntityOperations> {
   };
 }
 
-/**
- * Confirma que é admin (401/403) antes de olhar a entidade ou o corpo;
- * depois resolve a entidade da URL (desconhecida → 404).
- */
 export async function prepareAdmin(entity: string) {
   const { repos, currentUser } = await getContainer();
   const user = await currentUser();

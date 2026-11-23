@@ -22,7 +22,6 @@ const link = "inline-flex items-center gap-1.5 rounded py-1.5 text-white/85 tran
 export function Footer() {
   return (
     <footer className="mb-4 mt-10 overflow-hidden rounded-[var(--radius-card)] bg-brand-900 text-white">
-      {/* Marca + atalhos principais */}
       <div className="flex flex-col gap-5 border-b border-white/10 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <Logo light />
@@ -39,7 +38,6 @@ export function Footer() {
       </div>
 
       <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[1fr_1fr_1.3fr]">
-        {/* No celular a barra inferior já faz esse papel. */}
         <nav aria-label="Explorar" className="hidden md:block">
           <h2 className={title}>Explorar</h2>
           <ul className="mt-3 text-sm">

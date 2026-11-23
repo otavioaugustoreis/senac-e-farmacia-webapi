@@ -27,7 +27,6 @@ export default async function Home() {
 
   return (
     <div className="space-y-12 sm:space-y-16">
-      {/* Hero — continua o bloco verde do cabeçalho, como na referência */}
       <section className="-mt-10 grid gap-6 rounded-b-[var(--radius-card)] bg-brand-900 px-5 pb-5 pt-12 text-white sm:-mt-11 sm:px-8 sm:pb-8 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
         <div className="flex flex-col justify-center lg:py-6">
           <h1 className="text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.4rem]">
@@ -46,7 +45,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categorias */}
       <section aria-labelledby="title-categories">
         <h2 id="title-categories" className="sr-only">Categorias</h2>
         <ul className="no-scrollbar -mx-3 flex snap-x gap-3 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-y-8 sm:overflow-visible sm:px-0 lg:grid-cols-8">
@@ -69,7 +67,6 @@ export default async function Home() {
         </ul>
       </section>
 
-      {/* Menores preços (como "Flash Sale") */}
       <section aria-labelledby="title-prices">
         <h2 id="title-prices" className="text-2xl font-bold text-brand-900 sm:text-3xl">Menores preços</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-5">
@@ -84,7 +81,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Banners promocionais */}
       <section className="grid gap-4 md:grid-cols-2" aria-label="Destaques">
         <div className="relative flex min-h-[13rem] overflow-hidden rounded-[var(--radius-card)] bg-[#f4f1e6] p-6">
           <div className="relative z-10 flex max-w-[58%] flex-col justify-between gap-4">
@@ -116,7 +112,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Farmácias parceiras (como "Trusted Brands") */}
       {v.partnerPharmacies.length > 0 && (
         <section aria-labelledby="title-partners" className="text-center">
           <h2 id="title-partners" className="text-sm font-semibold text-ink">Farmácias parceiras</h2>
@@ -132,10 +127,8 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Mais buscados (como "Best Sellers") */}
       <MostSearched tabs={tabs} />
 
-      {/* Bloco final (como "Trusted by…") */}
       <section className="rounded-[var(--radius-card)] bg-brand-900 px-6 py-10 text-center text-white sm:px-10 sm:py-14">
         <p className="text-warning" aria-hidden>★★★★★</p>
         <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">Feito para cuidar da sua saúde e do seu bolso</h2>

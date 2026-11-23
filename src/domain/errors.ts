@@ -1,4 +1,3 @@
-/** Falha de validação de regra de negócio. */
 export class DomainError extends Error {
   constructor(message: string) {
     super(message);

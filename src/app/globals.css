@@ -28,7 +28,6 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* No celular, campos com menos de 16px fazem o iPhone dar zoom ao tocar. */
 @media (max-width: 767px) {
   input,
   select,
@@ -37,7 +36,6 @@ body {
   }
 }
 
-/* Faixas com rolagem lateral (categorias, filtros) sem barra visível */
 @utility no-scrollbar {
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -50,12 +48,10 @@ body {
   outline-offset: 2px;
 }
 
-/* Campo dentro de um contêiner que já mostra o anel de foco (focus-within) */
 [data-outer-ring]:focus-visible {
   outline: none;
 }
 
-/* Leaflet fica abaixo da navegação fixa */
 .leaflet-container {
   z-index: 0;
 }

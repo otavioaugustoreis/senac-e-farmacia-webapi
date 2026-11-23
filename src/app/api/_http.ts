@@ -5,7 +5,6 @@ export type RouteContext<T extends Record<string, string>> = { params: Promise<T
 export const json = (body: unknown, status = 200) => Response.json(body, { status });
 export const noContent = () => new Response(null, { status: 204 });
 
-/** Executa o controller e traduz erros do domínio em status HTTP com corpo { erro }. */
 export async function handle(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
@@ -23,14 +22,12 @@ export async function readJson(request: Request): Promise<Record<string, unknown
   try {
     const body = await request.json();
     if (body && typeof body === "object" && !Array.isArray(body)) return body as Record<string, unknown>;
-  } catch {
-    // cai no erro abaixo
-  }
+  } catch {}
   throw new DomainError("Corpo da requisição inválido");
 }
 
-export function parseId(amount: string): number {
-  const id = Number(amount);
+export function parseId(value: string): number {
+  const id = Number(value);
   if (!Number.isInteger(id) || id <= 0) throw new DomainError("Identificador inválido");
   return id;
 }

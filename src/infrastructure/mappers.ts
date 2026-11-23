@@ -84,7 +84,6 @@ export function toNearbyPharmacy(l: PharmacyRow): NearbyPharmacy {
   return { ...toPharmacy(l), distanceKm: num(l.distancia_km ?? null) ?? 0 };
 }
 
-/** EWKT aceito pelo PostgREST para colunas geography. */
 export function pointEwkt(lat: number, lng: number): string {
   return `SRID=4326;POINT(${lng} ${lat})`;
 }
@@ -94,7 +93,6 @@ export interface CouponRow {
   farmacias: { id: number; nome: string; endereco: string } | null;
 }
 
-/** `validade` é um dia (date) no calendário de São Paulo; meio-dia evita virar o dia por fuso. */
 export function dateFromDay(day: string): Date {
   return new Date(`${day}T12:00:00-03:00`);
 }

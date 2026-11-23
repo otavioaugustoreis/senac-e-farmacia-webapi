@@ -12,7 +12,6 @@ export interface Coupon {
 const TZ = "America/Sao_Paulo";
 const saoPauloDayFormat = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
 
-/** Data no calendário de São Paulo, como "2026-11-20" (comparável como texto). */
 export function dayInSaoPaulo(d: Date): string {
   return saoPauloDayFormat.format(d);
 }

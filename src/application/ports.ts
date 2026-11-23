@@ -54,7 +54,6 @@ export interface CategoryInput {
 export type PriceWithMedicine = Price & { medicine: string };
 
 export interface MedicineRepository {
-  /** Busca por nome comercial ou princípio ativo (sem acento/maiúsculas). `q` vazio = todos. */
   search(q: string, categoryId?: number): Promise<SearchResult[]>;
   getById(id: number): Promise<Medicine | null>;
   listByActiveIngredient(activeIngredient: string): Promise<SearchResult[]>;

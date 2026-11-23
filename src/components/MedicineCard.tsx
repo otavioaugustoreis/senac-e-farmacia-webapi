@@ -9,7 +9,6 @@ interface Props {
   savingsPercent?: number | null;
 }
 
-/** Cartão no estilo vitrine: imagem em fundo claro, selo de desconto, preço e "Ver preços". */
 export function MedicineCard({ medicine: m, referencePrice, savingsPercent }: Props) {
   return (
     <Link href={`/medicamento/${m.id}`} className="group flex flex-col">

@@ -5,17 +5,16 @@ import { useState } from "react";
 import { ChevronDown, LocateFixed, MapPin } from "lucide-react";
 import { requestLocation, useSavedLocation } from "@/lib/browser-location";
 
-/** "Perto de você" do cabeçalho: mostra a cidade real ou pede a localização. */
 export function CurrentLocation() {
   const place = useSavedLocation();
   const [state, setState] = useState<"idle" | "searching" | "failed">("idle");
 
-  const content = (icon: React.ReactNode, title: string, amount: string) => (
+  const content = (icon: React.ReactNode, title: string, value: string) => (
     <>
       <span className="grid size-10 place-items-center rounded-full ring-1 ring-white/30">{icon}</span>
       <span className="text-left leading-tight">
         <span className="block text-xs text-white/70">{title}</span>
-        <span className="flex max-w-[8.5rem] items-center gap-1 truncate font-semibold">{amount} <ChevronDown className="size-3.5 shrink-0" aria-hidden /></span>
+        <span className="flex max-w-[8.5rem] items-center gap-1 truncate font-semibold">{value} <ChevronDown className="size-3.5 shrink-0" aria-hidden /></span>
       </span>
     </>
   );

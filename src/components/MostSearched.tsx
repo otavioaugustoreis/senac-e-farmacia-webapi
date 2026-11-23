@@ -9,7 +9,6 @@ interface Tab {
   items: SearchResult[];
 }
 
-/** "Mais buscados" com abas em pílula (como "Best Sellers" da referência). */
 export function MostSearched({ tabs }: { tabs: Tab[] }) {
   const [activeTab, setActiveTab] = useState(0);
   if (tabs.length === 0) return null;

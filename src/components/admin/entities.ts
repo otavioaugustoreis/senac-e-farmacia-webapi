@@ -1,8 +1,6 @@
 import { TYPE_LABELS, MEDICINE_TYPES } from "@/domain/medicine";
 import { formatBRL, formatDate } from "@/lib/format";
 
-/* Configuração das telas do painel. Os itens chegam da WebApi como JSON (datas em texto ISO). */
-
 export const ENTITIES = ["medicamentos", "precos", "farmacias", "cupons", "categorias", "reportes"] as const;
 export type Entity = (typeof ENTITIES)[number];
 export type OptionSource = "categorias" | "farmacias" | "medicamentos";
@@ -30,7 +28,6 @@ export interface EntityConfig {
   toForm: (i: Item) => FormValues;
   toBody: (v: FormValues) => Record<string, unknown>;
   searchText: (i: Item) => string;
-  /** Medicamentos carregam a bula à parte ao editar. */
   loadsPackageInsert?: boolean;
 }
 

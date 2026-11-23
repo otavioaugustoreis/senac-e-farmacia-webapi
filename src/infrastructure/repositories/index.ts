@@ -10,7 +10,6 @@ import { unwrap } from "../supabase/errors";
 
 const PRICE_SELECT = "id, medicamento_id, valor, atualizado_em, farmacias(id, nome)";
 
-/** Implementa os ports da aplicação sobre o Supabase. A RLS do banco é a segunda barreira de acesso. */
 export function createRepositories(db: SupabaseClient): Repositories {
   const search = async (q: string, categoryId?: number) => {
     const rows = unwrap(await db.rpc("buscar_medicamentos", { q, categoria_filtro: categoryId ?? null }));

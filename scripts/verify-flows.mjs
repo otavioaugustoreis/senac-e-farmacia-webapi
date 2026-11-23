@@ -1,7 +1,3 @@
-// Verificação de ponta a ponta contra um servidor rodando (local ou Vercel).
-// Cria um usuário de teste, reporta um preço, confere o bloqueio do admin e, se houver
-// ADMIN_EMAIL/ADMIN_PASSWORD, altera um preço como admin. Remove o usuário de teste no fim.
-// Uso: node --env-file=.env.local scripts/verify-flows.mjs [http://localhost:3000]
 import { createClient } from "@supabase/supabase-js";
 
 const base = process.argv[2] ?? "http://localhost:3000";
@@ -16,7 +12,6 @@ const check = (ok, description) => {
   if (!ok) failures++;
 };
 
-/** Cookie no formato do @supabase/ssr (base64 + chunks de até 3180 caracteres). */
 function sessionCookie(session) {
   const amount = "base64-" + Buffer.from(JSON.stringify(session)).toString("base64url");
   const name = `sb-${ref}-auth-token`;
@@ -37,7 +32,6 @@ const testEmail = `teste-${Date.now()}@exemplo.com`;
 const testPassword = "senha-teste-123";
 
 try {
-  // Cadastro (sem confirmação de e-mail)
   const publicClient = createClient(url, anon, { auth: { persistSession: false } });
   const { data: signup, error: signupError } = await publicClient.auth.signUp({ email: testEmail, password: testPassword, options: { data: { nome: "Teste" } } });
   check(!signupError && !!signup.session, "cadastro entra logado direto (sem confirmar e-mail)");
@@ -64,7 +58,6 @@ try {
   const adminText = adminPage.status === 200 ? await adminPage.text() : "";
   check(adminText.includes("Acesso restrito") || adminPage.status >= 300, "tela /admin bloqueada para usuário comum");
 
-  // Admin (opcional)
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
     const adminCookie = await signIn(process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD);
     const target = detail.prices[detail.prices.length - 1];

@@ -28,7 +28,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 
   return (
     <div>
-      {/* No celular a busca mora aqui (aba "Buscar"); no computador fica no cabeçalho. */}
       <form action="/busca" role="search" autoComplete="off" className="mb-5 md:hidden">
         {filter && <input type="hidden" name="categoria" value={filter} />}
         <label className="flex items-center gap-2 rounded-full bg-white px-4 ring-1 ring-black/10 focus-within:ring-2 focus-within:ring-brand-600">

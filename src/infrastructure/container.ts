@@ -12,7 +12,6 @@ export interface Container {
 type Factory = () => Promise<Container>;
 let testFactory: Factory | null = null;
 
-/** Troca a composição por uma de teste (repositórios em memória). `null` restaura a real. */
 export function setContainerForTests(factory: Factory | null): void {
   testFactory = factory;
 }
@@ -29,7 +28,6 @@ export async function readCurrentUser(db: SupabaseClient): Promise<CurrentUser |
   };
 }
 
-/** Composição: liga os casos de uso aos repositórios Supabase com a sessão do usuário. */
 export async function getContainer(): Promise<Container> {
   if (testFactory) return testFactory();
   const db = await createServerSupabase();

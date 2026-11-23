@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { signUp, signIn, signOut } from "@/infrastructure/auth";
 import { destinationAfterLogin, safeDestination } from "@/lib/destination";
 
-/** Devolve o que a pessoa digitou (menos a senha): o React limpa o formulário após o envio. */
 export type FormState = { errorMessage?: string; name?: string; email?: string };
 
 const text = (form: FormData, field: string) => String(form.get(field) ?? "");

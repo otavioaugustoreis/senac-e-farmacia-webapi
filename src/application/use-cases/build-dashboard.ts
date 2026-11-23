@@ -27,7 +27,6 @@ export interface Dashboard {
 
 const pct = (part: number, total: number) => (total ? Math.round((part / total) * 100) : 0);
 
-/** Dados do dashboard administrativo (indicadores do documento do produto incluídos). */
 export const buildDashboard = (repos: Repositories) =>
   async (user: CurrentUser | null, today: Date): Promise<Dashboard> => {
     requireAdmin(user);

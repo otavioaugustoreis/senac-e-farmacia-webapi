@@ -1,4 +1,3 @@
-/** Aparece na hora em que a pessoa navega, enquanto a página busca os dados. */
 export default function Loading() {
   return (
     <div role="status" aria-live="polite" className="animate-pulse space-y-6">

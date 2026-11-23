@@ -20,7 +20,6 @@ const ITEMS: Item[] = [
 
 const ADMIN: Item = { href: "/admin", label: "Admin", icon: ShieldCheck, isActive: (c) => c.startsWith("/admin") };
 
-/** Barra de navegação fixa no celular (no computador a navegação fica no cabeçalho). */
 export function BottomNav({ admin }: { admin: boolean }) {
   const path = usePathname();
   const items = admin ? [...ITEMS, ADMIN] : ITEMS;

@@ -3,11 +3,6 @@
 import { useSyncExternalStore } from "react";
 import { cityFromAddress, isSavedLocationValid, type SavedLocation } from "./location-rules";
 
-/*
- * Localização do usuário, compartilhada entre o cabeçalho e o mapa.
- * Fica só no navegador (localStorage). O nome da cidade vem do OpenStreetMap (Nominatim).
- */
-
 const STORAGE_KEY = "e-farmacia:local";
 const EVENT_NAME = "e-farmacia:local";
 const TIMEOUT_MS = 15_000;
@@ -53,7 +48,6 @@ function currentPosition(): Promise<GeolocationPosition> {
   );
 }
 
-/** Pede a posição ao navegador, descobre a cidade e avisa os componentes interessados. */
 export async function requestLocation(): Promise<LocationResult> {
   if (typeof navigator === "undefined" || !("geolocation" in navigator)) return { ok: false, reason: "unsupported" };
   try {
@@ -90,7 +84,6 @@ function subscribe(notice: () => void) {
   };
 }
 
-/** Local salvo, atualizado quando o usuário define a localização em qualquer parte do site. */
 export function useSavedLocation(): SavedLocation | null {
   return useSyncExternalStore(subscribe, instant, () => null);
 }

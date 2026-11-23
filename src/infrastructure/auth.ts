@@ -29,7 +29,6 @@ export async function signUp(name: string, email: string, password: string): Pro
   const db = await createServerSupabase();
   const { data, error } = await db.auth.signUp({ email: email.trim(), password, options: { data: { nome: name.trim() } } });
   if (error) return { ok: false, errorMessage: translate(error.message) };
-  // Com e-mail já cadastrado o Supabase devolve usuário sem identidades.
   if (data.user && data.user.identities?.length === 0) return { ok: false, errorMessage: "Este e-mail já está cadastrado" };
   return { ok: true };
 }

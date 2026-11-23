@@ -7,15 +7,13 @@ export interface SavedLocation {
   ts: number;
 }
 
-/** A posição salva vale por 30 minutos; depois pedimos de novo ao navegador. */
 export const LOCATION_TTL_MS = 30 * 60 * 1000;
 
-/** Nome da cidade a partir do endereço do OpenStreetMap (Nominatim). */
 export function cityFromAddress(address: Record<string, unknown> | null | undefined): string | null {
   if (!address) return null;
-  for (const keyName of ["city", "town", "village", "municipality", "city_district", "county"]) {
-    const amount = address[keyName];
-    if (typeof amount === "string" && amount.trim()) return amount.trim();
+  for (const key of ["city", "town", "village", "municipality", "city_district", "county"]) {
+    const value = address[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
   }
   return null;
 }

@@ -57,7 +57,6 @@ export default async function MedicinePage({ params }: Props) {
       </nav>
 
       <section className="grid gap-6 md:grid-cols-[320px_1fr]">
-        {/* Com foto real: aparece também no celular. Sem foto: ilustração só no computador. */}
         <figure className={m.image ? "" : "hidden md:block"}>
           <MedicineImage medicine={m} variant="featured" />
           {m.image && (
@@ -95,7 +94,6 @@ export default async function MedicinePage({ params }: Props) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div className="space-y-8">
-          {/* Preços */}
           <section aria-labelledby="title-prices">
             <div className="flex items-baseline justify-between gap-2">
               <h2 id="title-prices" className="text-xl font-bold text-brand-900">Preços por farmácia</h2>
@@ -126,7 +124,6 @@ export default async function MedicinePage({ params }: Props) {
             <Link href="/farmacias" className="mt-2 inline-block text-sm font-semibold text-brand-700 underline">Ver farmácias no mapa</Link>
           </section>
 
-          {/* Bula */}
           <section aria-labelledby="title-package-insert">
             <h2 id="title-package-insert" className="text-xl font-bold text-brand-900">Bula organizada</h2>
             <div className="mt-3 space-y-2">
@@ -147,7 +144,6 @@ export default async function MedicinePage({ params }: Props) {
         </div>
 
         <aside className="space-y-8">
-          {/* Cupons */}
           {d.coupons.length > 0 && (
             <section aria-labelledby="title-coupons" className="rounded-2xl bg-cream p-5">
               <h2 id="title-coupons" className="flex items-center gap-2 font-bold text-brand-900"><Ticket className="size-5" aria-hidden /> Cupons das farmácias</h2>
@@ -165,7 +161,6 @@ export default async function MedicinePage({ params }: Props) {
             </section>
           )}
 
-          {/* Alternativas */}
           <section aria-labelledby="title-alternatives">
             <h2 id="title-alternatives" className="text-xl font-bold text-brand-900">Alternativas</h2>
             <p className="text-sm text-muted">Mesmo princípio ativo ({m.activeIngredient})</p>

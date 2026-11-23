@@ -17,7 +17,6 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho do painel */}
       <div className="flex flex-col gap-4 rounded-[var(--radius-card)] bg-brand-900 p-6 text-white sm:flex-row sm:items-end sm:justify-between sm:p-8">
         <div>
           <p className="text-sm text-white/70">{formatDate(today)}</p>
@@ -31,7 +30,6 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      {/* Indicadores */}
       <section aria-label="Indicadores" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Indicator href="/admin/precos" icon={CalendarClock} label="Preços atualizados em até 7 dias" value={`${t.freshPricesPct}%`}
           detail={`${t.prices - t.outdatedPrices} de ${t.prices} preços · meta 90%`}
@@ -54,17 +52,14 @@ export default async function AdminPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Idade dos preços */}
         <Card title="Idade dos preços" subtitle="Quantos dias desde a última atualização" action={{ href: "/admin/precos", text: "Ver preços" }}>
           <BarList items={p.priceAge.map((f) => ({ label: f.bucket, amount: f.count, warning: f.warning }))} total={t.prices} unit="preços" />
         </Card>
 
-        {/* Cobertura por farmácia */}
         <Card title="Cobertura por farmácia" subtitle={`Medicamentos com preço, de ${t.medicines} no catálogo`} action={{ href: "/admin/farmacias", text: "Farmácias" }}>
           <BarList items={p.pharmacyCoverage.map((f) => ({ label: f.name.replace(/^(Farmácia|Drogaria)\s+/, ""), amount: f.count, extra: `${f.pct}%` }))} total={t.medicines} unit="medicamentos" />
         </Card>
 
-        {/* Catálogo por categoria */}
         <Card title="Catálogo por categoria" subtitle="Medicamentos cadastrados" action={{ href: "/admin/categorias", text: "Categorias" }}>
           <BarList items={p.byCategory.map((c) => ({ label: c.name, amount: c.count }))} total={t.medicines} unit="medicamentos" />
         </Card>
@@ -194,7 +189,6 @@ function Card({ title, subtitle, action, children }: {
   );
 }
 
-/** Barras horizontais de uma série (uma cor); alerta usa ícone + texto, não só cor. */
 function BarList({ items, total, unit }: {
   items: { label: string; amount: number; extra?: string; warning?: boolean }[]; total: number; unit: string;
 }) {

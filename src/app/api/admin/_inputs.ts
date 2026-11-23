@@ -9,7 +9,6 @@ type Body = Record<string, unknown>;
 
 const text = (v: unknown) => (v === null || v === undefined ? "" : String(v));
 
-/** Aceita número ou texto com vírgula decimal ("7,49"). */
 export function toNumber(v: unknown): number {
   if (typeof v === "number") return v;
   let t = text(v).trim();

@@ -3,7 +3,6 @@ import { requireOperation, prepareAdmin } from "../../_entities";
 
 type Params = RouteContext<{ entity: string; id: string }>;
 
-/** GET /api/admin/:entidade/:id — detalhe extra (ex.: bula do medicamento) */
 export async function GET(_request: Request, { params }: Params) {
   return handle(async () => {
     const p = await params;
@@ -12,7 +11,6 @@ export async function GET(_request: Request, { params }: Params) {
   });
 }
 
-/** DELETE /api/admin/:entidade/:id */
 export async function DELETE(_request: Request, { params }: Params) {
   return handle(async () => {
     const p = await params;
@@ -22,7 +20,6 @@ export async function DELETE(_request: Request, { params }: Params) {
   });
 }
 
-/** PATCH /api/admin/reportes/:id — marca o reporte como resolvido */
 export async function PATCH(_request: Request, { params }: Params) {
   return handle(async () => {
     const p = await params;

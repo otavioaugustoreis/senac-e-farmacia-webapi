@@ -8,7 +8,6 @@ export function publicCredentials() {
   return { url, keyName };
 }
 
-/** Cliente Supabase no servidor, com a sessão do usuário lida dos cookies. */
 export async function createServerSupabase() {
   const { url, keyName } = publicCredentials();
   const cookieStore = await cookies();
@@ -18,9 +17,7 @@ export async function createServerSupabase() {
       setAll: (list) => {
         try {
           list.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-        } catch {
-          // Em Server Components os cookies são somente leitura; o proxy renova a sessão.
-        }
+        } catch {}
       },
     },
   });

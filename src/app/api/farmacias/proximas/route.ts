@@ -4,7 +4,6 @@ import { json, handle } from "../../_http";
 
 const numberOrNull = (v: string | null) => (v === null || v.trim() === "" ? undefined : Number(v));
 
-/** GET /api/farmacias/proximas?lat=&lng= — sem posição válida usa a Av. Paulista */
 export async function GET(request: Request) {
   return handle(async () => {
     const { searchParams } = new URL(request.url);

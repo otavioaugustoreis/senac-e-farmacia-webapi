@@ -25,7 +25,6 @@ export function FormAuth({ mode, action, next }: Props) {
 
   return (
     <div className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[1.75rem] bg-white shadow-[0_10px_40px_rgba(17,64,41,0.08)] ring-1 ring-black/5 lg:grid-cols-[1fr_1.1fr]">
-      {/* Painel de boas-vindas (computador) */}
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-brand-900 p-10 text-white lg:flex">
         <div className="absolute -right-16 -top-16 size-64 rounded-full bg-white/5" aria-hidden />
         <div className="absolute -bottom-20 -left-10 size-72 rounded-full bg-white/5" aria-hidden />
@@ -46,7 +45,6 @@ export function FormAuth({ mode, action, next }: Props) {
         </ul>
       </aside>
 
-      {/* Formulário */}
       <div className="px-5 py-8 sm:px-10 sm:py-12 lg:px-14">
         <h1 className="text-3xl font-bold text-brand-900">{isSignUp ? "Criar conta" : "Entrar"}</h1>
         <p className="mt-2 text-muted">

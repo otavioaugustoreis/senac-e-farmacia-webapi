@@ -1,5 +1,3 @@
-// Cria (ou promove) o administrador de demonstração.
-// Uso: node --env-file=.env.local scripts/create-admin.mjs [email]
 import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
@@ -13,7 +11,6 @@ const supabase = createClient(url, secretKey, { auth: { persistSession: false, a
 const { data: userList, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
 if (listError) throw listError;
 let user = userList.users.find((u) => u.email === email);
-// Sempre gera uma senha nova: rodar de novo também serve para redefinir a senha do admin de demo.
 const password = `Ef-${randomBytes(9).toString("base64url")}`;
 
 if (!user) {

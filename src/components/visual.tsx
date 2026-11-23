@@ -28,7 +28,6 @@ export function categoryVisual(name: string | null | undefined): CategoryVisual 
   return (name && VISUALS[normalizeText(name)]) || DEFAULT;
 }
 
-/** "Embalagem" ilustrada do medicamento, colorida pela categoria (sem fotos de produto). */
 export function MedicineBox({ category, name, large = false, neutral = false }: {
   category: string | null | undefined; name: string; large?: boolean; neutral?: boolean;
 }) {

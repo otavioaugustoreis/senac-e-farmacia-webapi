@@ -29,7 +29,6 @@ const YOU_PIN = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-/** Enquadra a origem e as farmácias (ex.: Campinas e São Paulo no mesmo mapa); com filtro, só o resultado. */
 function FitBounds({ origin, pharmacies, isFiltering }: { origin: { lat: number; lng: number }; pharmacies: NearbyPharmacy[]; isFiltering: boolean }) {
   const map = useMap();
   const keyName = `${origin.lat},${origin.lng}|${isFiltering}|${pharmacies.map((f) => f.id).join(",")}`;
@@ -56,7 +55,6 @@ async function fetchNearby(place: SavedLocation | null): Promise<NearbyResult> {
   return r.json();
 }
 
-/** Usa a posição já confirmada (cabeçalho ou visita anterior); senão pede ao navegador. */
 async function resolvePlace(askAgain: boolean): Promise<{ place: SavedLocation | null; failure: FailureReason | null }> {
   const saved = askAgain ? null : readSavedLocation();
   if (saved) return { place: saved, failure: null };

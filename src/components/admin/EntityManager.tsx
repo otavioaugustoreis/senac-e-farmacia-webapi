@@ -159,7 +159,6 @@ export function EntityManager({ entity }: { entity: Entity }) {
         <p className="mt-4 text-xs text-muted">{visible.length} {visible.length === 1 ? "registro" : "registros"}</p>
       )}
 
-      {/* Celular: cartões */}
       {items !== null && visible.length > 0 && (
         <ul className="mt-2 space-y-2 md:hidden">
           {visible.map((item) => (
@@ -196,7 +195,6 @@ export function EntityManager({ entity }: { entity: Entity }) {
         </ul>
       )}
 
-      {/* Computador: tabela (e mensagens de carregando/vazio em qualquer tela) */}
       <div className={`mt-2 overflow-x-auto rounded-[var(--radius-card)] bg-white ring-1 ring-black/5 ${items !== null && visible.length > 0 ? "hidden md:block" : ""}`}>
         {items === null ? (
           <p className="p-6 text-sm text-muted">Carregando…</p>

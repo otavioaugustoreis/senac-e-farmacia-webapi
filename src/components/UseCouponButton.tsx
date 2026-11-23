@@ -9,11 +9,10 @@ export interface CouponView {
   code: string;
   discount: string;
   description: string;
-  validUntil: string; // já formatada (dd/mm/aaaa)
+  validUntil: string;
   pharmacy: { name: string; address: string };
 }
 
-/** Botão "Usar na farmácia": abre o cupom com QR code para o caixa escanear. */
 export function UseCouponButton({ coupon: c, compact = false }: { coupon: CouponView; compact?: boolean }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const close = () => dialogRef.current?.close();

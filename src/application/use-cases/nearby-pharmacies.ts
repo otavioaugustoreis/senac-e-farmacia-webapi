@@ -2,7 +2,6 @@ import { validCoordinates, DEFAULT_POINT, type NearbyPharmacy } from "@/domain/p
 import type { Repositories } from "../ports";
 
 export const SEARCH_RADIUS_KM = 15;
-/** Sem nada por perto (ex.: usuário em outra cidade), procura as mais próximas num raio maior. */
 export const EXPANDED_RADIUS_KM = 300;
 
 export interface NearbyResult {

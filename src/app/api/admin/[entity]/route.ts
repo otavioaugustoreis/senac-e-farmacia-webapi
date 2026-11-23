@@ -3,7 +3,6 @@ import { requireOperation, prepareAdmin } from "../_entities";
 
 type Params = RouteContext<{ entity: string }>;
 
-/** GET /api/admin/:entidade — lista (somente admin) */
 export async function GET(_request: Request, { params }: Params) {
   return handle(async () => {
     const { ops, user } = await prepareAdmin((await params).entity);
@@ -11,7 +10,6 @@ export async function GET(_request: Request, { params }: Params) {
   });
 }
 
-/** POST /api/admin/:entidade — cria ou atualiza (id opcional no corpo) */
 export async function POST(request: Request, { params }: Params) {
   return handle(async () => {
     const { ops, user } = await prepareAdmin((await params).entity);

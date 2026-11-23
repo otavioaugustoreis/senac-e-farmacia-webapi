@@ -1,5 +1,3 @@
-// Configura o Auth do Supabase pela Management API e grava a chave secreta no .env.local.
-// Uso: node --env-file=.env.local scripts/configure-auth.mjs [site_url]
 import { readFileSync, writeFileSync } from "node:fs";
 
 const ref = process.env.SUPABASE_PROJECT_REF;
@@ -13,7 +11,6 @@ const api = (path, init = {}) =>
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...init.headers },
   });
 
-// 1) Cadastro sem confirmação de e-mail + URLs do site
 const redirects = [siteUrl, "http://localhost:3000"].filter((v, i, a) => a.indexOf(v) === i).map((u) => `${u}/**`).join(",");
 const patch = await api("/config/auth", {
   method: "PATCH",
@@ -22,7 +19,6 @@ const patch = await api("/config/auth", {
 if (!patch.ok) throw new Error(`Falha ao configurar Auth: ${patch.status} ${await patch.text()}`);
 console.log(`Auth configurado: confirmação de e-mail desligada, site_url=${siteUrl}`);
 
-// 2) Chave secreta (service role) para scripts administrativos — nunca vai para o navegador
 if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
   const resp = await api("/api-keys?reveal=true");
   if (!resp.ok) throw new Error(`Falha ao ler chaves: ${resp.status} ${await resp.text()}`);

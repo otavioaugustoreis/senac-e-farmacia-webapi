@@ -15,7 +15,6 @@ export interface NearbyPharmacy extends Pharmacy {
   distanceKm: number;
 }
 
-/** Av. Paulista — usado quando a localização do usuário não está disponível. */
 export const DEFAULT_POINT = { lat: -23.5614, lng: -46.6559 } as const;
 
 export function validCoordinates(lat: unknown, lng: unknown): boolean {
@@ -32,7 +31,6 @@ export function validatePharmacy(input: { name: string; address: string; lat: nu
   if (!validCoordinates(input.lat, input.lng)) throw new DomainError("Coordenadas inválidas");
 }
 
-/** Filtra por nome ou endereço (inclui o bairro); todas as palavras precisam aparecer, sem ligar para acento. */
 export function filterPharmacies<T extends { name: string; address: string }>(pharmacies: T[], query: string): T[] {
   const words = normalizeText(query).split(/\s+/).filter(Boolean);
   if (words.length === 0) return pharmacies;

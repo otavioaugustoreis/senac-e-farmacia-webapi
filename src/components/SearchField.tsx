@@ -4,7 +4,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 const INPUT_CLASS = "h-11 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted md:h-10";
 
-/** Mantém no campo o termo pesquisado enquanto a pessoa está nos resultados. */
 export function SearchField() {
   const params = useSearchParams();
   const query = usePathname() === "/busca" ? (params.get("q") ?? "") : "";
