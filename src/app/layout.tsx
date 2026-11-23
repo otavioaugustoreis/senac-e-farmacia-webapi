@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { MenuUsuario } from "@/components/MenuUsuario";
 import { NavInferior } from "@/components/NavInferior";
 import { obterContainer } from "@/infrastructure/container";
-import { listarCategorias } from "@/application/casos-de-uso/buscar-medicamentos";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
 const instrument = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["italic", "normal"], variable: "--font-instrument" });
@@ -24,8 +23,8 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const { repos, usuarioAtual } = await obterContainer();
-  const [usuario, categorias] = await Promise.all([usuarioAtual(), listarCategorias(repos)()]);
+  const { usuarioAtual } = await obterContainer();
+  const usuario = await usuarioAtual();
 
   return (
     <html lang="pt-BR" className={`${jakarta.variable} ${instrument.variable}`}>
@@ -34,7 +33,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           Pular para o conteúdo
         </a>
         <div className="mx-auto flex min-h-dvh w-full max-w-[90rem] flex-col px-3 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-0 lg:px-10">
-          <Header menuUsuario={<MenuUsuario usuario={usuario} />} categorias={categorias} />
+          <Header menuUsuario={<MenuUsuario usuario={usuario} />} />
           <main id="conteudo" className="flex-1 py-5 sm:py-6">{children}</main>
           <Footer />
         </div>

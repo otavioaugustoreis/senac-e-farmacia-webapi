@@ -1,16 +1,13 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
-import type { Categoria } from "@/domain/medicamento";
 import { Logo } from "./Logo";
-import { SeletorCategoria } from "./SeletorCategoria";
 import { LocalizacaoAtual } from "./LocalizacaoAtual";
 
 interface Props {
   menuUsuario: React.ReactNode;
-  categorias: Categoria[];
 }
 
-export function Header({ menuUsuario, categorias }: Props) {
+export function Header({ menuUsuario }: Props) {
   return (
     <header className="relative z-10 pt-3">
       <p className="rounded-full bg-menta-100 px-4 py-1.5 text-center text-xs font-medium text-marca-800">
@@ -26,9 +23,8 @@ export function Header({ menuUsuario, categorias }: Props) {
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] bg-marca-900 px-4 py-3 text-white sm:px-6 sm:py-4">
         <Logo claro />
 
-        <form action="/busca" role="search" autoComplete="off" className="order-3 flex w-full flex-col gap-2 sm:flex-row sm:items-center md:order-none md:w-auto md:flex-1">
-          <SeletorCategoria categorias={categorias} />
-          <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-tinta sm:w-auto">
+        <form action="/busca" role="search" autoComplete="off" className="order-3 flex w-full md:order-none md:w-auto md:max-w-2xl md:flex-1">
+          <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-tinta">
             <Search className="size-4 shrink-0 text-suave" aria-hidden />
             <input name="q" type="search" enterKeyHint="search" placeholder="Nome ou princípio ativo" aria-label="Buscar medicamento"
               className="h-11 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-suave md:h-10" />
