@@ -24,3 +24,23 @@ image.png
 Captura de tela*.png
 medicamentos-svg.zip
 /medicamentos.svg
+SECURITY_REPORT.md
+E-FARMACIA.md
+dist/
+build/
+.turbo/
+.cache/
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.sqlite
+*.db
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+desktop.ini
+*.zip
