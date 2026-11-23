@@ -22,3 +22,8 @@ docs/superpowers/
 # Arquivos locais
 image.png
 .codebase-memory/
+
+# Arquivos de trabalho locais
+Captura de tela*.png
+medicamentos-svg.zip
+/medicamentos.svg
