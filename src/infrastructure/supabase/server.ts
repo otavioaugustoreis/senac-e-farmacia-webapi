@@ -1,26 +1,25 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { SESSION_COOKIE_OPTIONS } from "./cookie-options";
 
-export function credenciaisPublicas() {
+export function publicCredentials() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !chave) throw new Error("Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY");
-  return { url, chave };
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) throw new Error("Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  return { url, anonKey };
 }
 
-/** Cliente Supabase no servidor, com a sessão do usuário lida dos cookies. */
-export async function criarClienteServidor() {
-  const { url, chave } = credenciaisPublicas();
+export async function createServerSupabase() {
+  const { url, anonKey } = publicCredentials();
   const cookieStore = await cookies();
-  return createServerClient(url, chave, {
+  return createServerClient(url, anonKey, {
+    cookieOptions: SESSION_COOKIE_OPTIONS,
     cookies: {
       getAll: () => cookieStore.getAll(),
-      setAll: (lista) => {
+      setAll: (list) => {
         try {
-          lista.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-        } catch {
-          // Em Server Components os cookies são somente leitura; o proxy renova a sessão.
-        }
+          list.forEach(({ name, value, options }) => cookieStore.set(name, value, { ...options, ...SESSION_COOKIE_OPTIONS }));
+        } catch {}
       },
     },
   });

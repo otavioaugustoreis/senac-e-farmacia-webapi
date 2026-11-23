@@ -1,12 +1,11 @@
-import { detalharMedicamento } from "@/application/casos-de-uso/detalhar-medicamento";
-import { obterContainer } from "@/infrastructure/container";
-import { json, lerId, tratar, type Contexto } from "../../_http";
+import { getMedicineDetail } from "@/application/use-cases/get-medicine-detail";
+import { getContainer } from "@/infrastructure/container";
+import { json, parseId, handle, type RouteContext } from "../../_http";
 
-/** GET /api/medicamentos/:id — bula, preços, alternativas e cupons */
-export async function GET(_request: Request, { params }: Contexto<{ id: string }>) {
-  return tratar(async () => {
-    const id = lerId((await params).id);
-    const { repos } = await obterContainer();
-    return json(await detalharMedicamento(repos)(id, new Date()));
+export async function GET(_request: Request, { params }: RouteContext<{ id: string }>) {
+  return handle(async () => {
+    const id = parseId((await params).id);
+    const { repos } = await getContainer();
+    return json(await getMedicineDetail(repos)(id, new Date()));
   });
 }

@@ -1,111 +1,111 @@
 import { describe, expect, it } from "vitest";
-import { criarCasosAdmin, exigirAdmin } from "@/application/casos-de-uso/admin";
-import { DomainError, NaoAutenticadoError, ProibidoError } from "@/domain/erros";
-import { admin, criarFakes, dadosVazios, farmacia, med, usuarioComum } from "./fakes";
+import { createAdminUseCases, requireAdmin } from "@/application/use-cases/admin";
+import { DomainError, UnauthenticatedError, ForbiddenError } from "@/domain/errors";
+import { admin, createFakes, emptyData, pharmacy, med, regularUser } from "./fakes";
 
-function cenario() {
-  const d = dadosVazios();
-  d.medicamentos = [med(1, "Novalgina", "Dipirona Sódica", "referencia")];
-  d.farmacias = [farmacia(1)];
+function scenario() {
+  const d = emptyData();
+  d.medicines = [med(1, "Novalgina", "Dipirona Sódica", "referencia")];
+  d.pharmacies = [pharmacy(1)];
   return d;
 }
 
-describe("exigirAdmin", () => {
-  it("lança NaoAutenticadoError sem usuário", () => {
+describe("requireAdmin", () => {
+  it("throws UnauthenticatedError without a user", () => {
     // Arrange
-    const usuario = null;
+    const user = null;
     // Act
-    const acao = () => exigirAdmin(usuario);
+    const action = () => requireAdmin(user);
     // Assert
-    expect(acao).toThrow(NaoAutenticadoError);
+    expect(action).toThrow(UnauthenticatedError);
   });
 
-  it("lança ProibidoError para usuário comum", () => {
+  it("throws ForbiddenError for a regular user", () => {
     // Arrange
-    const usuario = usuarioComum;
+    const user = regularUser;
     // Act
-    const acao = () => exigirAdmin(usuario);
+    const action = () => requireAdmin(user);
     // Assert
-    expect(acao).toThrow(ProibidoError);
-  });
-});
-
-describe("salvarPreco", () => {
-  it("recusa usuário comum", async () => {
-    // Arrange
-    const casos = criarCasosAdmin(criarFakes(cenario()));
-    // Act
-    const acao = casos.salvarPreco(usuarioComum, { medicamentoId: 1, farmaciaId: 1, valor: 9 });
-    // Assert
-    await expect(acao).rejects.toBeInstanceOf(ProibidoError);
-  });
-
-  it("recusa valor zero", async () => {
-    // Arrange
-    const casos = criarCasosAdmin(criarFakes(cenario()));
-    // Act
-    const acao = casos.salvarPreco(admin, { medicamentoId: 1, farmaciaId: 1, valor: 0 });
-    // Assert
-    await expect(acao).rejects.toBeInstanceOf(DomainError);
-  });
-
-  it("grava preço válido do admin", async () => {
-    // Arrange
-    const dados = cenario();
-    const casos = criarCasosAdmin(criarFakes(dados));
-    // Act
-    await casos.salvarPreco(admin, { medicamentoId: 1, farmaciaId: 1, valor: 9.9 });
-    // Assert
-    expect(dados.precos).toHaveLength(1);
-    expect(dados.precos[0].valor).toBe(9.9);
+    expect(action).toThrow(ForbiddenError);
   });
 });
 
-describe("salvarMedicamento", () => {
-  it("grava medicamento e bula juntos", async () => {
+describe("savePrice", () => {
+  it("rejects a regular user", async () => {
     // Arrange
-    const dados = cenario();
-    const casos = criarCasosAdmin(criarFakes(dados));
-    const bula = { paraQueServe: "Dor", contraindicacoes: "", efeitosColaterais: "", advertencias: "", linkAnvisa: "" };
+    const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
-    const id = await casos.salvarMedicamento(admin, {
-      nomeComercial: "Dorflex", principioAtivo: "Dipirona + Orfenadrina", categoriaId: 1, tipo: "referencia", fabricante: "Sanofi", apresentacao: "10 comprimidos", bula,
+    const action = useCases.savePrice(regularUser, { medicineId: 1, pharmacyId: 1, amount: 9 });
+    // Assert
+    await expect(action).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it("rejects a zero amount", async () => {
+    // Arrange
+    const useCases = createAdminUseCases(createFakes(scenario()));
+    // Act
+    const action = useCases.savePrice(admin, { medicineId: 1, pharmacyId: 1, amount: 0 });
+    // Assert
+    await expect(action).rejects.toBeInstanceOf(DomainError);
+  });
+
+  it("saves a valid admin price", async () => {
+    // Arrange
+    const payload = scenario();
+    const useCases = createAdminUseCases(createFakes(payload));
+    // Act
+    await useCases.savePrice(admin, { medicineId: 1, pharmacyId: 1, amount: 9.9 });
+    // Assert
+    expect(payload.prices).toHaveLength(1);
+    expect(payload.prices[0].amount).toBe(9.9);
+  });
+});
+
+describe("saveMedicine", () => {
+  it("saves the medicine and its package insert together", async () => {
+    // Arrange
+    const payload = scenario();
+    const useCases = createAdminUseCases(createFakes(payload));
+    const packageInsert = { usedFor: "Dor", contraindications: "", sideEffects: "", warnings: "", anvisaLink: "" };
+    // Act
+    const id = await useCases.saveMedicine(admin, {
+      brandName: "Dorflex", activeIngredient: "Dipirona + Orfenadrina", categoryId: 1, type: "referencia", manufacturer: "Sanofi", presentation: "10 comprimidos", packageInsert,
     });
     // Assert
-    expect(dados.medicamentos.some((m) => m.id === id && m.nomeComercial === "Dorflex")).toBe(true);
-    expect(dados.bulas.find((b) => b.medicamentoId === id)?.paraQueServe).toBe("Dor");
+    expect(payload.medicines.some((m) => m.id === id && m.brandName === "Dorflex")).toBe(true);
+    expect(payload.packageInserts.find((b) => b.medicineId === id)?.usedFor).toBe("Dor");
   });
 
-  it("recusa medicamento sem nome", async () => {
+  it("rejects a medicine without a name", async () => {
     // Arrange
-    const casos = criarCasosAdmin(criarFakes(cenario()));
+    const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
-    const acao = casos.salvarMedicamento(admin, { nomeComercial: "", principioAtivo: "X", categoriaId: null, tipo: "generico", fabricante: "", apresentacao: "" });
+    const action = useCases.saveMedicine(admin, { brandName: "", activeIngredient: "X", categoryId: null, type: "generico", manufacturer: "", presentation: "" });
     // Assert
-    await expect(acao).rejects.toThrow("Informe o nome comercial");
-  });
-});
-
-describe("salvarFarmacia", () => {
-  it("recusa coordenadas inválidas", async () => {
-    // Arrange
-    const casos = criarCasosAdmin(criarFakes(cenario()));
-    // Act
-    const acao = casos.salvarFarmacia(admin, { nome: "Drogaria", endereco: "Rua A", telefone: null, parceira: false, lat: 999, lng: 0 });
-    // Assert
-    await expect(acao).rejects.toThrow("Coordenadas inválidas");
+    await expect(action).rejects.toThrow("Informe o nome comercial");
   });
 });
 
-describe("resolverReporte", () => {
-  it("marca o reporte como resolvido", async () => {
+describe("savePharmacy", () => {
+  it("rejects invalid coordinates", async () => {
     // Arrange
-    const dados = cenario();
-    dados.reportes = [{ id: 5, precoId: 1, userId: "u1", comentario: "", medicamento: "", farmacia: "", valor: 1, criadoEm: new Date(), resolvido: false }];
-    const casos = criarCasosAdmin(criarFakes(dados));
+    const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
-    await casos.resolverReporte(admin, 5);
+    const action = useCases.savePharmacy(admin, { name: "Drogaria", address: "Rua A", phone: null, isPartner: false, lat: 999, lng: 0 });
     // Assert
-    expect(dados.reportes[0].resolvido).toBe(true);
+    await expect(action).rejects.toThrow("Coordenadas inválidas");
+  });
+});
+
+describe("resolveReport", () => {
+  it("marks the report as resolved", async () => {
+    // Arrange
+    const payload = scenario();
+    payload.reports = [{ id: 5, priceId: 1, userId: "u1", comment: "", medicine: "", pharmacy: "", amount: 1, createdAt: new Date(), resolved: false }];
+    const useCases = createAdminUseCases(createFakes(payload));
+    // Act
+    await useCases.resolveReport(admin, 5);
+    // Assert
+    expect(payload.reports[0].resolved).toBe(true);
   });
 });

@@ -1,40 +1,39 @@
-import { criarClienteServidor } from "./supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AuthService } from "@/application/ports";
 
-export type ResultadoAuth = { ok: true } | { ok: false; erro: string };
+const MIN_PASSWORD_LENGTH = 6;
 
-const SENHA_MINIMA = 6;
-
-function traduzir(mensagem: string): string {
-  const m = mensagem.toLowerCase();
+function translate(message: string): string {
+  const m = message.toLowerCase();
   if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos";
   if (m.includes("already registered") || m.includes("already been registered")) return "Este e-mail já está cadastrado";
-  if (m.includes("password")) return `A senha deve ter pelo menos ${SENHA_MINIMA} caracteres`;
+  if (m.includes("password")) return `A senha deve ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres`;
   if (m.includes("email")) return "Informe um e-mail válido";
   return "Não foi possível concluir. Tente novamente.";
 }
 
-export async function entrar(email: string, senha: string): Promise<ResultadoAuth & { papel?: "user" | "admin" }> {
-  if (!email.trim() || !senha) return { ok: false, erro: "Informe e-mail e senha" };
-  const db = await criarClienteServidor();
-  const { data, error } = await db.auth.signInWithPassword({ email: email.trim(), password: senha });
-  if (error) return { ok: false, erro: traduzir(error.message) };
-  const { data: perfil } = await db.from("profiles").select("role").eq("id", data.user.id).maybeSingle();
-  return { ok: true, papel: perfil?.role === "admin" ? "admin" : "user" };
-}
+export function createAuthService(db: SupabaseClient): AuthService {
+  return {
+    async signIn(email, password) {
+      if (!email.trim() || !password) return { ok: false, errorMessage: "Informe e-mail e senha" };
+      const { data, error } = await db.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) return { ok: false, errorMessage: translate(error.message) };
+      const { data: profile } = await db.from("profiles").select("role").eq("id", data.user.id).maybeSingle();
+      return { ok: true, role: profile?.role === "admin" ? "admin" : "user" };
+    },
 
-export async function cadastrar(nome: string, email: string, senha: string): Promise<ResultadoAuth> {
-  if (!nome.trim()) return { ok: false, erro: "Informe seu nome" };
-  if (!email.trim()) return { ok: false, erro: "Informe um e-mail válido" };
-  if (senha.length < SENHA_MINIMA) return { ok: false, erro: `A senha deve ter pelo menos ${SENHA_MINIMA} caracteres` };
-  const db = await criarClienteServidor();
-  const { data, error } = await db.auth.signUp({ email: email.trim(), password: senha, options: { data: { nome: nome.trim() } } });
-  if (error) return { ok: false, erro: traduzir(error.message) };
-  // Com e-mail já cadastrado o Supabase devolve usuário sem identidades.
-  if (data.user && data.user.identities?.length === 0) return { ok: false, erro: "Este e-mail já está cadastrado" };
-  return { ok: true };
-}
+    async signUp(name, email, password) {
+      if (!name.trim()) return { ok: false, errorMessage: "Informe seu nome" };
+      if (!email.trim()) return { ok: false, errorMessage: "Informe um e-mail válido" };
+      if (password.length < MIN_PASSWORD_LENGTH) return { ok: false, errorMessage: `A senha deve ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres` };
+      const { data, error } = await db.auth.signUp({ email: email.trim(), password, options: { data: { nome: name.trim() } } });
+      if (error) return { ok: false, errorMessage: translate(error.message) };
+      if (data.user && data.user.identities?.length === 0) return { ok: false, errorMessage: "Este e-mail já está cadastrado" };
+      return { ok: true };
+    },
 
-export async function sair(): Promise<void> {
-  const db = await criarClienteServidor();
-  await db.auth.signOut();
+    async signOut() {
+      await db.auth.signOut();
+    },
+  };
 }

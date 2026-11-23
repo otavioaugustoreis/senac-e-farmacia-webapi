@@ -1,36 +1,33 @@
-import { DomainError, NaoAutenticadoError, NaoEncontradoError, ProibidoError } from "@/domain/erros";
+import { DomainError, UnauthenticatedError, NotFoundError, ForbiddenError } from "@/domain/errors";
 
-export type Contexto<T extends Record<string, string>> = { params: Promise<T> };
+export type RouteContext<T extends Record<string, string>> = { params: Promise<T> };
 
-export const json = (corpo: unknown, status = 200) => Response.json(corpo, { status });
-export const semConteudo = () => new Response(null, { status: 204 });
+export const json = (body: unknown, status = 200) => Response.json(body, { status });
+export const noContent = () => new Response(null, { status: 204 });
 
-/** Executa o controller e traduz erros do domínio em status HTTP com corpo { erro }. */
-export async function tratar(fn: () => Promise<Response>): Promise<Response> {
+export async function handle(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
   } catch (e) {
-    if (e instanceof DomainError) return json({ erro: e.message }, 400);
-    if (e instanceof NaoAutenticadoError) return json({ erro: e.message }, 401);
-    if (e instanceof ProibidoError) return json({ erro: e.message }, 403);
-    if (e instanceof NaoEncontradoError) return json({ erro: e.message }, 404);
+    if (e instanceof DomainError) return json({ errorMessage: e.message }, 400);
+    if (e instanceof UnauthenticatedError) return json({ errorMessage: e.message }, 401);
+    if (e instanceof ForbiddenError) return json({ errorMessage: e.message }, 403);
+    if (e instanceof NotFoundError) return json({ errorMessage: e.message }, 404);
     console.error(e);
-    return json({ erro: "Erro interno" }, 500);
+    return json({ errorMessage: "Erro interno" }, 500);
   }
 }
 
-export async function lerJson(request: Request): Promise<Record<string, unknown>> {
+export async function readJson(request: Request): Promise<Record<string, unknown>> {
   try {
-    const corpo = await request.json();
-    if (corpo && typeof corpo === "object" && !Array.isArray(corpo)) return corpo as Record<string, unknown>;
-  } catch {
-    // cai no erro abaixo
-  }
+    const body = await request.json();
+    if (body && typeof body === "object" && !Array.isArray(body)) return body as Record<string, unknown>;
+  } catch {}
   throw new DomainError("Corpo da requisição inválido");
 }
 
-export function lerId(valor: string): number {
-  const id = Number(valor);
+export function parseId(value: string): number {
+  const id = Number(value);
   if (!Number.isInteger(id) || id <= 0) throw new DomainError("Identificador inválido");
   return id;
 }
