@@ -57,11 +57,11 @@ export function FormAuth({ modo, acao, next }: Props) {
           <input type="hidden" name="next" value={next} />
           {cadastro && (
             <Campo id="nome" rotulo="Nome" icone={UserRound}>
-              <input id="nome" name="nome" required autoComplete="name" placeholder="Como podemos te chamar?" className={CAMPO} />
+              <input id="nome" name="nome" defaultValue={estado.nome} required autoComplete="name" placeholder="Como podemos te chamar?" className={CAMPO} />
             </Campo>
           )}
           <Campo id="email" rotulo="E-mail" icone={Mail}>
-            <input id="email" name="email" type="email" required autoComplete="email" inputMode="email" placeholder="voce@exemplo.com" className={CAMPO} />
+            <input id="email" name="email" type="email" defaultValue={estado.email} required autoComplete="email" inputMode="email" placeholder="voce@exemplo.com" className={CAMPO} />
           </Campo>
           <Campo id="senha" rotulo="Senha" icone={Lock} ajuda={cadastro ? "Mínimo de 6 caracteres" : undefined}>
             <input id="senha" name="senha" type={verSenha ? "text" : "password"} required minLength={cadastro ? 6 : undefined}

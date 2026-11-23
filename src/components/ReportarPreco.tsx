@@ -9,6 +9,7 @@ type Estado = "fechado" | "aberto" | "enviando" | "enviado";
 export function ReportarPreco({ precoId, logado, voltarPara }: { precoId: number; logado: boolean; voltarPara: string }) {
   const [estado, setEstado] = useState<Estado>("fechado");
   const [erro, setErro] = useState<string | null>(null);
+  const [comentario, setComentario] = useState("");
 
   if (!logado) {
     return (
@@ -26,23 +27,27 @@ export function ReportarPreco({ precoId, logado, voltarPara }: { precoId: number
     );
   }
 
-  async function enviar(form: FormData) {
+  async function enviar() {
     setEstado("enviando");
     setErro(null);
-    const resposta = await fetch("/api/reportes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ precoId, comentario: String(form.get("comentario") ?? "") }),
-    });
-    if (resposta.ok) return setEstado("enviado");
-    const corpo = await resposta.json().catch(() => ({}));
-    setErro(corpo.erro ?? "Não foi possível enviar");
+    try {
+      const resposta = await fetch("/api/reportes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ precoId, comentario }),
+      });
+      if (resposta.ok) return setEstado("enviado");
+      const corpo = await resposta.json().catch(() => ({}));
+      setErro(corpo.erro ?? "Não foi possível enviar");
+    } catch {
+      setErro("Sem conexão. Verifique a internet e tente de novo.");
+    }
     setEstado("aberto");
   }
 
   return (
     <form action={enviar} className="flex w-full flex-col gap-2 sm:flex-row">
-      <input name="comentario" maxLength={500} placeholder="O que está errado? (opcional)" aria-label="Comentário"
+      <input name="comentario" value={comentario} onChange={(e) => setComentario(e.target.value)} maxLength={500} placeholder="O que está errado? (opcional)" aria-label="Comentário"
         className="min-w-0 flex-1 rounded-full border border-black/10 px-3 py-1.5 text-xs outline-none focus:border-marca-600" />
       <div className="flex gap-2">
         <button disabled={estado === "enviando"} className="rounded-full bg-marca-800 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">

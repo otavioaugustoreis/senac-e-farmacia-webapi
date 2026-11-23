@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Logo } from "./Logo";
 import { LocalizacaoAtual } from "./LocalizacaoAtual";
+import { CampoBusca, CampoBuscaVazio } from "./CampoBusca";
 
 interface Props {
   menuUsuario: React.ReactNode;
@@ -26,8 +28,7 @@ export function Header({ menuUsuario }: Props) {
         <form action="/busca" role="search" autoComplete="off" className="order-3 flex w-full md:order-none md:w-auto md:max-w-2xl md:flex-1">
           <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-tinta">
             <Search className="size-4 shrink-0 text-suave" aria-hidden />
-            <input name="q" type="search" enterKeyHint="search" placeholder="Nome ou princípio ativo" aria-label="Buscar medicamento"
-              className="h-11 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-suave md:h-10" />
+            <Suspense fallback={<CampoBuscaVazio />}><CampoBusca /></Suspense>
           </div>
         </form>
 
