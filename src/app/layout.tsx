@@ -3,9 +3,9 @@ import { Plus_Jakarta_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { MenuUsuario } from "@/components/MenuUsuario";
-import { NavInferior } from "@/components/NavInferior";
-import { obterContainer } from "@/infrastructure/container";
+import { UserMenu } from "@/components/MenuUsuario";
+import { BottomNav } from "@/components/NavInferior";
+import { getContainer } from "@/infrastructure/container";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
 const instrument = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["italic", "normal"], variable: "--font-instrument" });
@@ -23,8 +23,8 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const { usuarioAtual } = await obterContainer();
-  const usuario = await usuarioAtual();
+  const { currentUser } = await getContainer();
+  const user = await currentUser();
 
   return (
     <html lang="pt-BR" className={`${jakarta.variable} ${instrument.variable}`}>
@@ -33,11 +33,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           Pular para o conteúdo
         </a>
         <div className="mx-auto flex min-h-dvh w-full max-w-[90rem] flex-col px-3 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-0 lg:px-10">
-          <Header menuUsuario={<MenuUsuario usuario={usuario} />} />
+          <Header userMenu={<UserMenu user={user} />} />
           <main id="conteudo" className="flex-1 py-5 sm:py-6">{children}</main>
           <Footer />
         </div>
-        <NavInferior admin={usuario?.role === "admin"} />
+        <BottomNav admin={user?.role === "admin"} />
       </body>
     </html>
   );

@@ -1,14 +1,14 @@
-import { buscarMedicamentos } from "@/application/casos-de-uso/buscar-medicamentos";
-import { obterContainer } from "@/infrastructure/container";
-import { json, tratar } from "../_http";
+import { searchMedicines } from "@/application/casos-de-uso/buscar-medicamentos";
+import { getContainer } from "@/infrastructure/container";
+import { json, handle } from "../_http";
 
 /** GET /api/medicamentos?q=&categoria= */
 export async function GET(request: Request) {
-  return tratar(async () => {
+  return handle(async () => {
     const { searchParams } = new URL(request.url);
-    const categoria = Number(searchParams.get("categoria"));
-    const { repos } = await obterContainer();
-    const resultado = await buscarMedicamentos(repos)(searchParams.get("q") ?? "", Number.isInteger(categoria) && categoria > 0 ? categoria : undefined);
-    return json(resultado);
+    const category = Number(searchParams.get("categoria"));
+    const { repos } = await getContainer();
+    const result = await searchMedicines(repos)(searchParams.get("q") ?? "", Number.isInteger(category) && category > 0 ? category : undefined);
+    return json(result);
   });
 }

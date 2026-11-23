@@ -4,7 +4,7 @@ import Link from "next/link";
 import { RotateCw } from "lucide-react";
 
 /** Falha inesperada (ex.: banco fora do ar): mensagem amigável e chance de tentar de novo. */
-export default function Erro({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <div role="alert" className="mx-auto max-w-md rounded-[var(--radius-card)] bg-white p-10 text-center ring-1 ring-black/5">
       <p className="text-4xl" aria-hidden>💊</p>

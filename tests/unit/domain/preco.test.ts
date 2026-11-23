@@ -1,111 +1,111 @@
 import { describe, expect, it } from "vitest";
-import { economiaPercentual, estaDesatualizado, menorPreco, ordenarPorValor, validarValor, type Preco } from "@/domain/preco";
+import { savingsPercent, isOutdated, lowestPrice, sortByValue, validateAmount, type Price } from "@/domain/preco";
 import { DomainError } from "@/domain/erros";
 
-const preco = (id: number, valor: number, atualizadoEm = new Date("2026-11-20T12:00:00Z")): Preco => ({
-  id, medicamentoId: 1, farmacia: { id, nome: `F${id}` }, valor, atualizadoEm,
+const price = (id: number, amount: number, updatedAt = new Date("2026-11-20T12:00:00Z")): Price => ({
+  id, medicineId: 1, pharmacy: { id, name: `F${id}` }, amount, updatedAt,
 });
 
 describe("menorPreco", () => {
   it("retorna null quando não há preços", () => {
     // Arrange
-    const precos: Preco[] = [];
+    const prices: Price[] = [];
     // Act
-    const resultado = menorPreco(precos);
+    const result = lowestPrice(prices);
     // Assert
-    expect(resultado).toBeNull();
+    expect(result).toBeNull();
   });
 
   it("retorna o preço de menor valor", () => {
     // Arrange
-    const precos = [preco(1, 10), preco(2, 7.5), preco(3, 9)];
+    const prices = [price(1, 10), price(2, 7.5), price(3, 9)];
     // Act
-    const resultado = menorPreco(precos);
+    const result = lowestPrice(prices);
     // Assert
-    expect(resultado?.id).toBe(2);
+    expect(result?.id).toBe(2);
   });
 });
 
 describe("ordenarPorValor", () => {
   it("ordena do mais barato ao mais caro sem alterar a lista original", () => {
     // Arrange
-    const precos = [preco(1, 10), preco(2, 7.5)];
+    const prices = [price(1, 10), price(2, 7.5)];
     // Act
-    const resultado = ordenarPorValor(precos);
+    const result = sortByValue(prices);
     // Assert
-    expect(resultado.map((p) => p.id)).toEqual([2, 1]);
-    expect(precos.map((p) => p.id)).toEqual([1, 2]);
+    expect(result.map((p) => p.id)).toEqual([2, 1]);
+    expect(prices.map((p) => p.id)).toEqual([1, 2]);
   });
 });
 
 describe("estaDesatualizado", () => {
-  const hoje = new Date("2026-11-20T12:00:00Z");
+  const today = new Date("2026-11-20T12:00:00Z");
 
   it("considera desatualizado um preço de 8 dias", () => {
     // Arrange
-    const p = preco(1, 10, new Date("2026-11-12T12:00:00Z"));
+    const p = price(1, 10, new Date("2026-11-12T12:00:00Z"));
     // Act
-    const resultado = estaDesatualizado(p, hoje);
+    const result = isOutdated(p, today);
     // Assert
-    expect(resultado).toBe(true);
+    expect(result).toBe(true);
   });
 
   it("considera atualizado um preço de exatamente 7 dias", () => {
     // Arrange
-    const p = preco(1, 10, new Date("2026-11-13T12:00:00Z"));
+    const p = price(1, 10, new Date("2026-11-13T12:00:00Z"));
     // Act
-    const resultado = estaDesatualizado(p, hoje);
+    const result = isOutdated(p, today);
     // Assert
-    expect(resultado).toBe(false);
+    expect(result).toBe(false);
   });
 });
 
 describe("validarValor", () => {
   it("rejeita preço zero", () => {
     // Arrange
-    const valor = 0;
+    const amount = 0;
     // Act
-    const acao = () => validarValor(valor);
+    const action = () => validateAmount(amount);
     // Assert
-    expect(acao).toThrow(DomainError);
-    expect(acao).toThrow("O preço deve ser maior que zero");
+    expect(action).toThrow(DomainError);
+    expect(action).toThrow("O preço deve ser maior que zero");
   });
 
   it("rejeita valor que não é número finito", () => {
     // Arrange
-    const valor = Number.NaN;
+    const amount = Number.NaN;
     // Act
-    const acao = () => validarValor(valor);
+    const action = () => validateAmount(amount);
     // Assert
-    expect(acao).toThrow(DomainError);
+    expect(action).toThrow(DomainError);
   });
 });
 
 describe("economiaPercentual", () => {
   it("calcula 40% para R$ 6 contra referência de R$ 10", () => {
     // Arrange
-    const [valor, referencia] = [6, 10];
+    const [amount, reference] = [6, 10];
     // Act
-    const resultado = economiaPercentual(valor, referencia);
+    const result = savingsPercent(amount, reference);
     // Assert
-    expect(resultado).toBe(40);
+    expect(result).toBe(40);
   });
 
   it("retorna null quando a referência não é mais cara", () => {
     // Arrange
-    const [valor, referencia] = [10, 10];
+    const [amount, reference] = [10, 10];
     // Act
-    const resultado = economiaPercentual(valor, referencia);
+    const result = savingsPercent(amount, reference);
     // Assert
-    expect(resultado).toBeNull();
+    expect(result).toBeNull();
   });
 
   it("retorna null quando falta um dos valores", () => {
     // Arrange
-    const [valor, referencia] = [null, 10];
+    const [amount, reference] = [null, 10];
     // Act
-    const resultado = economiaPercentual(valor, referencia);
+    const result = savingsPercent(amount, reference);
     // Assert
-    expect(resultado).toBeNull();
+    expect(result).toBeNull();
   });
 });

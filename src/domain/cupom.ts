@@ -1,28 +1,28 @@
 import { DomainError } from "./erros";
 
-export interface Cupom {
+export interface Coupon {
   id: number;
-  farmacia: { id: number; nome: string; endereco: string };
-  codigo: string;
-  descricao: string;
-  desconto: string;
-  validade: Date;
+  pharmacy: { id: number; name: string; address: string };
+  code: string;
+  description: string;
+  discount: string;
+  validUntil: Date;
 }
 
 const TZ = "America/Sao_Paulo";
-const diaSP = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
+const saoPauloDayFormat = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
 
 /** Data no calendário de São Paulo, como "2026-11-20" (comparável como texto). */
-export function diaEmSaoPaulo(d: Date): string {
-  return diaSP.format(d);
+export function dayInSaoPaulo(d: Date): string {
+  return saoPauloDayFormat.format(d);
 }
 
-export function cupomVigente(c: Pick<Cupom, "validade">, hoje: Date): boolean {
-  return diaEmSaoPaulo(c.validade) >= diaEmSaoPaulo(hoje);
+export function isCouponActive(c: Pick<Coupon, "validUntil">, today: Date): boolean {
+  return dayInSaoPaulo(c.validUntil) >= dayInSaoPaulo(today);
 }
 
-export function validarCupom(input: { codigo: string; desconto: string; validade: Date }): void {
-  if (!input.codigo?.trim()) throw new DomainError("Informe o código do cupom");
-  if (!input.desconto?.trim()) throw new DomainError("Informe o desconto");
-  if (!(input.validade instanceof Date) || Number.isNaN(input.validade.getTime())) throw new DomainError("Validade inválida");
+export function validateCoupon(input: { code: string; discount: string; validUntil: Date }): void {
+  if (!input.code?.trim()) throw new DomainError("Informe o código do cupom");
+  if (!input.discount?.trim()) throw new DomainError("Informe o desconto");
+  if (!(input.validUntil instanceof Date) || Number.isNaN(input.validUntil.getTime())) throw new DomainError("Validade inválida");
 }

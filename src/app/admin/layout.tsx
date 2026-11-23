@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ShieldAlert } from "lucide-react";
-import { obterContainer } from "@/infrastructure/container";
-import { AbasAdmin } from "@/components/admin/AbasAdmin";
+import { getContainer } from "@/infrastructure/container";
+import { AdminTabs } from "@/components/admin/AbasAdmin";
 
 export const metadata: Metadata = { title: "Painel administrativo — E-Farmácia" };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const usuario = await (await obterContainer()).usuarioAtual();
-  if (!usuario) redirect("/entrar?next=/admin");
+  const user = await (await getContainer()).currentUser();
+  if (!user) redirect("/entrar?next=/admin");
 
-  if (usuario.role !== "admin") {
+  if (user.role !== "admin") {
     return (
       <div className="mx-auto max-w-md rounded-[var(--radius-card)] bg-white p-10 text-center ring-1 ring-black/5">
         <ShieldAlert className="mx-auto size-10 text-alerta" aria-hidden />
@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-suave">Painel administrativo</p>
-        <div className="mt-2"><AbasAdmin /></div>
+        <div className="mt-2"><AdminTabs /></div>
       </div>
       {children}
     </div>

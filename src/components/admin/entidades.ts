@@ -1,187 +1,187 @@
-import { ROTULO_TIPO, TIPOS_MEDICAMENTO } from "@/domain/medicamento";
-import { formatBRL, formatData } from "@/lib/format";
+import { TYPE_LABELS, MEDICINE_TYPES } from "@/domain/medicamento";
+import { formatBRL, formatDate } from "@/lib/format";
 
 /* Configuração das telas do painel. Os itens chegam da WebApi como JSON (datas em texto ISO). */
 
-export const ENTIDADES = ["medicamentos", "precos", "farmacias", "cupons", "categorias", "reportes"] as const;
-export type Entidade = (typeof ENTIDADES)[number];
-export type Fonte = "categorias" | "farmacias" | "medicamentos";
+export const ENTITIES = ["medicamentos", "precos", "farmacias", "cupons", "categorias", "reportes"] as const;
+export type Entity = (typeof ENTITIES)[number];
+export type OptionSource = "categorias" | "farmacias" | "medicamentos";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Item = any;
-export type Valores = Record<string, string | boolean>;
+export type FormValues = Record<string, string | boolean>;
 
-export interface Campo {
-  nome: string;
-  rotulo: string;
-  tipo: "texto" | "numero" | "textarea" | "checkbox" | "data" | "select";
-  fonte?: Fonte;
-  fixas?: { valor: string; rotulo: string }[];
-  obrigatorio?: boolean;
-  passo?: string;
-  grupo?: string;
+export interface Field {
+  name: string;
+  label: string;
+  type: "text" | "number" | "textarea" | "checkbox" | "date" | "select";
+  source?: OptionSource;
+  fixedOptions?: { value: string; label: string }[];
+  required?: boolean;
+  step?: string;
+  group?: string;
 }
 
-export interface ConfigEntidade {
-  titulo: string;
+export interface EntityConfig {
+  title: string;
   singular: string;
-  campos: Campo[];
-  colunas: { rotulo: string; valor: (i: Item) => string }[];
-  paraFormulario: (i: Item) => Valores;
-  paraCorpo: (v: Valores) => Record<string, unknown>;
-  textoBusca: (i: Item) => string;
+  fields: Field[];
+  columns: { label: string; value: (i: Item) => string }[];
+  toForm: (i: Item) => FormValues;
+  toBody: (v: FormValues) => Record<string, unknown>;
+  searchText: (i: Item) => string;
   /** Medicamentos carregam a bula à parte ao editar. */
-  carregaBula?: boolean;
+  loadsPackageInsert?: boolean;
 }
 
 const s = (v: unknown) => (v === null || v === undefined ? "" : String(v));
-const diaIso = (iso: string) => s(iso).slice(0, 10);
+const isoDay = (iso: string) => s(iso).slice(0, 10);
 
-const CAMPOS_BULA: Campo[] = [
-  { nome: "bula.paraQueServe", rotulo: "Para que serve", tipo: "textarea", grupo: "Bula (sem dosagem)" },
-  { nome: "bula.contraindicacoes", rotulo: "Contraindicações", tipo: "textarea", grupo: "Bula (sem dosagem)" },
-  { nome: "bula.efeitosColaterais", rotulo: "Efeitos colaterais", tipo: "textarea", grupo: "Bula (sem dosagem)" },
-  { nome: "bula.advertencias", rotulo: "Advertências", tipo: "textarea", grupo: "Bula (sem dosagem)" },
-  { nome: "bula.linkAnvisa", rotulo: "Link no Bulário da Anvisa", tipo: "texto", grupo: "Bula (sem dosagem)" },
+const PACKAGE_INSERT_FIELDS: Field[] = [
+  { name: "packageInsert.usedFor", label: "Para que serve", type: "textarea", group: "Bula (sem dosagem)" },
+  { name: "packageInsert.contraindications", label: "Contraindicações", type: "textarea", group: "Bula (sem dosagem)" },
+  { name: "packageInsert.sideEffects", label: "Efeitos colaterais", type: "textarea", group: "Bula (sem dosagem)" },
+  { name: "packageInsert.warnings", label: "Advertências", type: "textarea", group: "Bula (sem dosagem)" },
+  { name: "packageInsert.anvisaLink", label: "Link no Bulário da Anvisa", type: "text", group: "Bula (sem dosagem)" },
 ];
 
-export const CONFIG: Record<Entidade, ConfigEntidade> = {
+export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   medicamentos: {
-    titulo: "Medicamentos",
+    title: "Medicamentos",
     singular: "medicamento",
-    carregaBula: true,
-    campos: [
-      { nome: "nomeComercial", rotulo: "Nome comercial", tipo: "texto", obrigatorio: true },
-      { nome: "principioAtivo", rotulo: "Princípio ativo", tipo: "texto", obrigatorio: true },
-      { nome: "tipo", rotulo: "Tipo", tipo: "select", obrigatorio: true, fixas: TIPOS_MEDICAMENTO.map((t) => ({ valor: t, rotulo: ROTULO_TIPO[t] })) },
-      { nome: "categoriaId", rotulo: "Categoria", tipo: "select", fonte: "categorias" },
-      { nome: "fabricante", rotulo: "Fabricante", tipo: "texto" },
-      { nome: "apresentacao", rotulo: "Apresentação", tipo: "texto" },
-      { nome: "imagemUrl", rotulo: "Endereço da foto (https)", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
-      { nome: "imagemCredito", rotulo: "Crédito (autor · licença)", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
-      { nome: "imagemFonte", rotulo: "Página de origem da foto", tipo: "texto", grupo: "Foto (licença livre, com crédito)" },
-      ...CAMPOS_BULA,
+    loadsPackageInsert: true,
+    fields: [
+      { name: "brandName", label: "Nome comercial", type: "text", required: true },
+      { name: "activeIngredient", label: "Princípio ativo", type: "text", required: true },
+      { name: "type", label: "Tipo", type: "select", required: true, fixedOptions: MEDICINE_TYPES.map((t) => ({ value: t, label: TYPE_LABELS[t] })) },
+      { name: "categoryId", label: "Categoria", type: "select", source: "categorias" },
+      { name: "manufacturer", label: "Fabricante", type: "text" },
+      { name: "presentation", label: "Apresentação", type: "text" },
+      { name: "imageUrl", label: "Endereço da foto (https)", type: "text", group: "Foto (licença livre, com crédito)" },
+      { name: "imageCredit", label: "Crédito (autor · licença)", type: "text", group: "Foto (licença livre, com crédito)" },
+      { name: "imageSource", label: "Página de origem da foto", type: "text", group: "Foto (licença livre, com crédito)" },
+      ...PACKAGE_INSERT_FIELDS,
     ],
-    colunas: [
-      { rotulo: "Nome", valor: (i) => i.nomeComercial },
-      { rotulo: "Foto", valor: (i) => (i.imagem ? "Sim" : "—") },
-      { rotulo: "Princípio ativo", valor: (i) => i.principioAtivo },
-      { rotulo: "Tipo", valor: (i) => ROTULO_TIPO[i.tipo as keyof typeof ROTULO_TIPO] ?? i.tipo },
-      { rotulo: "Categoria", valor: (i) => i.categoria?.nome ?? "—" },
-      { rotulo: "Menor preço", valor: (i) => (i.menorPreco !== null ? formatBRL(i.menorPreco) : "—") },
+    columns: [
+      { label: "Nome", value: (i) => i.brandName },
+      { label: "Foto", value: (i) => (i.image ? "Sim" : "—") },
+      { label: "Princípio ativo", value: (i) => i.activeIngredient },
+      { label: "Tipo", value: (i) => TYPE_LABELS[i.type as keyof typeof TYPE_LABELS] ?? i.type },
+      { label: "Categoria", value: (i) => i.category?.name ?? "—" },
+      { label: "Menor preço", value: (i) => (i.lowestPrice !== null ? formatBRL(i.lowestPrice) : "—") },
     ],
-    paraFormulario: (i) => ({
-      id: s(i.id), nomeComercial: s(i.nomeComercial), principioAtivo: s(i.principioAtivo), tipo: s(i.tipo || "generico"),
-      categoriaId: s(i.categoria?.id), fabricante: s(i.fabricante), apresentacao: s(i.apresentacao),
-      imagemUrl: s(i.imagem?.url), imagemCredito: s(i.imagem?.credito), imagemFonte: s(i.imagem?.fonte),
+    toForm: (i) => ({
+      id: s(i.id), brandName: s(i.brandName), activeIngredient: s(i.activeIngredient), type: s(i.type || "generico"),
+      categoryId: s(i.category?.id), manufacturer: s(i.manufacturer), presentation: s(i.presentation),
+      imageUrl: s(i.image?.url), imageCredit: s(i.image?.credit), imageSource: s(i.image?.source),
     }),
-    paraCorpo: (v) => ({
-      id: v.id || undefined, nomeComercial: v.nomeComercial, principioAtivo: v.principioAtivo, tipo: v.tipo,
-      categoriaId: v.categoriaId || null, fabricante: v.fabricante, apresentacao: v.apresentacao,
-      imagemUrl: v.imagemUrl, imagemCredito: v.imagemCredito, imagemFonte: v.imagemFonte,
-      bula: {
-        paraQueServe: v["bula.paraQueServe"], contraindicacoes: v["bula.contraindicacoes"],
-        efeitosColaterais: v["bula.efeitosColaterais"], advertencias: v["bula.advertencias"], linkAnvisa: v["bula.linkAnvisa"],
+    toBody: (v) => ({
+      id: v.id || undefined, brandName: v.brandName, activeIngredient: v.activeIngredient, type: v.type,
+      categoryId: v.categoryId || null, manufacturer: v.manufacturer, presentation: v.presentation,
+      imageUrl: v.imageUrl, imageCredit: v.imageCredit, imageSource: v.imageSource,
+      packageInsert: {
+        usedFor: v["packageInsert.usedFor"], contraindications: v["packageInsert.contraindications"],
+        sideEffects: v["packageInsert.sideEffects"], warnings: v["packageInsert.warnings"], anvisaLink: v["packageInsert.anvisaLink"],
       },
     }),
-    textoBusca: (i) => `${i.nomeComercial} ${i.principioAtivo} ${i.fabricante}`,
+    searchText: (i) => `${i.brandName} ${i.activeIngredient} ${i.manufacturer}`,
   },
 
   precos: {
-    titulo: "Preços",
+    title: "Preços",
     singular: "preço",
-    campos: [
-      { nome: "medicamentoId", rotulo: "Medicamento", tipo: "select", fonte: "medicamentos", obrigatorio: true },
-      { nome: "farmaciaId", rotulo: "Farmácia", tipo: "select", fonte: "farmacias", obrigatorio: true },
-      { nome: "valor", rotulo: "Valor (R$)", tipo: "numero", passo: "0.01", obrigatorio: true },
+    fields: [
+      { name: "medicineId", label: "Medicamento", type: "select", source: "medicamentos", required: true },
+      { name: "pharmacyId", label: "Farmácia", type: "select", source: "farmacias", required: true },
+      { name: "amount", label: "Valor (R$)", type: "number", step: "0.01", required: true },
     ],
-    colunas: [
-      { rotulo: "Medicamento", valor: (i) => i.medicamento },
-      { rotulo: "Farmácia", valor: (i) => i.farmacia?.nome },
-      { rotulo: "Valor", valor: (i) => formatBRL(i.valor) },
-      { rotulo: "Atualizado em", valor: (i) => formatData(i.atualizadoEm) },
+    columns: [
+      { label: "Medicamento", value: (i) => i.medicine },
+      { label: "Farmácia", value: (i) => i.pharmacy?.name },
+      { label: "Valor", value: (i) => formatBRL(i.amount) },
+      { label: "Atualizado em", value: (i) => formatDate(i.updatedAt) },
     ],
-    paraFormulario: (i) => ({ id: s(i.id), medicamentoId: s(i.medicamentoId), farmaciaId: s(i.farmacia?.id), valor: s(i.valor) }),
-    paraCorpo: (v) => ({ id: v.id || undefined, medicamentoId: v.medicamentoId, farmaciaId: v.farmaciaId, valor: v.valor }),
-    textoBusca: (i) => `${i.medicamento} ${i.farmacia?.nome}`,
+    toForm: (i) => ({ id: s(i.id), medicineId: s(i.medicineId), pharmacyId: s(i.pharmacy?.id), amount: s(i.amount) }),
+    toBody: (v) => ({ id: v.id || undefined, medicineId: v.medicineId, pharmacyId: v.pharmacyId, amount: v.amount }),
+    searchText: (i) => `${i.medicine} ${i.pharmacy?.name}`,
   },
 
   farmacias: {
-    titulo: "Farmácias",
+    title: "Farmácias",
     singular: "farmácia",
-    campos: [
-      { nome: "nome", rotulo: "Nome", tipo: "texto", obrigatorio: true },
-      { nome: "endereco", rotulo: "Endereço", tipo: "texto", obrigatorio: true },
-      { nome: "telefone", rotulo: "Telefone", tipo: "texto" },
-      { nome: "lat", rotulo: "Latitude", tipo: "numero", passo: "any", obrigatorio: true },
-      { nome: "lng", rotulo: "Longitude", tipo: "numero", passo: "any", obrigatorio: true },
-      { nome: "parceira", rotulo: "Farmácia parceira", tipo: "checkbox" },
+    fields: [
+      { name: "name", label: "Nome", type: "text", required: true },
+      { name: "address", label: "Endereço", type: "text", required: true },
+      { name: "phone", label: "Telefone", type: "text" },
+      { name: "lat", label: "Latitude", type: "number", step: "any", required: true },
+      { name: "lng", label: "Longitude", type: "number", step: "any", required: true },
+      { name: "isPartner", label: "Farmácia parceira", type: "checkbox" },
     ],
-    colunas: [
-      { rotulo: "Nome", valor: (i) => i.nome },
-      { rotulo: "Endereço", valor: (i) => i.endereco },
-      { rotulo: "Parceira", valor: (i) => (i.parceira ? "Sim" : "Não") },
-      { rotulo: "Lat, Lng", valor: (i) => `${Number(i.lat).toFixed(4)}, ${Number(i.lng).toFixed(4)}` },
+    columns: [
+      { label: "Nome", value: (i) => i.name },
+      { label: "Endereço", value: (i) => i.address },
+      { label: "Parceira", value: (i) => (i.isPartner ? "Sim" : "Não") },
+      { label: "Lat, Lng", value: (i) => `${Number(i.lat).toFixed(4)}, ${Number(i.lng).toFixed(4)}` },
     ],
-    paraFormulario: (i) => ({
-      id: s(i.id), nome: s(i.nome), endereco: s(i.endereco), telefone: s(i.telefone), lat: s(i.lat), lng: s(i.lng), parceira: Boolean(i.parceira),
+    toForm: (i) => ({
+      id: s(i.id), name: s(i.name), address: s(i.address), phone: s(i.phone), lat: s(i.lat), lng: s(i.lng), isPartner: Boolean(i.isPartner),
     }),
-    paraCorpo: (v) => ({ id: v.id || undefined, nome: v.nome, endereco: v.endereco, telefone: v.telefone, lat: v.lat, lng: v.lng, parceira: v.parceira === true }),
-    textoBusca: (i) => `${i.nome} ${i.endereco}`,
+    toBody: (v) => ({ id: v.id || undefined, name: v.name, address: v.address, phone: v.phone, lat: v.lat, lng: v.lng, isPartner: v.isPartner === true }),
+    searchText: (i) => `${i.name} ${i.address}`,
   },
 
   cupons: {
-    titulo: "Cupons",
+    title: "Cupons",
     singular: "cupom",
-    campos: [
-      { nome: "farmaciaId", rotulo: "Farmácia", tipo: "select", fonte: "farmacias", obrigatorio: true },
-      { nome: "codigo", rotulo: "Código", tipo: "texto", obrigatorio: true },
-      { nome: "desconto", rotulo: "Desconto (ex.: 10% ou R$ 5)", tipo: "texto", obrigatorio: true },
-      { nome: "descricao", rotulo: "Descrição", tipo: "texto" },
-      { nome: "validade", rotulo: "Válido até", tipo: "data", obrigatorio: true },
+    fields: [
+      { name: "pharmacyId", label: "Farmácia", type: "select", source: "farmacias", required: true },
+      { name: "code", label: "Código", type: "text", required: true },
+      { name: "discount", label: "Desconto (ex.: 10% ou R$ 5)", type: "text", required: true },
+      { name: "description", label: "Descrição", type: "text" },
+      { name: "validUntil", label: "Válido até", type: "date", required: true },
     ],
-    colunas: [
-      { rotulo: "Código", valor: (i) => i.codigo },
-      { rotulo: "Farmácia", valor: (i) => i.farmacia?.nome },
-      { rotulo: "Desconto", valor: (i) => i.desconto },
-      { rotulo: "Validade", valor: (i) => formatData(i.validade) },
+    columns: [
+      { label: "Código", value: (i) => i.code },
+      { label: "Farmácia", value: (i) => i.pharmacy?.name },
+      { label: "Desconto", value: (i) => i.discount },
+      { label: "Validade", value: (i) => formatDate(i.validUntil) },
     ],
-    paraFormulario: (i) => ({
-      id: s(i.id), farmaciaId: s(i.farmacia?.id), codigo: s(i.codigo), desconto: s(i.desconto), descricao: s(i.descricao), validade: diaIso(i.validade),
+    toForm: (i) => ({
+      id: s(i.id), pharmacyId: s(i.pharmacy?.id), code: s(i.code), discount: s(i.discount), description: s(i.description), validUntil: isoDay(i.validUntil),
     }),
-    paraCorpo: (v) => ({ id: v.id || undefined, farmaciaId: v.farmaciaId, codigo: v.codigo, desconto: v.desconto, descricao: v.descricao, validade: v.validade }),
-    textoBusca: (i) => `${i.codigo} ${i.farmacia?.nome} ${i.descricao}`,
+    toBody: (v) => ({ id: v.id || undefined, pharmacyId: v.pharmacyId, code: v.code, discount: v.discount, description: v.description, validUntil: v.validUntil }),
+    searchText: (i) => `${i.code} ${i.pharmacy?.name} ${i.description}`,
   },
 
   categorias: {
-    titulo: "Categorias",
+    title: "Categorias",
     singular: "categoria",
-    campos: [{ nome: "nome", rotulo: "Nome", tipo: "texto", obrigatorio: true }],
-    colunas: [{ rotulo: "Nome", valor: (i) => i.nome }],
-    paraFormulario: (i) => ({ id: s(i.id), nome: s(i.nome) }),
-    paraCorpo: (v) => ({ id: v.id || undefined, nome: v.nome }),
-    textoBusca: (i) => i.nome,
+    fields: [{ name: "name", label: "Nome", type: "text", required: true }],
+    columns: [{ label: "Nome", value: (i) => i.name }],
+    toForm: (i) => ({ id: s(i.id), name: s(i.name) }),
+    toBody: (v) => ({ id: v.id || undefined, name: v.name }),
+    searchText: (i) => i.name,
   },
 
   reportes: {
-    titulo: "Reportes de preço",
+    title: "Reportes de preço",
     singular: "reporte",
-    campos: [],
-    colunas: [
-      { rotulo: "Medicamento", valor: (i) => i.medicamento },
-      { rotulo: "Farmácia", valor: (i) => i.farmacia },
-      { rotulo: "Valor", valor: (i) => formatBRL(i.valor) },
-      { rotulo: "Comentário", valor: (i) => i.comentario || "—" },
-      { rotulo: "Data", valor: (i) => formatData(i.criadoEm) },
-      { rotulo: "Situação", valor: (i) => (i.resolvido ? "Resolvido" : "Aberto") },
+    fields: [],
+    columns: [
+      { label: "Medicamento", value: (i) => i.medicine },
+      { label: "Farmácia", value: (i) => i.pharmacy },
+      { label: "Valor", value: (i) => formatBRL(i.amount) },
+      { label: "Comentário", value: (i) => i.comment || "—" },
+      { label: "Data", value: (i) => formatDate(i.createdAt) },
+      { label: "Situação", value: (i) => (i.resolved ? "Resolvido" : "Aberto") },
     ],
-    paraFormulario: () => ({}),
-    paraCorpo: () => ({}),
-    textoBusca: (i) => `${i.medicamento} ${i.farmacia} ${i.comentario}`,
+    toForm: () => ({}),
+    toBody: () => ({}),
+    searchText: (i) => `${i.medicine} ${i.pharmacy} ${i.comment}`,
   },
 };
 
-export function rotuloOpcao(fonte: Fonte, i: Item): string {
-  if (fonte === "medicamentos") return `${i.nomeComercial} (${i.apresentacao})`;
-  return i.nome;
+export function optionLabel(source: OptionSource, i: Item): string {
+  if (source === "medicamentos") return `${i.brandName} (${i.presentation})`;
+  return i.name;
 }

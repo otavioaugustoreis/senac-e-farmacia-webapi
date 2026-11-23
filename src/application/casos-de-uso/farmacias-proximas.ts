@@ -1,27 +1,27 @@
-import { coordenadasValidas, PONTO_PADRAO, type FarmaciaProxima } from "@/domain/farmacia";
-import type { Repositorios } from "../ports";
+import { validCoordinates, DEFAULT_POINT, type NearbyPharmacy } from "@/domain/farmacia";
+import type { Repositories } from "../ports";
 
-export const RAIO_BUSCA_KM = 15;
+export const SEARCH_RADIUS_KM = 15;
 /** Sem nada por perto (ex.: usuário em outra cidade), procura as mais próximas num raio maior. */
-export const RAIO_AMPLIADO_KM = 300;
+export const EXPANDED_RADIUS_KM = 300;
 
-export interface ResultadoProximas {
-  origem: { lat: number; lng: number; padrao: boolean };
-  farmacias: FarmaciaProxima[];
-  raioKm: number;
-  ampliado: boolean;
+export interface NearbyResult {
+  origin: { lat: number; lng: number; isDefault: boolean };
+  pharmacies: NearbyPharmacy[];
+  radiusKm: number;
+  expanded: boolean;
 }
 
-export const farmaciasProximas = (repos: Pick<Repositorios, "farmacias">) =>
-  async (lat: unknown, lng: unknown): Promise<ResultadoProximas> => {
-    const valida = coordenadasValidas(lat, lng);
-    const origem = valida
-      ? { lat: lat as number, lng: lng as number, padrao: false }
-      : { ...PONTO_PADRAO, padrao: true };
+export const nearbyPharmacies = (repos: Pick<Repositories, "pharmacies">) =>
+  async (lat: unknown, lng: unknown): Promise<NearbyResult> => {
+    const isValid = validCoordinates(lat, lng);
+    const origin = isValid
+      ? { lat: lat as number, lng: lng as number, isDefault: false }
+      : { ...DEFAULT_POINT, isDefault: true };
 
-    const perto = await repos.farmacias.proximas(origem.lat, origem.lng, RAIO_BUSCA_KM);
-    if (perto.length > 0) return { origem, farmacias: perto, raioKm: RAIO_BUSCA_KM, ampliado: false };
+    const near = await repos.pharmacies.nearby(origin.lat, origin.lng, SEARCH_RADIUS_KM);
+    if (near.length > 0) return { origin, pharmacies: near, radiusKm: SEARCH_RADIUS_KM, expanded: false };
 
-    const longe = await repos.farmacias.proximas(origem.lat, origem.lng, RAIO_AMPLIADO_KM);
-    return { origem, farmacias: longe, raioKm: RAIO_AMPLIADO_KM, ampliado: true };
+    const far = await repos.pharmacies.nearby(origin.lat, origin.lng, EXPANDED_RADIUS_KM);
+    return { origin, pharmacies: far, radiusKm: EXPANDED_RADIUS_KM, expanded: true };
   };

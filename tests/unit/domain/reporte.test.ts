@@ -1,24 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { normalizarComentario } from "@/domain/reporte";
+import { normalizeComment } from "@/domain/reporte";
 import { DomainError } from "@/domain/erros";
 
 describe("normalizarComentario", () => {
   it("remove espaços nas pontas", () => {
     // Arrange
-    const comentario = "  preço mudou  ";
+    const comment = "  preço mudou  ";
     // Act
-    const resultado = normalizarComentario(comentario);
+    const result = normalizeComment(comment);
     // Assert
-    expect(resultado).toBe("preço mudou");
+    expect(result).toBe("preço mudou");
   });
 
   it("rejeita comentário com mais de 500 caracteres", () => {
     // Arrange
-    const comentario = "a".repeat(501);
+    const comment = "a".repeat(501);
     // Act
-    const acao = () => normalizarComentario(comentario);
+    const action = () => normalizeComment(comment);
     // Assert
-    expect(acao).toThrow(DomainError);
-    expect(acao).toThrow("Comentário muito longo");
+    expect(action).toThrow(DomainError);
+    expect(action).toThrow("Comentário muito longo");
   });
 });

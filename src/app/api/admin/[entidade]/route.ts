@@ -1,21 +1,21 @@
-import { json, lerJson, tratar, type Contexto } from "../../_http";
-import { exigirOperacao, prepararAdmin } from "../_entidades";
+import { json, readJson, handle, type RouteContext } from "../../_http";
+import { requireOperation, prepareAdmin } from "../_entidades";
 
-type Params = Contexto<{ entidade: string }>;
+type Params = RouteContext<{ entity: string }>;
 
 /** GET /api/admin/:entidade — lista (somente admin) */
 export async function GET(_request: Request, { params }: Params) {
-  return tratar(async () => {
-    const { ops, usuario } = await prepararAdmin((await params).entidade);
-    return json(await ops.listar(usuario));
+  return handle(async () => {
+    const { ops, user } = await prepareAdmin((await params).entity);
+    return json(await ops.list(user));
   });
 }
 
 /** POST /api/admin/:entidade — cria ou atualiza (id opcional no corpo) */
 export async function POST(request: Request, { params }: Params) {
-  return tratar(async () => {
-    const { ops, usuario } = await prepararAdmin((await params).entidade);
-    const salvar = exigirOperacao(ops.salvar);
-    return json((await salvar(usuario, await lerJson(request))) ?? { ok: true });
+  return handle(async () => {
+    const { ops, user } = await prepareAdmin((await params).entity);
+    const save = requireOperation(ops.save);
+    return json((await save(user, await readJson(request))) ?? { ok: true });
   });
 }

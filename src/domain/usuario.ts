@@ -1,8 +1,8 @@
-export type Papel = "user" | "admin";
+export type Role = "user" | "admin";
 
-export interface UsuarioAtual {
+export interface CurrentUser {
   id: string;
   email: string;
-  nome: string | null;
-  role: Papel;
+  name: string | null;
+  role: Role;
 }

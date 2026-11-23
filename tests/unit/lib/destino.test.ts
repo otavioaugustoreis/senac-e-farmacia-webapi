@@ -1,32 +1,32 @@
 import { describe, expect, it } from "vitest";
-import { destinoAposLogin, destinoSeguro } from "@/lib/destino";
+import { destinationAfterLogin, safeDestination } from "@/lib/destino";
 
 describe("destinoAposLogin", () => {
   it("leva o admin para o painel quando não havia destino", () => {
     // Arrange
-    const [next, papel] = ["/", "admin" as const];
+    const [next, role] = ["/", "admin" as const];
     // Act
-    const resultado = destinoAposLogin(next, papel);
+    const result = destinationAfterLogin(next, role);
     // Assert
-    expect(resultado).toBe("/admin");
+    expect(result).toBe("/admin");
   });
 
   it("respeita o destino pedido pelo admin", () => {
     // Arrange
-    const [next, papel] = ["/medicamento/4", "admin" as const];
+    const [next, role] = ["/medicamento/4", "admin" as const];
     // Act
-    const resultado = destinoAposLogin(next, papel);
+    const result = destinationAfterLogin(next, role);
     // Assert
-    expect(resultado).toBe("/medicamento/4");
+    expect(result).toBe("/medicamento/4");
   });
 
   it("mantém usuário comum na página inicial", () => {
     // Arrange
-    const [next, papel] = [null, "user" as const];
+    const [next, role] = [null, "user" as const];
     // Act
-    const resultado = destinoAposLogin(next, papel);
+    const result = destinationAfterLogin(next, role);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 });
 
@@ -35,62 +35,62 @@ describe("destinoSeguro", () => {
     // Arrange
     const next = "/medicamento/1";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/medicamento/1");
+    expect(result).toBe("/medicamento/1");
   });
 
   it("troca URL externa pela página inicial", () => {
     // Arrange
     const next = "https://golpe.example";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 
   it("troca caminho com // (protocolo relativo) pela página inicial", () => {
     // Arrange
     const next = "//golpe.example";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 
   it("troca caminho com tabulação que o navegador transforma em // pela página inicial", () => {
     // Arrange
     const next = "/\t/evil.com";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 
   it("troca caminho com barra invertida pela página inicial", () => {
     // Arrange
     const next = "/\\evil.com";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 
   it("mantém caminho interno com parâmetros", () => {
     // Arrange
     const next = "/busca?q=dipirona";
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/busca?q=dipirona");
+    expect(result).toBe("/busca?q=dipirona");
   });
 
   it("troca valor ausente pela página inicial", () => {
     // Arrange
     const next = null;
     // Act
-    const resultado = destinoSeguro(next);
+    const result = safeDestination(next);
     // Assert
-    expect(resultado).toBe("/");
+    expect(result).toBe("/");
   });
 });

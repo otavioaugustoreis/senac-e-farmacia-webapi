@@ -1,27 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { cupomVigente, type Cupom } from "@/domain/cupom";
+import { isCouponActive, type Coupon } from "@/domain/cupom";
 
-const cupom = (validade: string): Cupom => ({
-  id: 1, farmacia: { id: 1, nome: "F", endereco: "Rua A, 1" }, codigo: "X10", descricao: "", desconto: "10%", validade: new Date(validade),
+const coupon = (validUntil: string): Coupon => ({
+  id: 1, pharmacy: { id: 1, name: "F", address: "Rua A, 1" }, code: "X10", description: "", discount: "10%", validUntil: new Date(validUntil),
 });
-const hoje = new Date("2026-11-20T15:00:00-03:00");
+const today = new Date("2026-11-20T15:00:00-03:00");
 
 describe("cupomVigente", () => {
   it("não considera vigente cupom que venceu ontem", () => {
     // Arrange
-    const c = cupom("2026-11-19T00:00:00-03:00");
+    const c = coupon("2026-11-19T00:00:00-03:00");
     // Act
-    const resultado = cupomVigente(c, hoje);
+    const result = isCouponActive(c, today);
     // Assert
-    expect(resultado).toBe(false);
+    expect(result).toBe(false);
   });
 
   it("considera vigente cupom que vence hoje", () => {
     // Arrange
-    const c = cupom("2026-11-20T00:00:00-03:00");
+    const c = coupon("2026-11-20T00:00:00-03:00");
     // Act
-    const resultado = cupomVigente(c, hoje);
+    const result = isCouponActive(c, today);
     // Assert
-    expect(resultado).toBe(true);
+    expect(result).toBe(true);
   });
 });

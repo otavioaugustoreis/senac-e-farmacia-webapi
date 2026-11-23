@@ -1,27 +1,27 @@
-import { coordenadasValidas } from "@/domain/farmacia";
+import { validCoordinates } from "@/domain/farmacia";
 
-export interface LocalSalvo {
+export interface SavedLocation {
   lat: number;
   lng: number;
-  cidade: string | null;
+  city: string | null;
   ts: number;
 }
 
 /** A posição salva vale por 30 minutos; depois pedimos de novo ao navegador. */
-export const VALIDADE_LOCAL_MS = 30 * 60 * 1000;
+export const LOCATION_TTL_MS = 30 * 60 * 1000;
 
 /** Nome da cidade a partir do endereço do OpenStreetMap (Nominatim). */
-export function cidadeDoEndereco(endereco: Record<string, unknown> | null | undefined): string | null {
-  if (!endereco) return null;
-  for (const chave of ["city", "town", "village", "municipality", "city_district", "county"]) {
-    const valor = endereco[chave];
-    if (typeof valor === "string" && valor.trim()) return valor.trim();
+export function cityFromAddress(address: Record<string, unknown> | null | undefined): string | null {
+  if (!address) return null;
+  for (const keyName of ["city", "town", "village", "municipality", "city_district", "county"]) {
+    const amount = address[keyName];
+    if (typeof amount === "string" && amount.trim()) return amount.trim();
   }
   return null;
 }
 
-export function localSalvoValido(salvo: unknown, agora: number): salvo is LocalSalvo {
-  if (!salvo || typeof salvo !== "object") return false;
-  const s = salvo as Partial<LocalSalvo>;
-  return coordenadasValidas(s.lat, s.lng) && typeof s.ts === "number" && agora - s.ts <= VALIDADE_LOCAL_MS;
+export function isSavedLocationValid(saved: unknown, now: number): saved is SavedLocation {
+  if (!saved || typeof saved !== "object") return false;
+  const s = saved as Partial<SavedLocation>;
+  return validCoordinates(s.lat, s.lng) && typeof s.ts === "number" && now - s.ts <= LOCATION_TTL_MS;
 }

@@ -1,106 +1,106 @@
-import { cupomVigente } from "@/domain/cupom";
-import { estaDesatualizado } from "@/domain/preco";
-import type { ReportePreco } from "@/domain/reporte";
-import type { UsuarioAtual } from "@/domain/usuario";
-import type { Repositorios } from "../ports";
-import { exigirAdmin } from "./admin";
-import { montarVitrine, type ItemVitrine } from "./montar-vitrine";
+import { isCouponActive } from "@/domain/cupom";
+import { isOutdated } from "@/domain/preco";
+import type { PriceReport } from "@/domain/reporte";
+import type { CurrentUser } from "@/domain/usuario";
+import type { Repositories } from "../ports";
+import { requireAdmin } from "./admin";
+import { buildShowcase, type ShowcaseItem } from "./montar-vitrine";
 
-const DIA_MS = 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-export interface Painel {
-  totais: {
-    medicamentos: number; comFoto: number; semPreco: number;
-    precos: number; precosDesatualizados: number; precosAtualizadosPct: number;
-    farmacias: number; parceiras: number;
-    cuponsVigentes: number; cuponsVencidos: number;
-    reportesAbertos: number; categorias: number; economiaMediaPct: number | null;
+export interface Dashboard {
+  totals: {
+    medicines: number; withPhoto: number; withoutPrice: number;
+    prices: number; outdatedPrices: number; freshPricesPct: number;
+    pharmacies: number; partners: number;
+    activeCoupons: number; expiredCoupons: number;
+    openReports: number; categories: number; averageSavingsPct: number | null;
   };
-  idadePrecos: { faixa: string; qtd: number; alerta: boolean }[];
-  coberturaFarmacias: { id: number; nome: string; parceira: boolean; qtd: number; pct: number }[];
-  porCategoria: { nome: string; qtd: number }[];
-  semPreco: { id: number; nome: string }[];
-  maisAntigos: { precoId: number; medicamento: string; farmacia: string; dias: number }[];
-  reportesAbertos: ReportePreco[];
-  maioresEconomias: ItemVitrine[];
+  priceAge: { bucket: string; count: number; warning: boolean }[];
+  pharmacyCoverage: { id: number; name: string; isPartner: boolean; count: number; pct: number }[];
+  byCategory: { name: string; count: number }[];
+  withoutPrice: { id: number; name: string }[];
+  oldest: { priceId: number; medicine: string; pharmacy: string; days: number }[];
+  openReports: PriceReport[];
+  topSavings: ShowcaseItem[];
 }
 
-const pct = (parte: number, total: number) => (total ? Math.round((parte / total) * 100) : 0);
+const pct = (part: number, total: number) => (total ? Math.round((part / total) * 100) : 0);
 
 /** Dados do dashboard administrativo (indicadores do documento do produto incluídos). */
-export const montarPainel = (repos: Repositorios) =>
-  async (usuario: UsuarioAtual | null, hoje: Date): Promise<Painel> => {
-    exigirAdmin(usuario);
+export const buildDashboard = (repos: Repositories) =>
+  async (user: CurrentUser | null, today: Date): Promise<Dashboard> => {
+    requireAdmin(user);
 
-    const [medicamentos, precos, farmacias, cupons, reportes, categorias, vitrine] = await Promise.all([
-      repos.medicamentos.buscar(""),
-      repos.precos.listarTodos(),
-      repos.farmacias.listar(),
-      repos.cupons.listar(),
-      repos.reportes.listar(),
-      repos.categorias.listar(),
-      montarVitrine(repos)(hoje),
+    const [medicines, prices, pharmacies, coupons, reports, categories, showcase] = await Promise.all([
+      repos.medicines.search(""),
+      repos.prices.listAll(),
+      repos.pharmacies.list(),
+      repos.coupons.list(),
+      repos.reports.list(),
+      repos.categories.list(),
+      buildShowcase(repos)(today),
     ]);
 
-    const idade = (d: Date) => Math.floor((hoje.getTime() - d.getTime()) / DIA_MS);
-    const desatualizados = precos.filter((p) => estaDesatualizado(p, hoje));
-    const vigentes = cupons.filter((c) => cupomVigente(c, hoje));
-    const abertos = reportes.filter((r) => !r.resolvido).sort((a, b) => b.criadoEm.getTime() - a.criadoEm.getTime());
-    const semPreco = medicamentos.filter((m) => m.menorPreco === null);
+    const age = (d: Date) => Math.floor((today.getTime() - d.getTime()) / DAY_MS);
+    const outdatedCount = prices.filter((p) => isOutdated(p, today));
+    const active = coupons.filter((c) => isCouponActive(c, today));
+    const openItems = reports.filter((r) => !r.resolved).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const withoutPrice = medicines.filter((m) => m.lowestPrice === null);
 
-    const faixas = [
-      { faixa: "0 a 2 dias", qtd: 0, alerta: false, max: 2 },
-      { faixa: "3 a 5 dias", qtd: 0, alerta: false, max: 5 },
-      { faixa: "6 a 7 dias", qtd: 0, alerta: false, max: 7 },
-      { faixa: "Mais de 7 dias", qtd: 0, alerta: true, max: Infinity },
+    const buckets = [
+      { bucket: "0 a 2 dias", count: 0, warning: false, max: 2 },
+      { bucket: "3 a 5 dias", count: 0, warning: false, max: 5 },
+      { bucket: "6 a 7 dias", count: 0, warning: false, max: 7 },
+      { bucket: "Mais de 7 dias", count: 0, warning: true, max: Infinity },
     ];
-    for (const p of precos) {
-      if (estaDesatualizado(p, hoje)) faixas[3].qtd++;
-      else faixas.find((f) => idade(p.atualizadoEm) <= f.max)!.qtd++;
+    for (const p of prices) {
+      if (isOutdated(p, today)) buckets[3].count++;
+      else buckets.find((f) => age(p.updatedAt) <= f.max)!.count++;
     }
 
-    const medicamentosPorFarmacia = new Map<number, Set<number>>();
-    for (const p of precos) {
-      if (!medicamentosPorFarmacia.has(p.farmacia.id)) medicamentosPorFarmacia.set(p.farmacia.id, new Set());
-      medicamentosPorFarmacia.get(p.farmacia.id)!.add(p.medicamentoId);
+    const medicinesByPharmacy = new Map<number, Set<number>>();
+    for (const p of prices) {
+      if (!medicinesByPharmacy.has(p.pharmacy.id)) medicinesByPharmacy.set(p.pharmacy.id, new Set());
+      medicinesByPharmacy.get(p.pharmacy.id)!.add(p.medicineId);
     }
 
-    const porCategoria = new Map<string, number>();
-    for (const m of medicamentos) {
-      const nome = m.categoria?.nome ?? "Sem categoria";
-      porCategoria.set(nome, (porCategoria.get(nome) ?? 0) + 1);
+    const byCategory = new Map<string, number>();
+    for (const m of medicines) {
+      const name = m.category?.name ?? "Sem categoria";
+      byCategory.set(name, (byCategory.get(name) ?? 0) + 1);
     }
 
     return {
-      totais: {
-        medicamentos: medicamentos.length,
-        comFoto: medicamentos.filter((m) => m.imagem).length,
-        semPreco: semPreco.length,
-        precos: precos.length,
-        precosDesatualizados: desatualizados.length,
-        precosAtualizadosPct: pct(precos.length - desatualizados.length, precos.length),
-        farmacias: farmacias.length,
-        parceiras: farmacias.filter((f) => f.parceira).length,
-        cuponsVigentes: vigentes.length,
-        cuponsVencidos: cupons.length - vigentes.length,
-        reportesAbertos: abertos.length,
-        categorias: categorias.length,
-        economiaMediaPct: vitrine.numeros.economiaMediaPercentual,
+      totals: {
+        medicines: medicines.length,
+        withPhoto: medicines.filter((m) => m.image).length,
+        withoutPrice: withoutPrice.length,
+        prices: prices.length,
+        outdatedPrices: outdatedCount.length,
+        freshPricesPct: pct(prices.length - outdatedCount.length, prices.length),
+        pharmacies: pharmacies.length,
+        partners: pharmacies.filter((f) => f.isPartner).length,
+        activeCoupons: active.length,
+        expiredCoupons: coupons.length - active.length,
+        openReports: openItems.length,
+        categories: categories.length,
+        averageSavingsPct: showcase.stats.averageSavingsPercent,
       },
-      idadePrecos: faixas.map(({ faixa, qtd, alerta }) => ({ faixa, qtd, alerta })),
-      coberturaFarmacias: farmacias
+      priceAge: buckets.map(({ bucket, count, warning }) => ({ bucket, count, warning })),
+      pharmacyCoverage: pharmacies
         .map((f) => {
-          const qtd = medicamentosPorFarmacia.get(f.id)?.size ?? 0;
-          return { id: f.id, nome: f.nome, parceira: f.parceira, qtd, pct: pct(qtd, medicamentos.length) };
+          const count = medicinesByPharmacy.get(f.id)?.size ?? 0;
+          return { id: f.id, name: f.name, isPartner: f.isPartner, count, pct: pct(count, medicines.length) };
         })
-        .sort((a, b) => b.qtd - a.qtd),
-      porCategoria: [...porCategoria].map(([nome, qtd]) => ({ nome, qtd })).sort((a, b) => b.qtd - a.qtd),
-      semPreco: semPreco.map((m) => ({ id: m.id, nome: m.nomeComercial })),
-      maisAntigos: desatualizados
-        .map((p) => ({ precoId: p.id, medicamento: p.medicamento, farmacia: p.farmacia.nome, dias: idade(p.atualizadoEm) }))
-        .sort((a, b) => b.dias - a.dias)
+        .sort((a, b) => b.count - a.count),
+      byCategory: [...byCategory].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+      withoutPrice: withoutPrice.map((m) => ({ id: m.id, name: m.brandName })),
+      oldest: outdatedCount
+        .map((p) => ({ priceId: p.id, medicine: p.medicine, pharmacy: p.pharmacy.name, days: age(p.updatedAt) }))
+        .sort((a, b) => b.days - a.days)
         .slice(0, 5),
-      reportesAbertos: abertos.slice(0, 5),
-      maioresEconomias: vitrine.menoresPrecos.slice(0, 5),
+      openReports: openItems.slice(0, 5),
+      topSavings: showcase.lowestPrices.slice(0, 5),
     };
   };

@@ -1,11 +1,11 @@
-import { listarCategorias } from "@/application/casos-de-uso/buscar-medicamentos";
-import { obterContainer } from "@/infrastructure/container";
-import { json, tratar } from "../_http";
+import { listCategories } from "@/application/casos-de-uso/buscar-medicamentos";
+import { getContainer } from "@/infrastructure/container";
+import { json, handle } from "../_http";
 
 /** GET /api/categorias */
 export async function GET() {
-  return tratar(async () => {
-    const { repos } = await obterContainer();
-    return json(await listarCategorias(repos)());
+  return handle(async () => {
+    const { repos } = await getContainer();
+    return json(await listCategories(repos)());
   });
 }

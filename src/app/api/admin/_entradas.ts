@@ -1,80 +1,80 @@
-import type { MedicamentoComBulaInput } from "@/application/casos-de-uso/admin";
-import type { CategoriaInput, CupomInput, FarmaciaInput, PrecoInput } from "@/application/ports";
-import { BULARIO_ANVISA_URL } from "@/domain/bula";
+import type { MedicineWithInsertInput } from "@/application/casos-de-uso/admin";
+import type { CategoryInput, CouponInput, PharmacyInput, PriceInput } from "@/application/ports";
+import { ANVISA_INSERTS_URL } from "@/domain/bula";
 import { DomainError } from "@/domain/erros";
-import type { TipoMedicamento } from "@/domain/medicamento";
-import { dataDoDia } from "@/infrastructure/mapeadores";
+import type { MedicineType } from "@/domain/medicamento";
+import { dateFromDay } from "@/infrastructure/mapeadores";
 
-type Corpo = Record<string, unknown>;
+type Body = Record<string, unknown>;
 
-const texto = (v: unknown) => (v === null || v === undefined ? "" : String(v));
+const text = (v: unknown) => (v === null || v === undefined ? "" : String(v));
 
 /** Aceita número ou texto com vírgula decimal ("7,49"). */
-export function numero(v: unknown): number {
+export function toNumber(v: unknown): number {
   if (typeof v === "number") return v;
-  let t = texto(v).trim();
+  let t = text(v).trim();
   if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
   return t === "" ? Number.NaN : Number(t);
 }
 
-const idOpcional = (v: unknown) => {
-  const n = numero(v);
+const optionalId = (v: unknown) => {
+  const n = toNumber(v);
   return Number.isInteger(n) && n > 0 ? n : undefined;
 };
 
-const idOuNulo = (v: unknown) => idOpcional(v) ?? null;
+const idOrNull = (v: unknown) => optionalId(v) ?? null;
 
-export const paraMedicamento = (c: Corpo): MedicamentoComBulaInput => {
-  const b = (c.bula ?? null) as Corpo | null;
+export const toMedicine = (c: Body): MedicineWithInsertInput => {
+  const b = (c.packageInsert ?? null) as Body | null;
   return {
-    id: idOpcional(c.id),
-    nomeComercial: texto(c.nomeComercial),
-    principioAtivo: texto(c.principioAtivo),
-    categoriaId: idOuNulo(c.categoriaId),
-    tipo: texto(c.tipo) as TipoMedicamento,
-    fabricante: texto(c.fabricante),
-    apresentacao: texto(c.apresentacao),
-    imagemUrl: texto(c.imagemUrl),
-    imagemCredito: texto(c.imagemCredito),
-    imagemFonte: texto(c.imagemFonte),
-    bula: b
+    id: optionalId(c.id),
+    brandName: text(c.brandName),
+    activeIngredient: text(c.activeIngredient),
+    categoryId: idOrNull(c.categoryId),
+    type: text(c.type) as MedicineType,
+    manufacturer: text(c.manufacturer),
+    presentation: text(c.presentation),
+    imageUrl: text(c.imageUrl),
+    imageCredit: text(c.imageCredit),
+    imageSource: text(c.imageSource),
+    packageInsert: b
       ? {
-          paraQueServe: texto(b.paraQueServe), contraindicacoes: texto(b.contraindicacoes),
-          efeitosColaterais: texto(b.efeitosColaterais), advertencias: texto(b.advertencias),
-          linkAnvisa: texto(b.linkAnvisa) || BULARIO_ANVISA_URL,
+          usedFor: text(b.usedFor), contraindications: text(b.contraindications),
+          sideEffects: text(b.sideEffects), warnings: text(b.warnings),
+          anvisaLink: text(b.anvisaLink) || ANVISA_INSERTS_URL,
         }
       : undefined,
   };
 };
 
-export const paraCategoria = (c: Corpo): CategoriaInput => ({ id: idOpcional(c.id), nome: texto(c.nome) });
+export const toCategory = (c: Body): CategoryInput => ({ id: optionalId(c.id), name: text(c.name) });
 
-export const paraFarmacia = (c: Corpo): FarmaciaInput => ({
-  id: idOpcional(c.id),
-  nome: texto(c.nome),
-  endereco: texto(c.endereco),
-  telefone: texto(c.telefone).trim() || null,
-  parceira: c.parceira === true || c.parceira === "true" || c.parceira === "on",
-  lat: numero(c.lat),
-  lng: numero(c.lng),
+export const toPharmacy = (c: Body): PharmacyInput => ({
+  id: optionalId(c.id),
+  name: text(c.name),
+  address: text(c.address),
+  phone: text(c.phone).trim() || null,
+  isPartner: c.isPartner === true || c.isPartner === "true" || c.isPartner === "on",
+  lat: toNumber(c.lat),
+  lng: toNumber(c.lng),
 });
 
-export const paraPreco = (c: Corpo): PrecoInput => ({
-  id: idOpcional(c.id),
-  medicamentoId: numero(c.medicamentoId),
-  farmaciaId: numero(c.farmaciaId),
-  valor: numero(c.valor),
+export const toPrice = (c: Body): PriceInput => ({
+  id: optionalId(c.id),
+  medicineId: toNumber(c.medicineId),
+  pharmacyId: toNumber(c.pharmacyId),
+  amount: toNumber(c.amount),
 });
 
-export const paraCupom = (c: Corpo): CupomInput => {
-  const validade = texto(c.validade);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(validade)) throw new DomainError("Validade inválida");
+export const toCoupon = (c: Body): CouponInput => {
+  const validUntil = text(c.validUntil);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(validUntil)) throw new DomainError("Validade inválida");
   return {
-    id: idOpcional(c.id),
-    farmaciaId: numero(c.farmaciaId),
-    codigo: texto(c.codigo),
-    descricao: texto(c.descricao),
-    desconto: texto(c.desconto),
-    validade: dataDoDia(validade),
+    id: optionalId(c.id),
+    pharmacyId: toNumber(c.pharmacyId),
+    code: text(c.code),
+    description: text(c.description),
+    discount: text(c.discount),
+    validUntil: dateFromDay(validUntil),
   };
 };

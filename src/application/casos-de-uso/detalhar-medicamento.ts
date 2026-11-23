@@ -1,42 +1,42 @@
-import { COMO_USAR_PADRAO, type Bula } from "@/domain/bula";
-import { cupomVigente, type Cupom } from "@/domain/cupom";
-import { NaoEncontradoError } from "@/domain/erros";
-import { alternativasDe, type Medicamento, type ResultadoBusca } from "@/domain/medicamento";
-import { estaDesatualizado, menorPreco, ordenarPorValor, type Preco } from "@/domain/preco";
-import type { Repositorios } from "../ports";
+import { DEFAULT_HOW_TO_USE, type PackageInsert } from "@/domain/bula";
+import { isCouponActive, type Coupon } from "@/domain/cupom";
+import { NotFoundError } from "@/domain/erros";
+import { alternativesOf, type Medicine, type SearchResult } from "@/domain/medicamento";
+import { isOutdated, lowestPrice, sortByValue, type Price } from "@/domain/preco";
+import type { Repositories } from "../ports";
 
-export interface DetalheMedicamento {
-  medicamento: Medicamento;
-  bula: Bula | null;
-  comoUsar: string;
-  precos: (Preco & { desatualizado: boolean })[];
-  menorPreco: Preco | null;
-  alternativas: ResultadoBusca[];
-  cupons: Cupom[];
+export interface MedicineDetail {
+  medicine: Medicine;
+  packageInsert: PackageInsert | null;
+  howToUse: string;
+  prices: (Price & { outdated: boolean })[];
+  lowestPrice: Price | null;
+  alternatives: SearchResult[];
+  coupons: Coupon[];
 }
 
-export const detalharMedicamento = (repos: Pick<Repositorios, "medicamentos" | "bulas" | "precos" | "cupons">) =>
-  async (id: number, hoje: Date): Promise<DetalheMedicamento> => {
-    const medicamento = await repos.medicamentos.obterPorId(id);
-    if (!medicamento) throw new NaoEncontradoError("Medicamento não encontrado");
+export const getMedicineDetail = (repos: Pick<Repositories, "medicines" | "packageInserts" | "prices" | "coupons">) =>
+  async (id: number, today: Date): Promise<MedicineDetail> => {
+    const medicine = await repos.medicines.getById(id);
+    if (!medicine) throw new NotFoundError("Medicamento não encontrado");
 
-    const [bula, precosBrutos, mesmoPrincipio, cupons] = await Promise.all([
-      repos.bulas.obter(id),
-      repos.precos.listarPorMedicamento(id),
-      repos.medicamentos.listarPorPrincipioAtivo(medicamento.principioAtivo),
-      repos.cupons.listar(),
+    const [packageInsert, rawPrices, sameIngredient, coupons] = await Promise.all([
+      repos.packageInserts.get(id),
+      repos.prices.listByMedicine(id),
+      repos.medicines.listByActiveIngredient(medicine.activeIngredient),
+      repos.coupons.list(),
     ]);
 
-    const precos = ordenarPorValor(precosBrutos).map((p) => ({ ...p, desatualizado: estaDesatualizado(p, hoje) }));
-    const farmaciasComPreco = new Set(precos.map((p) => p.farmacia.id));
+    const prices = sortByValue(rawPrices).map((p) => ({ ...p, outdated: isOutdated(p, today) }));
+    const pharmaciesWithPrice = new Set(prices.map((p) => p.pharmacy.id));
 
     return {
-      medicamento,
-      bula,
-      comoUsar: COMO_USAR_PADRAO,
-      precos,
-      menorPreco: menorPreco(precosBrutos),
-      alternativas: alternativasDe(medicamento, mesmoPrincipio),
-      cupons: cupons.filter((c) => farmaciasComPreco.has(c.farmacia.id) && cupomVigente(c, hoje)),
+      medicine,
+      packageInsert,
+      howToUse: DEFAULT_HOW_TO_USE,
+      prices,
+      lowestPrice: lowestPrice(rawPrices),
+      alternatives: alternativesOf(medicine, sameIngredient),
+      coupons: coupons.filter((c) => pharmaciesWithPrice.has(c.pharmacy.id) && isCouponActive(c, today)),
     };
   };

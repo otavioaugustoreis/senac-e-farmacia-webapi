@@ -1,28 +1,28 @@
 /** Falha de validação de regra de negócio. */
 export class DomainError extends Error {
-  constructor(mensagem: string) {
-    super(mensagem);
+  constructor(message: string) {
+    super(message);
     this.name = "DomainError";
   }
 }
 
-export class NaoEncontradoError extends Error {
-  constructor(mensagem = "Não encontrado") {
-    super(mensagem);
+export class NotFoundError extends Error {
+  constructor(message = "Não encontrado") {
+    super(message);
     this.name = "NaoEncontradoError";
   }
 }
 
-export class NaoAutenticadoError extends Error {
-  constructor(mensagem = "Faça login para continuar") {
-    super(mensagem);
+export class UnauthenticatedError extends Error {
+  constructor(message = "Faça login para continuar") {
+    super(message);
     this.name = "NaoAutenticadoError";
   }
 }
 
-export class ProibidoError extends Error {
-  constructor(mensagem = "Acesso restrito a administradores") {
-    super(mensagem);
+export class ForbiddenError extends Error {
+  constructor(message = "Acesso restrito a administradores") {
+    super(message);
     this.name = "ProibidoError";
   }
 }

@@ -1,61 +1,61 @@
-import { cupomVigente, type Cupom } from "@/domain/cupom";
-import type { Farmacia } from "@/domain/farmacia";
-import type { Categoria, ResultadoBusca } from "@/domain/medicamento";
-import { economiaPercentual } from "@/domain/preco";
-import { normalizarTexto } from "@/domain/texto";
-import type { Repositorios } from "../ports";
+import { isCouponActive, type Coupon } from "@/domain/cupom";
+import type { Pharmacy } from "@/domain/farmacia";
+import type { Category, SearchResult } from "@/domain/medicamento";
+import { savingsPercent } from "@/domain/preco";
+import { normalizeText } from "@/domain/texto";
+import type { Repositories } from "../ports";
 
-export type ItemVitrine = ResultadoBusca & { precoReferencia: number | null; economiaPercentual: number | null };
+export type ShowcaseItem = SearchResult & { referencePrice: number | null; savingsPercent: number | null };
 
-export interface Vitrine {
-  categorias: Categoria[];
-  menoresPrecos: ItemVitrine[];
-  farmaciasParceiras: Farmacia[];
-  cupons: Cupom[];
-  numeros: { medicamentos: number; farmacias: number; economiaMediaPercentual: number | null };
+export interface Showcase {
+  categories: Category[];
+  lowestPrices: ShowcaseItem[];
+  partnerPharmacies: Pharmacy[];
+  coupons: Coupon[];
+  stats: { medicines: number; pharmacies: number; averageSavingsPercent: number | null };
 }
 
-const LIMITE_VITRINE = 8;
-const LIMITE_CUPONS = 2;
+const SHOWCASE_LIMIT = 8;
+const COUPON_LIMIT = 2;
 
-export const montarVitrine = (repos: Pick<Repositorios, "medicamentos" | "farmacias" | "cupons" | "categorias">) =>
-  async (hoje: Date): Promise<Vitrine> => {
-    const [todos, farmacias, cupons, categorias] = await Promise.all([
-      repos.medicamentos.buscar(""),
-      repos.farmacias.listar(),
-      repos.cupons.listar(),
-      repos.categorias.listar(),
+export const buildShowcase = (repos: Pick<Repositories, "medicines" | "pharmacies" | "coupons" | "categories">) =>
+  async (today: Date): Promise<Showcase> => {
+    const [all, pharmacies, coupons, categories] = await Promise.all([
+      repos.medicines.search(""),
+      repos.pharmacies.list(),
+      repos.coupons.list(),
+      repos.categories.list(),
     ]);
 
-    const referenciaPorPrincipio = new Map<string, number>();
-    for (const m of todos) {
-      if (m.tipo !== "referencia" || m.menorPreco === null) continue;
-      const chave = normalizarTexto(m.principioAtivo);
-      const atual = referenciaPorPrincipio.get(chave);
-      if (atual === undefined || m.menorPreco < atual) referenciaPorPrincipio.set(chave, m.menorPreco);
+    const referenceByIngredient = new Map<string, number>();
+    for (const m of all) {
+      if (m.type !== "referencia" || m.lowestPrice === null) continue;
+      const keyName = normalizeText(m.activeIngredient);
+      const current = referenceByIngredient.get(keyName);
+      if (current === undefined || m.lowestPrice < current) referenceByIngredient.set(keyName, m.lowestPrice);
     }
 
-    const itens: ItemVitrine[] = todos
-      .filter((m) => m.tipo !== "referencia" && m.menorPreco !== null)
+    const items: ShowcaseItem[] = all
+      .filter((m) => m.type !== "referencia" && m.lowestPrice !== null)
       .map((m) => {
-        const precoReferencia = referenciaPorPrincipio.get(normalizarTexto(m.principioAtivo)) ?? null;
-        return { ...m, precoReferencia, economiaPercentual: economiaPercentual(m.menorPreco, precoReferencia) };
+        const referencePrice = referenceByIngredient.get(normalizeText(m.activeIngredient)) ?? null;
+        return { ...m, referencePrice, savingsPercent: savingsPercent(m.lowestPrice, referencePrice) };
       });
 
-    const economias = itens.map((i) => i.economiaPercentual).filter((e): e is number => e !== null);
-    const menoresPrecos = [...itens]
-      .sort((a, b) => (b.economiaPercentual ?? -1) - (a.economiaPercentual ?? -1))
-      .slice(0, LIMITE_VITRINE);
+    const savings = items.map((i) => i.savingsPercent).filter((e): e is number => e !== null);
+    const lowestPrices = [...items]
+      .sort((a, b) => (b.savingsPercent ?? -1) - (a.savingsPercent ?? -1))
+      .slice(0, SHOWCASE_LIMIT);
 
     return {
-      categorias,
-      menoresPrecos,
-      farmaciasParceiras: farmacias.filter((f) => f.parceira),
-      cupons: cupons.filter((c) => cupomVigente(c, hoje)).slice(0, LIMITE_CUPONS),
-      numeros: {
-        medicamentos: todos.length,
-        farmacias: farmacias.length,
-        economiaMediaPercentual: economias.length ? Math.round(economias.reduce((s, e) => s + e, 0) / economias.length) : null,
+      categories,
+      lowestPrices,
+      partnerPharmacies: pharmacies.filter((f) => f.isPartner),
+      coupons: coupons.filter((c) => isCouponActive(c, today)).slice(0, COUPON_LIMIT),
+      stats: {
+        medicines: all.length,
+        pharmacies: pharmacies.length,
+        averageSavingsPercent: savings.length ? Math.round(savings.reduce((s, e) => s + e, 0) / savings.length) : null,
       },
     };
   };

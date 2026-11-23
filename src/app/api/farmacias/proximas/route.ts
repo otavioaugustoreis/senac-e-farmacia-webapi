@@ -1,14 +1,14 @@
-import { farmaciasProximas } from "@/application/casos-de-uso/farmacias-proximas";
-import { obterContainer } from "@/infrastructure/container";
-import { json, tratar } from "../../_http";
+import { nearbyPharmacies } from "@/application/casos-de-uso/farmacias-proximas";
+import { getContainer } from "@/infrastructure/container";
+import { json, handle } from "../../_http";
 
-const numeroOuNada = (v: string | null) => (v === null || v.trim() === "" ? undefined : Number(v));
+const numberOrNull = (v: string | null) => (v === null || v.trim() === "" ? undefined : Number(v));
 
 /** GET /api/farmacias/proximas?lat=&lng= — sem posição válida usa a Av. Paulista */
 export async function GET(request: Request) {
-  return tratar(async () => {
+  return handle(async () => {
     const { searchParams } = new URL(request.url);
-    const { repos } = await obterContainer();
-    return json(await farmaciasProximas(repos)(numeroOuNada(searchParams.get("lat")), numeroOuNada(searchParams.get("lng"))));
+    const { repos } = await getContainer();
+    return json(await nearbyPharmacies(repos)(numberOrNull(searchParams.get("lat")), numberOrNull(searchParams.get("lng"))));
   });
 }

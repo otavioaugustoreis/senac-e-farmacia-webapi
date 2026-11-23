@@ -1,129 +1,129 @@
 import { createClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
-import { criarRepositorios } from "@/infrastructure/repositorios";
-import { PONTO_PADRAO } from "@/domain/farmacia";
+import { createRepositories } from "@/infrastructure/repositorios";
+import { DEFAULT_POINT } from "@/domain/farmacia";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const chave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const keyName = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Integração real contra o Supabase (somente leitura, como visitante anônimo).
-describe.skipIf(!url || !chave)("repositórios Supabase (leitura anônima)", () => {
-  const repos = () => criarRepositorios(createClient(url!, chave!, { auth: { persistSession: false } }));
+describe.skipIf(!url || !keyName)("repositórios Supabase (leitura anônima)", () => {
+  const repos = () => createRepositories(createClient(url!, keyName!, { auth: { persistSession: false } }));
 
   it("busca 'DIPIRONA' sem acento e traz menor preço numérico", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const resultado = await medicamentos.buscar("DIPIRONA");
+    const result = await medicines.search("DIPIRONA");
     // Assert
-    expect(resultado.length).toBeGreaterThanOrEqual(2);
-    expect(resultado.some((m) => typeof m.menorPreco === "number")).toBe(true);
-    expect(resultado[0].categoria?.nome).toBeTruthy();
+    expect(result.length).toBeGreaterThanOrEqual(2);
+    expect(result.some((m) => typeof m.lowestPrice === "number")).toBe(true);
+    expect(result[0].category?.name).toBeTruthy();
   });
 
   it("encontra por princípio ativo ('losartana')", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const resultado = await medicamentos.buscar("losartana");
+    const result = await medicines.search("losartana");
     // Assert
-    expect(resultado.some((m) => m.principioAtivo === "Losartana Potássica")).toBe(true);
+    expect(result.some((m) => m.activeIngredient === "Losartana Potássica")).toBe(true);
   });
 
   it("filtra por categoria", async () => {
     // Arrange
-    const { medicamentos, categorias } = repos();
-    const [primeira] = await categorias.listar();
+    const { medicines, categories } = repos();
+    const [first] = await categories.list();
     // Act
-    const resultado = await medicamentos.buscar("", primeira.id);
+    const result = await medicines.search("", first.id);
     // Assert
-    expect(resultado.length).toBeGreaterThan(0);
-    expect(resultado.every((m) => m.categoria?.id === primeira.id)).toBe(true);
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.every((m) => m.category?.id === first.id)).toBe(true);
   });
 
   it("traz a ilustração da equipe para cada medicamento, na busca e no detalhe", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const [detalhe, busca] = await Promise.all([medicamentos.obterPorId(4), medicamentos.buscar("tylenol")]);
+    const [detail, search] = await Promise.all([medicines.getById(4), medicines.search("tylenol")]);
     // Assert
-    expect(detalhe?.imagem?.url).toBe("/medicamentos/25-tylenol.svg");
-    expect(detalhe?.imagem?.credito).toBe("Ilustração: equipe E-Farmácia");
-    expect(busca[0].imagem?.url).toBe(detalhe?.imagem?.url);
+    expect(detail?.image?.url).toBe("/medicamentos/25-tylenol.svg");
+    expect(detail?.image?.credit).toBe("Ilustração: equipe E-Farmácia");
+    expect(search[0].image?.url).toBe(detail?.image?.url);
   });
 
   it("todos os medicamentos do catálogo têm imagem, inclusive a dipirona", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const [todos, novalgina] = await Promise.all([medicamentos.buscar(""), medicamentos.obterPorId(1)]);
+    const [all, novalgina] = await Promise.all([medicines.search(""), medicines.getById(1)]);
     // Assert
-    expect(todos.every((m) => m.imagem?.url.startsWith("/medicamentos/"))).toBe(true);
-    expect(novalgina?.imagem?.url).toBe("/medicamentos/22-novalgina.svg");
+    expect(all.every((m) => m.image?.url.startsWith("/medicamentos/"))).toBe(true);
+    expect(novalgina?.image?.url).toBe("/medicamentos/22-novalgina.svg");
   });
 
   it("devolve null para medicamento inexistente", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const resultado = await medicamentos.obterPorId(999999);
+    const result = await medicines.getById(999999);
     // Assert
-    expect(resultado).toBeNull();
+    expect(result).toBeNull();
   });
 
   it("lista alternativas pelo princípio ativo exato", async () => {
     // Arrange
-    const { medicamentos } = repos();
+    const { medicines } = repos();
     // Act
-    const resultado = await medicamentos.listarPorPrincipioAtivo("Ibuprofeno");
+    const result = await medicines.listByActiveIngredient("Ibuprofeno");
     // Assert
-    expect(resultado.length).toBeGreaterThanOrEqual(3);
-    expect(resultado.every((m) => m.principioAtivo === "Ibuprofeno")).toBe(true);
+    expect(result.length).toBeGreaterThanOrEqual(3);
+    expect(result.every((m) => m.activeIngredient === "Ibuprofeno")).toBe(true);
   });
 
   it("ordena farmácias próximas por distância", async () => {
     // Arrange
-    const { farmacias } = repos();
+    const { pharmacies } = repos();
     // Act
-    const resultado = await farmacias.proximas(PONTO_PADRAO.lat, PONTO_PADRAO.lng, 15);
+    const result = await pharmacies.nearby(DEFAULT_POINT.lat, DEFAULT_POINT.lng, 15);
     // Assert
-    expect(resultado.length).toBeGreaterThan(0);
-    const distancias = resultado.map((f) => f.distanciaKm);
-    expect(distancias).toEqual([...distancias].sort((a, b) => a - b));
-    expect(typeof resultado[0].lat).toBe("number");
+    expect(result.length).toBeGreaterThan(0);
+    const distances = result.map((f) => f.distanceKm);
+    expect(distances).toEqual([...distances].sort((a, b) => a - b));
+    expect(typeof result[0].lat).toBe("number");
   });
 
   it("converte datas e valores dos preços", async () => {
     // Arrange
-    const { precos } = repos();
+    const { prices } = repos();
     // Act
-    const resultado = await precos.listarPorMedicamento(1);
+    const result = await prices.listByMedicine(1);
     // Assert
-    expect(resultado.length).toBeGreaterThan(0);
-    expect(resultado[0].atualizadoEm).toBeInstanceOf(Date);
-    expect(typeof resultado[0].valor).toBe("number");
-    expect(resultado[0].farmacia.nome).toBeTruthy();
+    expect(result.length).toBeGreaterThan(0);
+    expect(result[0].updatedAt).toBeInstanceOf(Date);
+    expect(typeof result[0].amount).toBe("number");
+    expect(result[0].pharmacy.name).toBeTruthy();
   });
 
   it("lê bula e cupons com farmácia e endereço", async () => {
     // Arrange
-    const { bulas, cupons } = repos();
+    const { packageInserts, coupons } = repos();
     // Act
-    const [bula, lista] = await Promise.all([bulas.obter(1), cupons.listar()]);
+    const [packageInsert, list] = await Promise.all([packageInserts.get(1), coupons.list()]);
     // Assert
-    expect(bula?.paraQueServe).toContain("dor");
-    expect(lista.length).toBeGreaterThan(0);
-    expect(lista[0].validade).toBeInstanceOf(Date);
-    expect(lista[0].farmacia.nome).toBeTruthy();
-    expect(lista[0].farmacia.endereco).toBeTruthy();
+    expect(packageInsert?.usedFor).toContain("dor");
+    expect(list.length).toBeGreaterThan(0);
+    expect(list[0].validUntil).toBeInstanceOf(Date);
+    expect(list[0].pharmacy.name).toBeTruthy();
+    expect(list[0].pharmacy.address).toBeTruthy();
   });
 
   it("não deixa visitante anônimo gravar preço", async () => {
     // Arrange
-    const { precos } = repos();
+    const { prices } = repos();
     // Act
-    const acao = precos.salvar({ medicamentoId: 1, farmaciaId: 1, valor: 1 });
+    const action = prices.save({ medicineId: 1, pharmacyId: 1, amount: 1 });
     // Assert
-    await expect(acao).rejects.toThrow();
+    await expect(action).rejects.toThrow();
   });
 });

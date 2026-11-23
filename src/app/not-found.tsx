@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function NaoEncontrado() {
+export default function NotFound() {
   return (
     <div className="mx-auto max-w-md rounded-[var(--radius-card)] bg-white p-10 text-center ring-1 ring-black/5">
       <p className="text-5xl font-bold text-marca-700">404</p>

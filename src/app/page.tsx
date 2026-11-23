@@ -1,29 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, CalendarClock, MapPin } from "lucide-react";
-import { buscarMedicamentos } from "@/application/casos-de-uso/buscar-medicamentos";
-import { montarVitrine } from "@/application/casos-de-uso/montar-vitrine";
-import { obterContainer } from "@/infrastructure/container";
-import { CartaoMedicamento } from "@/components/CartaoMedicamento";
-import { MaisBuscados } from "@/components/MaisBuscados";
-import { visualDaCategoria } from "@/components/visual";
-import { formatData } from "@/lib/format";
+import { searchMedicines } from "@/application/casos-de-uso/buscar-medicamentos";
+import { buildShowcase } from "@/application/casos-de-uso/montar-vitrine";
+import { getContainer } from "@/infrastructure/container";
+import { MedicineCard } from "@/components/CartaoMedicamento";
+import { MostSearched } from "@/components/MaisBuscados";
+import { categoryVisual } from "@/components/visual";
+import { formatDate } from "@/lib/format";
 
-const ABAS_MAIS_BUSCADOS = ["Analgésicos e antitérmicos", "Anti-hipertensivos", "Antialérgicos", "Antibióticos"];
+const MOST_SEARCHED_TABS = ["Analgésicos e antitérmicos", "Anti-hipertensivos", "Antialérgicos", "Antibióticos"];
 
 export default async function Home() {
-  const { repos } = await obterContainer();
-  const [v, todos] = await Promise.all([montarVitrine(repos)(new Date()), buscarMedicamentos(repos)("")]);
+  const { repos } = await getContainer();
+  const [v, all] = await Promise.all([buildShowcase(repos)(new Date()), searchMedicines(repos)("")]);
 
-  const abas = ABAS_MAIS_BUSCADOS
-    .map((nome) => ({
-      rotulo: nome === "Analgésicos e antitérmicos" ? "Dor e febre" : nome,
-      itens: todos.filter((m) => m.categoria?.nome === nome).slice(0, 4),
+  const tabs = MOST_SEARCHED_TABS
+    .map((name) => ({
+      label: name === "Analgésicos e antitérmicos" ? "Dor e febre" : name,
+      items: all.filter((m) => m.category?.name === name).slice(0, 4),
     }))
-    .filter((a) => a.itens.length > 0);
+    .filter((a) => a.items.length > 0);
 
-  const maiorEconomia = Math.max(0, ...v.menoresPrecos.map((m) => m.economiaPercentual ?? 0));
-  const [cupomDestaque] = v.cupons;
+  const biggestSavings = Math.max(0, ...v.lowestPrices.map((m) => m.savingsPercent ?? 0));
+  const [featuredCoupon] = v.coupons;
 
   return (
     <div className="space-y-12 sm:space-y-16">
@@ -50,18 +50,18 @@ export default async function Home() {
       <section aria-labelledby="titulo-categorias">
         <h2 id="titulo-categorias" className="sr-only">Categorias</h2>
         <ul className="sem-barra -mx-3 flex snap-x gap-3 overflow-x-auto px-3 pb-1 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-y-8 sm:overflow-visible sm:px-0 lg:grid-cols-8">
-          {v.categorias.map((c) => {
-            const vis = visualDaCategoria(c.nome);
+          {v.categories.map((c) => {
+            const vis = categoryVisual(c.name);
             const Icone = vis.icone;
             return (
               <li key={c.id} className="w-[5.75rem] shrink-0 snap-start sm:w-auto">
                 <Link href={`/busca?categoria=${c.id}`} className="group flex flex-col items-center text-center">
                   <span className="grid size-20 place-items-center rounded-full bg-[#eaf4ec] transition group-hover:scale-105 sm:size-24">
                     <span className="grid size-12 place-items-center rounded-2xl bg-white shadow-sm sm:size-14">
-                      <Icone className="size-6 sm:size-7" style={{ color: vis.tampa }} aria-hidden />
+                      <Icone className="size-6 sm:size-7" style={{ color: vis.cap }} aria-hidden />
                     </span>
                   </span>
-                  <span className="mt-2.5 line-clamp-2 text-xs font-bold leading-tight text-tinta sm:text-sm">{c.nome}</span>
+                  <span className="mt-2.5 line-clamp-2 text-xs font-bold leading-tight text-tinta sm:text-sm">{c.name}</span>
                 </Link>
               </li>
             );
@@ -73,8 +73,8 @@ export default async function Home() {
       <section aria-labelledby="titulo-precos">
         <h2 id="titulo-precos" className="text-2xl font-bold text-marca-900 sm:text-3xl">Menores preços</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-5">
-          {v.menoresPrecos.map((m) => (
-            <CartaoMedicamento key={m.id} medicamento={m} precoReferencia={m.precoReferencia} economiaPercentual={m.economiaPercentual} />
+          {v.lowestPrices.map((m) => (
+            <MedicineCard key={m.id} medicine={m} referencePrice={m.referencePrice} savingsPercent={m.savingsPercent} />
           ))}
         </div>
         <div className="mt-6 text-center">
@@ -89,7 +89,7 @@ export default async function Home() {
         <div className="relative flex min-h-[13rem] overflow-hidden rounded-[var(--radius-card)] bg-[#f4f1e6] p-6">
           <div className="relative z-10 flex max-w-[58%] flex-col justify-between gap-4">
             <div>
-              <p className="text-2xl font-bold leading-tight text-tinta">Economize até {maiorEconomia}% com genéricos</p>
+              <p className="text-2xl font-bold leading-tight text-tinta">Economize até {biggestSavings}% com genéricos</p>
               <p className="mt-2 text-sm text-suave">Mesmo princípio ativo, preço bem menor. Compare antes de comprar.</p>
             </div>
             <Link href="/busca" className="w-fit rounded-full bg-marca-900 px-4 py-2 text-sm font-semibold text-white">Ver genéricos</Link>
@@ -101,30 +101,30 @@ export default async function Home() {
           <div className="relative z-10 flex max-w-[58%] flex-col justify-between gap-4">
             <div>
               <p className="text-2xl font-bold leading-tight text-tinta">
-                {cupomDestaque ? `${cupomDestaque.desconto} off na ${cupomDestaque.farmacia.nome}` : "Cupons de farmácias parceiras"}
+                {featuredCoupon ? `${featuredCoupon.discount} off na ${featuredCoupon.pharmacy.name}` : "Cupons de farmácias parceiras"}
               </p>
               <p className="mt-2 text-sm text-suave">
-                {cupomDestaque ? `${cupomDestaque.descricao} · até ${formatData(cupomDestaque.validade)}` : "Descontos exclusivos para quem usa o E-Farmácia."}
+                {featuredCoupon ? `${featuredCoupon.description} · até ${formatDate(featuredCoupon.validUntil)}` : "Descontos exclusivos para quem usa o E-Farmácia."}
               </p>
             </div>
             <Link href="/cupons" className="w-fit rounded-full bg-marca-900 px-4 py-2 text-sm font-semibold text-white">Ver cupons</Link>
           </div>
           <div className="absolute -right-6 bottom-6 rotate-[-8deg] rounded-2xl border-2 border-dashed border-marca-600/50 bg-white px-6 py-5 shadow-lg">
-            <p className="font-mono text-lg font-bold text-marca-800">{cupomDestaque?.codigo ?? "CUPOM"}</p>
+            <p className="font-mono text-lg font-bold text-marca-800">{featuredCoupon?.code ?? "CUPOM"}</p>
             <p className="text-xs text-suave">cupom de desconto</p>
           </div>
         </div>
       </section>
 
       {/* Farmácias parceiras (como "Trusted Brands") */}
-      {v.farmaciasParceiras.length > 0 && (
+      {v.partnerPharmacies.length > 0 && (
         <section aria-labelledby="titulo-parceiras" className="text-center">
           <h2 id="titulo-parceiras" className="text-sm font-semibold text-tinta">Farmácias parceiras</h2>
           <ul className="sem-barra -mx-3 mt-4 flex gap-3 overflow-x-auto px-3 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
-            {v.farmaciasParceiras.map((f) => (
+            {v.partnerPharmacies.map((f) => (
               <li key={f.id} className="shrink-0">
                 <Link href="/farmacias" className="grid size-20 place-items-center rounded-full bg-[#fbf6ec] p-2 text-center text-[11px] font-bold leading-tight text-marca-800 ring-1 ring-black/5 hover:ring-marca-600 sm:size-24 sm:text-xs">
-                  {f.nome.replace(/^(Farmácia|Drogaria)\s+/, "")}
+                  {f.name.replace(/^(Farmácia|Drogaria)\s+/, "")}
                 </Link>
               </li>
             ))}
@@ -133,7 +133,7 @@ export default async function Home() {
       )}
 
       {/* Mais buscados (como "Best Sellers") */}
-      <MaisBuscados abas={abas} />
+      <MostSearched tabs={tabs} />
 
       {/* Bloco final (como "Trusted by…") */}
       <section className="rounded-[var(--radius-card)] bg-marca-900 px-6 py-10 text-center text-white sm:px-10 sm:py-14">
@@ -144,14 +144,14 @@ export default async function Home() {
         </p>
         <ul className="mt-8 grid gap-3 text-left sm:grid-cols-3">
           {[
-            { icone: BadgeCheck, titulo: "Bula da fonte oficial", texto: "Resumos organizados com link para o Bulário da Anvisa." },
-            { icone: CalendarClock, titulo: "Preço com data", texto: "Cada preço mostra quando foi atualizado." },
-            { icone: MapPin, titulo: "Farmácias perto de você", texto: "Veja no mapa onde encontrar mais barato." },
-          ].map(({ icone: Icone, titulo, texto }) => (
-            <li key={titulo} className="rounded-2xl bg-white/10 p-5">
+            { icone: BadgeCheck, title: "Bula da fonte oficial", text: "Resumos organizados com link para o Bulário da Anvisa." },
+            { icone: CalendarClock, title: "Preço com data", text: "Cada preço mostra quando foi atualizado." },
+            { icone: MapPin, title: "Farmácias perto de você", text: "Veja no mapa onde encontrar mais barato." },
+          ].map(({ icone: Icone, title, text }) => (
+            <li key={title} className="rounded-2xl bg-white/10 p-5">
               <Icone className="size-6 text-alerta" aria-hidden />
-              <p className="mt-3 font-semibold">{titulo}</p>
-              <p className="mt-1 text-sm text-white/70">{texto}</p>
+              <p className="mt-3 font-semibold">{title}</p>
+              <p className="mt-1 text-sm text-white/70">{text}</p>
             </li>
           ))}
         </ul>

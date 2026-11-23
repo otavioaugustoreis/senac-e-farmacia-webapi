@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { buscarMedicamentos, listarCategorias } from "@/application/casos-de-uso/buscar-medicamentos";
-import { obterContainer } from "@/infrastructure/container";
-import { CartaoMedicamento } from "@/components/CartaoMedicamento";
+import { searchMedicines, listCategories } from "@/application/casos-de-uso/buscar-medicamentos";
+import { getContainer } from "@/infrastructure/container";
+import { MedicineCard } from "@/components/CartaoMedicamento";
 
 export const metadata: Metadata = { title: "Buscar medicamentos — E-Farmácia" };
 
-type Params = { q?: string; categoria?: string };
+type Params = { q?: string; category?: string };
 
-export default async function BuscaPage({ searchParams }: { searchParams: Promise<Params> }) {
-  const { q = "", categoria } = await searchParams;
-  const categoriaId = Number(categoria);
-  const filtro = Number.isInteger(categoriaId) && categoriaId > 0 ? categoriaId : undefined;
+export default async function SearchPage({ searchParams }: { searchParams: Promise<Params> }) {
+  const { q = "", category } = await searchParams;
+  const categoryId = Number(category);
+  const filter = Number.isInteger(categoryId) && categoryId > 0 ? categoryId : undefined;
 
-  const { repos } = await obterContainer();
-  const [resultados, categorias] = await Promise.all([buscarMedicamentos(repos)(q, filtro), listarCategorias(repos)()]);
-  const nomeCategoria = categorias.find((c) => c.id === filtro)?.nome;
+  const { repos } = await getContainer();
+  const [results, categories] = await Promise.all([searchMedicines(repos)(q, filter), listCategories(repos)()]);
+  const categoryName = categories.find((c) => c.id === filter)?.name;
 
   const link = (cat?: number) => {
     const p = new URLSearchParams();
@@ -30,7 +30,7 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
     <div>
       {/* No celular a busca mora aqui (aba "Buscar"); no computador fica no cabeçalho. */}
       <form action="/busca" role="search" autoComplete="off" className="mb-5 md:hidden">
-        {filtro && <input type="hidden" name="categoria" value={filtro} />}
+        {filter && <input type="hidden" name="categoria" value={filter} />}
         <label className="flex items-center gap-2 rounded-full bg-white px-4 ring-1 ring-black/10 focus-within:ring-2 focus-within:ring-marca-600">
           <Search className="size-4 shrink-0 text-suave" aria-hidden />
           <input data-anel-externo key={q} name="q" type="search" enterKeyHint="search" defaultValue={q} placeholder="Nome ou princípio ativo"
@@ -39,35 +39,35 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
       </form>
       <h1 className="text-2xl font-bold text-marca-900">
         {q.trim() ? <>Resultados para “{q.trim()}”</> : "Todos os medicamentos"}
-        {nomeCategoria && <span className="font-serif font-normal italic text-suave"> em {nomeCategoria}</span>}
+        {categoryName && <span className="font-serif font-normal italic text-suave"> em {categoryName}</span>}
       </h1>
-      <p className="text-sm text-suave">{resultados.length} {resultados.length === 1 ? "medicamento" : "medicamentos"}</p>
+      <p className="text-sm text-suave">{results.length} {results.length === 1 ? "medicamento" : "medicamentos"}</p>
 
       <nav aria-label="Filtrar por categoria" className="sem-barra -mx-3 mt-4 flex gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-        <Chip ativo={!filtro} href={link()}>Todas</Chip>
-        {categorias.map((c) => (
-          <Chip key={c.id} ativo={filtro === c.id} href={link(c.id)}>{c.nome}</Chip>
+        <Chip isActive={!filter} href={link()}>Todas</Chip>
+        {categories.map((c) => (
+          <Chip key={c.id} isActive={filter === c.id} href={link(c.id)}>{c.name}</Chip>
         ))}
       </nav>
 
-      {resultados.length === 0 ? (
+      {results.length === 0 ? (
         <div className="mt-10 rounded-[var(--radius-card)] bg-white p-10 text-center ring-1 ring-black/5">
           <p className="text-lg font-semibold">Nenhum medicamento encontrado</p>
           <p className="mt-1 text-sm text-suave">Confira a grafia ou busque pelo princípio ativo (ex.: “paracetamol”).</p>
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-5 xl:grid-cols-5">
-          {resultados.map((m) => <CartaoMedicamento key={m.id} medicamento={m} />)}
+          {results.map((m) => <MedicineCard key={m.id} medicine={m} />)}
         </div>
       )}
     </div>
   );
 }
 
-function Chip({ ativo, href, children }: { ativo: boolean; href: string; children: React.ReactNode }) {
+function Chip({ isActive, href, children }: { isActive: boolean; href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} aria-current={ativo ? "page" : undefined}
-      className={`flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-medium ring-1 ${ativo ? "bg-marca-800 text-white ring-marca-800" : "bg-white text-tinta ring-black/10 hover:ring-marca-600"}`}>
+    <Link href={href} aria-current={isActive ? "page" : undefined}
+      className={`flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-medium ring-1 ${isActive ? "bg-marca-800 text-white ring-marca-800" : "bg-white text-tinta ring-black/10 hover:ring-marca-600"}`}>
       {children}
     </Link>
   );

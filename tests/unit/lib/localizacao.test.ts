@@ -1,62 +1,62 @@
 import { describe, expect, it } from "vitest";
-import { cidadeDoEndereco, localSalvoValido, VALIDADE_LOCAL_MS } from "@/lib/localizacao-regras";
+import { cityFromAddress, isSavedLocationValid, LOCATION_TTL_MS } from "@/lib/localizacao-regras";
 
 describe("cidadeDoEndereco", () => {
   it("usa a cidade quando existe", () => {
     // Arrange
-    const endereco = { city: "Campinas", state: "São Paulo" };
+    const address = { city: "Campinas", state: "São Paulo" };
     // Act
-    const resultado = cidadeDoEndereco(endereco);
+    const result = cityFromAddress(address);
     // Assert
-    expect(resultado).toBe("Campinas");
+    expect(result).toBe("Campinas");
   });
 
   it("usa town ou município quando não há city", () => {
     // Arrange
-    const endereco = { town: "Valinhos" };
+    const address = { town: "Valinhos" };
     // Act
-    const resultado = cidadeDoEndereco(endereco);
+    const result = cityFromAddress(address);
     // Assert
-    expect(resultado).toBe("Valinhos");
+    expect(result).toBe("Valinhos");
   });
 
   it("devolve null sem dados de cidade", () => {
     // Arrange
-    const endereco = { country: "Brasil" };
+    const address = { country: "Brasil" };
     // Act
-    const resultado = cidadeDoEndereco(endereco);
+    const result = cityFromAddress(address);
     // Assert
-    expect(resultado).toBeNull();
+    expect(result).toBeNull();
   });
 });
 
 describe("localSalvoValido", () => {
-  const agora = 1_800_000_000_000;
+  const now = 1_800_000_000_000;
 
   it("aceita local recente com coordenadas válidas", () => {
     // Arrange
-    const salvo = { lat: -22.9, lng: -47.06, cidade: "Campinas", ts: agora - 60_000 };
+    const saved = { lat: -22.9, lng: -47.06, city: "Campinas", ts: now - 60_000 };
     // Act
-    const resultado = localSalvoValido(salvo, agora);
+    const result = isSavedLocationValid(saved, now);
     // Assert
-    expect(resultado).toBe(true);
+    expect(result).toBe(true);
   });
 
   it("recusa local mais velho que a validade", () => {
     // Arrange
-    const salvo = { lat: -22.9, lng: -47.06, cidade: "Campinas", ts: agora - VALIDADE_LOCAL_MS - 1 };
+    const saved = { lat: -22.9, lng: -47.06, city: "Campinas", ts: now - LOCATION_TTL_MS - 1 };
     // Act
-    const resultado = localSalvoValido(salvo, agora);
+    const result = isSavedLocationValid(saved, now);
     // Assert
-    expect(resultado).toBe(false);
+    expect(result).toBe(false);
   });
 
   it("recusa dado corrompido", () => {
     // Arrange
-    const salvo = { lat: "x", lng: 1, ts: agora };
+    const saved = { lat: "x", lng: 1, ts: now };
     // Act
-    const resultado = localSalvoValido(salvo, agora);
+    const result = isSavedLocationValid(saved, now);
     // Assert
-    expect(resultado).toBe(false);
+    expect(result).toBe(false);
   });
 });

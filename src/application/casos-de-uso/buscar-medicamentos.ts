@@ -1,7 +1,7 @@
-import type { Repositorios } from "../ports";
+import type { Repositories } from "../ports";
 
-export const buscarMedicamentos = (repos: Pick<Repositorios, "medicamentos">) =>
-  (q: string, categoriaId?: number) => repos.medicamentos.buscar((q ?? "").trim(), categoriaId);
+export const searchMedicines = (repos: Pick<Repositories, "medicines">) =>
+  (q: string, categoryId?: number) => repos.medicines.search((q ?? "").trim(), categoryId);
 
-export const listarCategorias = (repos: Pick<Repositorios, "categorias">) =>
-  () => repos.categorias.listar();
+export const listCategories = (repos: Pick<Repositories, "categories">) =>
+  () => repos.categories.list();

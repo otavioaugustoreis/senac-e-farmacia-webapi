@@ -1,14 +1,14 @@
-import { reportarPreco } from "@/application/casos-de-uso/reportar-preco";
-import { obterContainer } from "@/infrastructure/container";
-import { json, lerJson, tratar } from "../_http";
+import { reportPrice } from "@/application/casos-de-uso/reportar-preco";
+import { getContainer } from "@/infrastructure/container";
+import { json, readJson, handle } from "../_http";
 
 /** POST /api/reportes { precoId, comentario } — exige login */
 export async function POST(request: Request) {
-  return tratar(async () => {
-    const { repos, usuarioAtual } = await obterContainer();
-    const usuario = await usuarioAtual();
-    const corpo = usuario ? await lerJson(request) : {};
-    await reportarPreco(repos)(usuario, Number(corpo.precoId), String(corpo.comentario ?? ""));
+  return handle(async () => {
+    const { repos, currentUser } = await getContainer();
+    const user = await currentUser();
+    const body = user ? await readJson(request) : {};
+    await reportPrice(repos)(user, Number(body.priceId), String(body.comment ?? ""));
     return json({ ok: true }, 201);
   });
 }

@@ -1,64 +1,64 @@
 import { DomainError } from "./erros";
-import { normalizarTexto } from "./texto";
+import { normalizeText } from "./texto";
 
-export const TIPOS_MEDICAMENTO = ["referencia", "generico", "similar"] as const;
-export type TipoMedicamento = (typeof TIPOS_MEDICAMENTO)[number];
+export const MEDICINE_TYPES = ["referencia", "generico", "similar"] as const;
+export type MedicineType = (typeof MEDICINE_TYPES)[number];
 
-export const ROTULO_TIPO: Record<TipoMedicamento, string> = {
+export const TYPE_LABELS: Record<MedicineType, string> = {
   referencia: "Referência",
   generico: "Genérico",
   similar: "Similar",
 };
 
-export interface Categoria {
+export interface Category {
   id: number;
-  nome: string;
+  name: string;
 }
 
 /** Foto real com licença livre; `credito` e `fonte` são obrigatórios para exibir. */
-export interface ImagemMedicamento {
+export interface MedicineImageInfo {
   url: string;
-  credito: string;
-  fonte: string;
+  credit: string;
+  source: string;
 }
 
-export interface Medicamento {
+export interface Medicine {
   id: number;
-  nomeComercial: string;
-  principioAtivo: string;
-  categoria: Categoria | null;
-  tipo: TipoMedicamento;
-  fabricante: string;
-  apresentacao: string;
-  imagem: ImagemMedicamento | null;
+  brandName: string;
+  activeIngredient: string;
+  category: Category | null;
+  type: MedicineType;
+  manufacturer: string;
+  presentation: string;
+  image: MedicineImageInfo | null;
 }
 
-export interface ResultadoBusca extends Medicamento {
-  menorPreco: number | null;
+export interface SearchResult extends Medicine {
+  lowestPrice: number | null;
 }
 
-export function alternativasDe<T extends Medicamento>(alvo: Medicamento, candidatos: T[]): T[] {
-  const principio = normalizarTexto(alvo.principioAtivo);
-  return candidatos.filter((m) => m.id !== alvo.id && normalizarTexto(m.principioAtivo) === principio);
+export function alternativesOf<T extends Medicine>(target: Medicine, candidates: T[]): T[] {
+  const ingredient = normalizeText(target.activeIngredient);
+  return candidates.filter((m) => m.id !== target.id && normalizeText(m.activeIngredient) === ingredient);
 }
 
-export function validarMedicamento(input: {
-  nomeComercial: string; principioAtivo: string; tipo: TipoMedicamento; imagemUrl?: string | null;
+export function validateMedicine(input: {
+  brandName: string; activeIngredient: string; type: MedicineType; imageUrl?: string | null;
 }): void {
-  if (!input.nomeComercial?.trim()) throw new DomainError("Informe o nome comercial");
-  if (!input.principioAtivo?.trim()) throw new DomainError("Informe o princípio ativo");
-  if (!TIPOS_MEDICAMENTO.includes(input.tipo)) throw new DomainError("Tipo de medicamento inválido");
-  const url = input.imagemUrl?.trim();
-  if (url && !imagemPermitida(url)) throw new DomainError("A foto precisa de um endereço https");
+  if (!input.brandName?.trim()) throw new DomainError("Informe o nome comercial");
+  if (!input.activeIngredient?.trim()) throw new DomainError("Informe o princípio ativo");
+  if (!MEDICINE_TYPES.includes(input.type)) throw new DomainError("Tipo de medicamento inválido");
+  const url = input.imageUrl?.trim();
+  if (url && !isImageAllowed(url)) throw new DomainError("A foto precisa de um endereço https");
 }
 
 /** Aceita https:// ou um arquivo do próprio site ("/medicamentos/x.svg"), nunca "//outro-site". */
-export function imagemPermitida(url: string): boolean {
+export function isImageAllowed(url: string): boolean {
   return url.startsWith("https://") || (url.startsWith("/") && !url.startsWith("//") && !url.includes("\\"));
 }
 
 /** Monta a imagem só quando há URL; sem crédito informado, aponta para a fonte. */
-export function montarImagem(url?: string | null, credito?: string | null, fonte?: string | null): ImagemMedicamento | null {
+export function buildImage(url?: string | null, credit?: string | null, source?: string | null): MedicineImageInfo | null {
   if (!url?.trim()) return null;
-  return { url: url.trim(), credito: credito?.trim() || "Imagem ilustrativa", fonte: fonte?.trim() || url.trim() };
+  return { url: url.trim(), credit: credit?.trim() || "Imagem ilustrativa", source: source?.trim() || url.trim() };
 }

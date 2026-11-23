@@ -1,11 +1,11 @@
-import { DomainError, NaoAutenticadoError } from "@/domain/erros";
-import { normalizarComentario } from "@/domain/reporte";
-import type { UsuarioAtual } from "@/domain/usuario";
-import type { Repositorios } from "../ports";
+import { DomainError, UnauthenticatedError } from "@/domain/erros";
+import { normalizeComment } from "@/domain/reporte";
+import type { CurrentUser } from "@/domain/usuario";
+import type { Repositories } from "../ports";
 
-export const reportarPreco = (repos: Pick<Repositorios, "reportes">) =>
-  async (usuario: UsuarioAtual | null, precoId: number, comentario: string): Promise<void> => {
-    if (!usuario) throw new NaoAutenticadoError("Faça login para reportar um preço");
-    if (!Number.isInteger(precoId) || precoId <= 0) throw new DomainError("Preço inválido");
-    await repos.reportes.criar({ precoId, userId: usuario.id, comentario: normalizarComentario(comentario) });
+export const reportPrice = (repos: Pick<Repositories, "reports">) =>
+  async (user: CurrentUser | null, priceId: number, comment: string): Promise<void> => {
+    if (!user) throw new UnauthenticatedError("Faça login para reportar um preço");
+    if (!Number.isInteger(priceId) || priceId <= 0) throw new DomainError("Preço inválido");
+    await repos.reports.create({ priceId, userId: user.id, comment: normalizeComment(comment) });
   };

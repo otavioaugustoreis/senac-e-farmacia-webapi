@@ -1,5 +1,5 @@
-import { cupomVigente } from "@/domain/cupom";
-import type { Repositorios } from "../ports";
+import { isCouponActive } from "@/domain/cupom";
+import type { Repositories } from "../ports";
 
-export const listarCuponsVigentes = (repos: Pick<Repositorios, "cupons">) =>
-  async (hoje: Date) => (await repos.cupons.listar()).filter((c) => cupomVigente(c, hoje));
+export const listActiveCoupons = (repos: Pick<Repositories, "coupons">) =>
+  async (today: Date) => (await repos.coupons.list()).filter((c) => isCouponActive(c, today));

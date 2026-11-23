@@ -1,24 +1,24 @@
-import { normalizarTexto } from "./texto";
+import { normalizeText } from "./texto";
 import { DomainError } from "./erros";
 
-export interface Farmacia {
+export interface Pharmacy {
   id: number;
-  nome: string;
-  endereco: string;
-  telefone: string | null;
-  parceira: boolean;
+  name: string;
+  address: string;
+  phone: string | null;
+  isPartner: boolean;
   lat: number;
   lng: number;
 }
 
-export interface FarmaciaProxima extends Farmacia {
-  distanciaKm: number;
+export interface NearbyPharmacy extends Pharmacy {
+  distanceKm: number;
 }
 
 /** Av. Paulista — usado quando a localização do usuário não está disponível. */
-export const PONTO_PADRAO = { lat: -23.5614, lng: -46.6559 } as const;
+export const DEFAULT_POINT = { lat: -23.5614, lng: -46.6559 } as const;
 
-export function coordenadasValidas(lat: unknown, lng: unknown): boolean {
+export function validCoordinates(lat: unknown, lng: unknown): boolean {
   return (
     typeof lat === "number" && typeof lng === "number" &&
     Number.isFinite(lat) && Number.isFinite(lng) &&
@@ -26,18 +26,18 @@ export function coordenadasValidas(lat: unknown, lng: unknown): boolean {
   );
 }
 
-export function validarFarmacia(input: { nome: string; endereco: string; lat: number; lng: number }): void {
-  if (!input.nome?.trim()) throw new DomainError("Informe o nome da farmácia");
-  if (!input.endereco?.trim()) throw new DomainError("Informe o endereço");
-  if (!coordenadasValidas(input.lat, input.lng)) throw new DomainError("Coordenadas inválidas");
+export function validatePharmacy(input: { name: string; address: string; lat: number; lng: number }): void {
+  if (!input.name?.trim()) throw new DomainError("Informe o nome da farmácia");
+  if (!input.address?.trim()) throw new DomainError("Informe o endereço");
+  if (!validCoordinates(input.lat, input.lng)) throw new DomainError("Coordenadas inválidas");
 }
 
 /** Filtra por nome ou endereço (inclui o bairro); todas as palavras precisam aparecer, sem ligar para acento. */
-export function filtrarFarmacias<T extends { nome: string; endereco: string }>(farmacias: T[], termo: string): T[] {
-  const palavras = normalizarTexto(termo).split(/\s+/).filter(Boolean);
-  if (palavras.length === 0) return farmacias;
-  return farmacias.filter((f) => {
-    const alvo = normalizarTexto(`${f.nome} ${f.endereco}`);
-    return palavras.every((p) => alvo.includes(p));
+export function filterPharmacies<T extends { name: string; address: string }>(pharmacies: T[], query: string): T[] {
+  const words = normalizeText(query).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return pharmacies;
+  return pharmacies.filter((f) => {
+    const target = normalizeText(`${f.name} ${f.address}`);
+    return words.every((p) => target.includes(p));
   });
 }

@@ -2,85 +2,85 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ExternalLink, Ticket } from "lucide-react";
-import { detalharMedicamento, type DetalheMedicamento } from "@/application/casos-de-uso/detalhar-medicamento";
-import { BULARIO_ANVISA_URL } from "@/domain/bula";
-import { NaoEncontradoError } from "@/domain/erros";
-import { obterContainer } from "@/infrastructure/container";
-import { CartaoMedicamento } from "@/components/CartaoMedicamento";
-import { ReportarPreco } from "@/components/ReportarPreco";
-import { SeloTipo } from "@/components/visual";
-import { FotoMedicamento } from "@/components/FotoMedicamento";
-import { UsarCupom } from "@/components/UsarCupom";
-import { formatBRL, formatData } from "@/lib/format";
+import { getMedicineDetail, type MedicineDetail } from "@/application/casos-de-uso/detalhar-medicamento";
+import { ANVISA_INSERTS_URL } from "@/domain/bula";
+import { NotFoundError } from "@/domain/erros";
+import { getContainer } from "@/infrastructure/container";
+import { MedicineCard } from "@/components/CartaoMedicamento";
+import { ReportPriceButton } from "@/components/ReportarPreco";
+import { TypeBadge } from "@/components/visual";
+import { MedicineImage } from "@/components/FotoMedicamento";
+import { UseCouponButton } from "@/components/UsarCupom";
+import { formatBRL, formatDate } from "@/lib/format";
 
 type Props = { params: Promise<{ id: string }> };
 
-async function carregar(idTexto: string): Promise<{ detalhe: DetalheMedicamento; logado: boolean }> {
-  const id = Number(idTexto);
+async function load(idText: string): Promise<{ detail: MedicineDetail; isLoggedIn: boolean }> {
+  const id = Number(idText);
   if (!Number.isInteger(id) || id <= 0) notFound();
-  const { repos, usuarioAtual } = await obterContainer();
+  const { repos, currentUser } = await getContainer();
   try {
-    const [detalhe, usuario] = await Promise.all([detalharMedicamento(repos)(id, new Date()), usuarioAtual()]);
-    return { detalhe, logado: usuario !== null };
+    const [detail, user] = await Promise.all([getMedicineDetail(repos)(id, new Date()), currentUser()]);
+    return { detail, isLoggedIn: user !== null };
   } catch (e) {
-    if (e instanceof NaoEncontradoError) notFound();
+    if (e instanceof NotFoundError) notFound();
     throw e;
   }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const { repos } = await obterContainer();
-  const m = Number.isInteger(Number(id)) ? await repos.medicamentos.obterPorId(Number(id)) : null;
-  return { title: m ? `${m.nomeComercial} — preços e bula | E-Farmácia` : "Medicamento — E-Farmácia" };
+  const { repos } = await getContainer();
+  const m = Number.isInteger(Number(id)) ? await repos.medicines.getById(Number(id)) : null;
+  return { title: m ? `${m.brandName} — preços e bula | E-Farmácia` : "Medicamento — E-Farmácia" };
 }
 
-export default async function MedicamentoPage({ params }: Props) {
+export default async function MedicinePage({ params }: Props) {
   const { id } = await params;
-  const { detalhe: d, logado } = await carregar(id);
-  const m = d.medicamento;
-  const caminho = `/medicamento/${m.id}`;
+  const { detail: d, isLoggedIn } = await load(id);
+  const m = d.medicine;
+  const path = `/medicamento/${m.id}`;
 
-  const secoes = [
-    ["Para que serve", d.bula?.paraQueServe],
-    ["Como usar", d.comoUsar],
-    ["Contraindicações", d.bula?.contraindicacoes],
-    ["Efeitos colaterais", d.bula?.efeitosColaterais],
-    ["Advertências", d.bula?.advertencias],
+  const sections = [
+    ["Para que serve", d.packageInsert?.usedFor],
+    ["Como usar", d.howToUse],
+    ["Contraindicações", d.packageInsert?.contraindications],
+    ["Efeitos colaterais", d.packageInsert?.sideEffects],
+    ["Advertências", d.packageInsert?.warnings],
   ] as const;
 
   return (
     <div className="space-y-8">
       <nav className="text-sm text-suave">
         <Link href="/busca" className="underline">Medicamentos</Link>
-        {m.categoria && <> / <Link href={`/busca?categoria=${m.categoria.id}`} className="underline">{m.categoria.nome}</Link></>}
+        {m.category && <> / <Link href={`/busca?categoria=${m.category.id}`} className="underline">{m.category.name}</Link></>}
       </nav>
 
       <section className="grid gap-6 md:grid-cols-[320px_1fr]">
         {/* Com foto real: aparece também no celular. Sem foto: ilustração só no computador. */}
-        <figure className={m.imagem ? "" : "hidden md:block"}>
-          <FotoMedicamento medicamento={m} variante="destaque" />
-          {m.imagem && (
+        <figure className={m.image ? "" : "hidden md:block"}>
+          <MedicineImage medicine={m} variant="featured" />
+          {m.image && (
             <figcaption className="mt-2 text-[11px] leading-snug text-suave">
               Imagem ilustrativa, pode diferir da embalagem real.{" "}
-              {m.imagem.fonte.startsWith("https://")
-                ? <a href={m.imagem.fonte} target="_blank" rel="noreferrer" className="underline">{m.imagem.credito}</a>
-                : m.imagem.credito}
+              {m.image.source.startsWith("https://")
+                ? <a href={m.image.source} target="_blank" rel="noreferrer" className="underline">{m.image.credit}</a>
+                : m.image.credit}
             </figcaption>
           )}
         </figure>
         <div>
-          <SeloTipo tipo={m.tipo} />
-          <h1 className="mt-2 text-2xl font-bold leading-tight text-marca-900 sm:text-3xl">{m.nomeComercial}</h1>
+          <TypeBadge type={m.type} />
+          <h1 className="mt-2 text-2xl font-bold leading-tight text-marca-900 sm:text-3xl">{m.brandName}</h1>
           <p className="mt-1 text-suave">
-            <span className="font-medium text-tinta">{m.principioAtivo}</span> · {m.apresentacao} · {m.fabricante}
+            <span className="font-medium text-tinta">{m.activeIngredient}</span> · {m.presentation} · {m.manufacturer}
           </p>
           <div className="mt-4 rounded-2xl bg-menta-50 p-4 ring-1 ring-marca-600/10">
-            {d.menorPreco ? (
+            {d.lowestPrice ? (
               <>
                 <p className="text-sm text-suave">Menor preço encontrado</p>
-                <p className="text-3xl font-bold text-marca-700">{formatBRL(d.menorPreco.valor)}</p>
-                <p className="text-sm text-suave">em {d.menorPreco.farmacia.nome} · atualizado em {formatData(d.menorPreco.atualizadoEm)}</p>
+                <p className="text-3xl font-bold text-marca-700">{formatBRL(d.lowestPrice.amount)}</p>
+                <p className="text-sm text-suave">em {d.lowestPrice.pharmacy.name} · atualizado em {formatDate(d.lowestPrice.updatedAt)}</p>
               </>
             ) : (
               <p className="font-medium">Sem preços cadastrados para este medicamento.</p>
@@ -101,24 +101,24 @@ export default async function MedicamentoPage({ params }: Props) {
               <h2 id="titulo-precos" className="text-xl font-bold text-marca-900">Preços por farmácia</h2>
               <span className="rounded-full bg-creme px-2 py-0.5 text-[11px] font-semibold text-amber-800">Dados de demonstração</span>
             </div>
-            {d.precos.length === 0 ? (
+            {d.prices.length === 0 ? (
               <p className="mt-3 rounded-2xl bg-white p-6 text-center text-suave ring-1 ring-black/5">Sem preços cadastrados.</p>
             ) : (
               <ul className="mt-3 divide-y divide-black/5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
-                {d.precos.map((p, i) => (
+                {d.prices.map((p, i) => (
                   <li key={p.id} className={`p-4 ${i === 0 ? "bg-menta-50" : ""}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-semibold leading-snug">{p.farmacia.nome}</p>
+                        <p className="font-semibold leading-snug">{p.pharmacy.name}</p>
                         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-suave">
                           {i === 0 && <span className="rounded-full bg-marca-800 px-2 py-0.5 text-[11px] font-semibold text-white">Menor preço</span>}
-                          <span>Atualizado em {formatData(p.atualizadoEm)}</span>
-                          {p.desatualizado && <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">Desatualizado</span>}
+                          <span>Atualizado em {formatDate(p.updatedAt)}</span>
+                          {p.outdated && <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">Desatualizado</span>}
                         </p>
                       </div>
-                      <p className="shrink-0 whitespace-nowrap text-xl font-bold text-marca-700">{formatBRL(p.valor)}</p>
+                      <p className="shrink-0 whitespace-nowrap text-xl font-bold text-marca-700">{formatBRL(p.amount)}</p>
                     </div>
-                    <div className="mt-1"><ReportarPreco precoId={p.id} logado={logado} voltarPara={caminho} /></div>
+                    <div className="mt-1"><ReportPriceButton priceId={p.id} isLoggedIn={isLoggedIn} returnTo={path} /></div>
                   </li>
                 ))}
               </ul>
@@ -130,16 +130,16 @@ export default async function MedicamentoPage({ params }: Props) {
           <section aria-labelledby="titulo-bula">
             <h2 id="titulo-bula" className="text-xl font-bold text-marca-900">Bula organizada</h2>
             <div className="mt-3 space-y-2">
-              {secoes.map(([titulo, texto], i) => (
-                <details key={titulo} open={i < 2} className="group rounded-2xl bg-white p-4 ring-1 ring-black/5">
+              {sections.map(([title, text], i) => (
+                <details key={title} open={i < 2} className="group rounded-2xl bg-white p-4 ring-1 ring-black/5">
                   <summary className="cursor-pointer list-none font-semibold marker:hidden">
-                    <span className="mr-2 inline-block text-marca-600 transition group-open:rotate-90">›</span>{titulo}
+                    <span className="mr-2 inline-block text-marca-600 transition group-open:rotate-90">›</span>{title}
                   </summary>
-                  <p className="mt-2 text-sm leading-relaxed text-tinta/90">{texto || "Consulte a bula oficial."}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-tinta/90">{text || "Consulte a bula oficial."}</p>
                 </details>
               ))}
             </div>
-            <a href={d.bula?.linkAnvisa || BULARIO_ANVISA_URL} target="_blank" rel="noreferrer"
+            <a href={d.packageInsert?.anvisaLink || ANVISA_INSERTS_URL} target="_blank" rel="noreferrer"
               className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-marca-700 underline">
               Bula completa no Bulário Eletrônico da Anvisa <ExternalLink className="size-4" aria-hidden />
             </a>
@@ -148,17 +148,17 @@ export default async function MedicamentoPage({ params }: Props) {
 
         <aside className="space-y-8">
           {/* Cupons */}
-          {d.cupons.length > 0 && (
+          {d.coupons.length > 0 && (
             <section aria-labelledby="titulo-cupons" className="rounded-2xl bg-creme p-5">
               <h2 id="titulo-cupons" className="flex items-center gap-2 font-bold text-marca-900"><Ticket className="size-5" aria-hidden /> Cupons das farmácias</h2>
               <ul className="mt-3 space-y-2">
-                {d.cupons.map((c) => (
+                {d.coupons.map((c) => (
                   <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white p-3 text-sm">
                     <div className="min-w-0">
-                      <p className="font-semibold">{c.desconto} · {c.farmacia.nome}</p>
-                      <p className="text-xs text-suave">{c.descricao} · até {formatData(c.validade)}</p>
+                      <p className="font-semibold">{c.discount} · {c.pharmacy.name}</p>
+                      <p className="text-xs text-suave">{c.description} · até {formatDate(c.validUntil)}</p>
                     </div>
-                    <UsarCupom cupom={{ ...c, validade: formatData(c.validade) }} compacto />
+                    <UseCouponButton coupon={{ ...c, validUntil: formatDate(c.validUntil) }} compact />
                   </li>
                 ))}
               </ul>
@@ -168,12 +168,12 @@ export default async function MedicamentoPage({ params }: Props) {
           {/* Alternativas */}
           <section aria-labelledby="titulo-alternativas">
             <h2 id="titulo-alternativas" className="text-xl font-bold text-marca-900">Alternativas</h2>
-            <p className="text-sm text-suave">Mesmo princípio ativo ({m.principioAtivo})</p>
-            {d.alternativas.length === 0 ? (
+            <p className="text-sm text-suave">Mesmo princípio ativo ({m.activeIngredient})</p>
+            {d.alternatives.length === 0 ? (
               <p className="mt-3 text-sm text-suave">Nenhuma alternativa cadastrada.</p>
             ) : (
               <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 lg:grid-cols-2">
-                {d.alternativas.map((a) => <CartaoMedicamento key={a.id} medicamento={a} />)}
+                {d.alternatives.map((a) => <MedicineCard key={a.id} medicine={a} />)}
               </div>
             )}
           </section>

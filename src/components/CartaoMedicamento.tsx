@@ -1,34 +1,34 @@
 import Link from "next/link";
-import { ROTULO_TIPO, type ResultadoBusca } from "@/domain/medicamento";
+import { TYPE_LABELS, type SearchResult } from "@/domain/medicamento";
 import { formatBRL } from "@/lib/format";
-import { FotoMedicamento } from "./FotoMedicamento";
+import { MedicineImage } from "./FotoMedicamento";
 
 interface Props {
-  medicamento: ResultadoBusca;
-  precoReferencia?: number | null;
-  economiaPercentual?: number | null;
+  medicine: SearchResult;
+  referencePrice?: number | null;
+  savingsPercent?: number | null;
 }
 
 /** Cartão no estilo vitrine: imagem em fundo claro, selo de desconto, preço e "Ver preços". */
-export function CartaoMedicamento({ medicamento: m, precoReferencia, economiaPercentual }: Props) {
+export function MedicineCard({ medicine: m, referencePrice, savingsPercent }: Props) {
   return (
     <Link href={`/medicamento/${m.id}`} className="group flex flex-col">
       <div className="relative overflow-hidden rounded-2xl bg-[#f3f5f4] transition group-hover:bg-menta-100">
-        <FotoMedicamento medicamento={m} />
-        {economiaPercentual ? (
-          <span className="absolute right-2.5 top-2.5 rounded-md bg-alerta px-1.5 py-0.5 text-[11px] font-bold text-white">{economiaPercentual}%</span>
+        <MedicineImage medicine={m} />
+        {savingsPercent ? (
+          <span className="absolute right-2.5 top-2.5 rounded-md bg-alerta px-1.5 py-0.5 text-[11px] font-bold text-white">{savingsPercent}%</span>
         ) : null}
       </div>
       <div className="mt-2.5 flex items-center gap-1.5 text-[11px] text-suave">
-        <span className="truncate">{m.categoria?.nome ?? "Medicamento"}</span>
+        <span className="truncate">{m.category?.name ?? "Medicamento"}</span>
       </div>
-      <p className="mt-0.5 text-[11px] font-semibold text-marca-600">{ROTULO_TIPO[m.tipo]} · {m.fabricante}</p>
-      <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-tinta group-hover:text-marca-700 sm:text-base">{m.nomeComercial}</h3>
+      <p className="mt-0.5 text-[11px] font-semibold text-marca-600">{TYPE_LABELS[m.type]} · {m.manufacturer}</p>
+      <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-tinta group-hover:text-marca-700 sm:text-base">{m.brandName}</h3>
       <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-        {m.menorPreco !== null ? (
+        {m.lowestPrice !== null ? (
           <>
-            <span className="whitespace-nowrap text-base font-bold text-marca-700 sm:text-lg">{formatBRL(m.menorPreco)}</span>
-            {precoReferencia ? <span className="whitespace-nowrap text-xs text-suave line-through">{formatBRL(precoReferencia)}</span> : null}
+            <span className="whitespace-nowrap text-base font-bold text-marca-700 sm:text-lg">{formatBRL(m.lowestPrice)}</span>
+            {referencePrice ? <span className="whitespace-nowrap text-xs text-suave line-through">{formatBRL(referencePrice)}</span> : null}
           </>
         ) : (
           <span className="text-sm text-suave">Sem preço</span>

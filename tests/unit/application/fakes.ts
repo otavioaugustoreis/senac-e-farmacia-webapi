@@ -1,158 +1,158 @@
-import type { Repositorios } from "@/application/ports";
-import type { Bula } from "@/domain/bula";
-import type { Cupom } from "@/domain/cupom";
-import type { Farmacia } from "@/domain/farmacia";
-import type { Categoria, Medicamento, ResultadoBusca } from "@/domain/medicamento";
-import type { Preco } from "@/domain/preco";
-import type { ReportePreco } from "@/domain/reporte";
-import type { UsuarioAtual } from "@/domain/usuario";
-import { menorPreco } from "@/domain/preco";
-import { normalizarTexto } from "@/domain/texto";
-import { montarImagem } from "@/domain/medicamento";
+import type { Repositories } from "@/application/ports";
+import type { PackageInsert } from "@/domain/bula";
+import type { Coupon } from "@/domain/cupom";
+import type { Pharmacy } from "@/domain/farmacia";
+import type { Category, Medicine, SearchResult } from "@/domain/medicamento";
+import type { Price } from "@/domain/preco";
+import type { PriceReport } from "@/domain/reporte";
+import type { CurrentUser } from "@/domain/usuario";
+import { lowestPrice } from "@/domain/preco";
+import { normalizeText } from "@/domain/texto";
+import { buildImage } from "@/domain/medicamento";
 
-export interface Dados {
-  categorias: Categoria[];
-  medicamentos: Medicamento[];
-  bulas: Bula[];
-  farmacias: Farmacia[];
-  precos: Preco[];
-  cupons: Cupom[];
-  reportes: (ReportePreco & { userId: string })[];
+export interface DashboardData {
+  categories: Category[];
+  medicines: Medicine[];
+  packageInserts: PackageInsert[];
+  pharmacies: Pharmacy[];
+  prices: Price[];
+  coupons: Coupon[];
+  reports: (PriceReport & { userId: string })[];
 }
 
-export const usuarioComum: UsuarioAtual = { id: "u1", email: "u@x.com", nome: "Usuária", role: "user" };
-export const admin: UsuarioAtual = { id: "a1", email: "user123@gmail.com", nome: "Admin", role: "admin" };
+export const regularUser: CurrentUser = { id: "u1", email: "u@x.com", name: "Usuária", role: "user" };
+export const admin: CurrentUser = { id: "a1", email: "user123@gmail.com", name: "Admin", role: "admin" };
 
-export function med(id: number, nome: string, principioAtivo: string, tipo: Medicamento["tipo"]): Medicamento {
-  return { id, nomeComercial: nome, principioAtivo, categoria: { id: 1, nome: "Analgésicos" }, tipo, fabricante: "Lab", apresentacao: "10 comprimidos", imagem: null };
+export function med(id: number, name: string, activeIngredient: string, type: Medicine["type"]): Medicine {
+  return { id, brandName: name, activeIngredient, category: { id: 1, name: "Analgésicos" }, type, manufacturer: "Lab", presentation: "10 comprimidos", image: null };
 }
 
-export function farmacia(id: number, parceira = true): Farmacia {
-  return { id, nome: `Farmácia ${id}`, endereco: `Rua ${id}`, telefone: null, parceira, lat: -23.56 + id / 1000, lng: -46.65 };
+export function pharmacy(id: number, isPartner = true): Pharmacy {
+  return { id, name: `Farmácia ${id}`, address: `Rua ${id}`, phone: null, isPartner, lat: -23.56 + id / 1000, lng: -46.65 };
 }
 
-export function preco(id: number, medicamentoId: number, farmaciaId: number, valor: number, atualizadoEm = new Date("2026-11-19T12:00:00Z")): Preco {
-  return { id, medicamentoId, farmacia: { id: farmaciaId, nome: `Farmácia ${farmaciaId}` }, valor, atualizadoEm };
+export function price(id: number, medicineId: number, pharmacyId: number, amount: number, updatedAt = new Date("2026-11-19T12:00:00Z")): Price {
+  return { id, medicineId, pharmacy: { id: pharmacyId, name: `Farmácia ${pharmacyId}` }, amount, updatedAt };
 }
 
-export function cupom(id: number, farmaciaId: number, validade: string): Cupom {
-  return { id, farmacia: { id: farmaciaId, nome: `Farmácia ${farmaciaId}`, endereco: "Rua Exemplo, 100" }, codigo: `CUPOM${id}`, descricao: "", desconto: "10%", validade: new Date(validade) };
+export function coupon(id: number, pharmacyId: number, validUntil: string): Coupon {
+  return { id, pharmacy: { id: pharmacyId, name: `Farmácia ${pharmacyId}`, address: "Rua Exemplo, 100" }, code: `CUPOM${id}`, description: "", discount: "10%", validUntil: new Date(validUntil) };
 }
 
-export function dadosVazios(): Dados {
-  return { categorias: [{ id: 1, nome: "Analgésicos" }], medicamentos: [], bulas: [], farmacias: [], precos: [], cupons: [], reportes: [] };
+export function emptyData(): DashboardData {
+  return { categories: [{ id: 1, name: "Analgésicos" }], medicines: [], packageInserts: [], pharmacies: [], prices: [], coupons: [], reports: [] };
 }
 
 /** Repositórios em memória para testar casos de uso sem banco. */
-export function criarFakes(d: Dados): Repositorios {
-  const resultado = (m: Medicamento): ResultadoBusca => ({
+export function createFakes(d: DashboardData): Repositories {
+  const result = (m: Medicine): SearchResult => ({
     ...m,
-    menorPreco: menorPreco(d.precos.filter((p) => p.medicamentoId === m.id))?.valor ?? null,
+    lowestPrice: lowestPrice(d.prices.filter((p) => p.medicineId === m.id))?.amount ?? null,
   });
-  let proximoId = 1000;
+  let nextId = 1000;
 
   return {
-    medicamentos: {
-      async buscar(q, categoriaId) {
-        const termo = normalizarTexto(q);
-        return d.medicamentos
-          .filter((m) => !termo || normalizarTexto(m.nomeComercial).includes(termo) || normalizarTexto(m.principioAtivo).includes(termo))
-          .filter((m) => categoriaId === undefined || m.categoria?.id === categoriaId)
-          .map(resultado);
+    medicines: {
+      async search(q, categoryId) {
+        const query = normalizeText(q);
+        return d.medicines
+          .filter((m) => !query || normalizeText(m.brandName).includes(query) || normalizeText(m.activeIngredient).includes(query))
+          .filter((m) => categoryId === undefined || m.category?.id === categoryId)
+          .map(result);
       },
-      async obterPorId(id) {
-        return d.medicamentos.find((m) => m.id === id) ?? null;
+      async getById(id) {
+        return d.medicines.find((m) => m.id === id) ?? null;
       },
-      async listarPorPrincipioAtivo(p) {
-        return d.medicamentos.filter((m) => normalizarTexto(m.principioAtivo) === normalizarTexto(p)).map(resultado);
+      async listByActiveIngredient(p) {
+        return d.medicines.filter((m) => normalizeText(m.activeIngredient) === normalizeText(p)).map(result);
       },
-      async salvar(input) {
-        const id = input.id ?? ++proximoId;
-        const categoria = d.categorias.find((c) => c.id === input.categoriaId) ?? null;
-        const novo: Medicamento = { id, nomeComercial: input.nomeComercial, principioAtivo: input.principioAtivo, categoria, tipo: input.tipo, fabricante: input.fabricante, apresentacao: input.apresentacao, imagem: montarImagem(input.imagemUrl, input.imagemCredito, input.imagemFonte) };
-        d.medicamentos = [...d.medicamentos.filter((m) => m.id !== id), novo];
+      async save(input) {
+        const id = input.id ?? ++nextId;
+        const category = d.categories.find((c) => c.id === input.categoryId) ?? null;
+        const newItem: Medicine = { id, brandName: input.brandName, activeIngredient: input.activeIngredient, category, type: input.type, manufacturer: input.manufacturer, presentation: input.presentation, image: buildImage(input.imageUrl, input.imageCredit, input.imageSource) };
+        d.medicines = [...d.medicines.filter((m) => m.id !== id), newItem];
         return id;
       },
-      async excluir(id) {
-        d.medicamentos = d.medicamentos.filter((m) => m.id !== id);
+      async remove(id) {
+        d.medicines = d.medicines.filter((m) => m.id !== id);
       },
     },
-    bulas: {
-      async obter(id) {
-        return d.bulas.find((b) => b.medicamentoId === id) ?? null;
+    packageInserts: {
+      async get(id) {
+        return d.packageInserts.find((b) => b.medicineId === id) ?? null;
       },
-      async salvar(b) {
-        d.bulas = [...d.bulas.filter((x) => x.medicamentoId !== b.medicamentoId), b];
-      },
-    },
-    precos: {
-      async listarPorMedicamento(id) {
-        return d.precos.filter((p) => p.medicamentoId === id);
-      },
-      async listarTodos() {
-        return d.precos.map((p) => ({ ...p, medicamento: d.medicamentos.find((m) => m.id === p.medicamentoId)?.nomeComercial ?? "" }));
-      },
-      async salvar(input) {
-        const id = input.id ?? ++proximoId;
-        const f = d.farmacias.find((x) => x.id === input.farmaciaId);
-        d.precos = [...d.precos.filter((p) => p.id !== id), { id, medicamentoId: input.medicamentoId, farmacia: { id: input.farmaciaId, nome: f?.nome ?? "" }, valor: input.valor, atualizadoEm: new Date() }];
-      },
-      async excluir(id) {
-        d.precos = d.precos.filter((p) => p.id !== id);
+      async save(b) {
+        d.packageInserts = [...d.packageInserts.filter((x) => x.medicineId !== b.medicineId), b];
       },
     },
-    farmacias: {
-      async proximas(lat, lng, raioKm) {
-        return d.farmacias
-          .map((f) => ({ ...f, distanciaKm: Math.hypot(f.lat - lat, f.lng - lng) * 111 }))
-          .filter((f) => f.distanciaKm <= raioKm)
-          .sort((a, b) => a.distanciaKm - b.distanciaKm);
+    prices: {
+      async listByMedicine(id) {
+        return d.prices.filter((p) => p.medicineId === id);
       },
-      async listar() {
-        return d.farmacias;
+      async listAll() {
+        return d.prices.map((p) => ({ ...p, medicine: d.medicines.find((m) => m.id === p.medicineId)?.brandName ?? "" }));
       },
-      async salvar(input) {
-        const id = input.id ?? ++proximoId;
-        d.farmacias = [...d.farmacias.filter((f) => f.id !== id), { ...input, id }];
+      async save(input) {
+        const id = input.id ?? ++nextId;
+        const f = d.pharmacies.find((x) => x.id === input.pharmacyId);
+        d.prices = [...d.prices.filter((p) => p.id !== id), { id, medicineId: input.medicineId, pharmacy: { id: input.pharmacyId, name: f?.name ?? "" }, amount: input.amount, updatedAt: new Date() }];
       },
-      async excluir(id) {
-        d.farmacias = d.farmacias.filter((f) => f.id !== id);
+      async remove(id) {
+        d.prices = d.prices.filter((p) => p.id !== id);
       },
     },
-    cupons: {
-      async listar() {
-        return d.cupons;
+    pharmacies: {
+      async nearby(lat, lng, radiusKm) {
+        return d.pharmacies
+          .map((f) => ({ ...f, distanceKm: Math.hypot(f.lat - lat, f.lng - lng) * 111 }))
+          .filter((f) => f.distanceKm <= radiusKm)
+          .sort((a, b) => a.distanceKm - b.distanceKm);
       },
-      async salvar(input) {
-        const id = input.id ?? ++proximoId;
-        d.cupons = [...d.cupons.filter((c) => c.id !== id), { id, farmacia: { id: input.farmaciaId, nome: "", endereco: "" }, codigo: input.codigo, descricao: input.descricao, desconto: input.desconto, validade: input.validade }];
+      async list() {
+        return d.pharmacies;
       },
-      async excluir(id) {
-        d.cupons = d.cupons.filter((c) => c.id !== id);
+      async save(input) {
+        const id = input.id ?? ++nextId;
+        d.pharmacies = [...d.pharmacies.filter((f) => f.id !== id), { ...input, id }];
       },
-    },
-    categorias: {
-      async listar() {
-        return d.categorias;
-      },
-      async salvar(input) {
-        const id = input.id ?? ++proximoId;
-        d.categorias = [...d.categorias.filter((c) => c.id !== id), { id, nome: input.nome }];
-      },
-      async excluir(id) {
-        d.categorias = d.categorias.filter((c) => c.id !== id);
+      async remove(id) {
+        d.pharmacies = d.pharmacies.filter((f) => f.id !== id);
       },
     },
-    reportes: {
-      async criar(r) {
-        const p = d.precos.find((x) => x.id === r.precoId);
-        d.reportes.push({ id: ++proximoId, precoId: r.precoId, userId: r.userId, comentario: r.comentario, medicamento: "", farmacia: p?.farmacia.nome ?? "", valor: p?.valor ?? 0, criadoEm: new Date(), resolvido: false });
+    coupons: {
+      async list() {
+        return d.coupons;
       },
-      async listar() {
-        return d.reportes;
+      async save(input) {
+        const id = input.id ?? ++nextId;
+        d.coupons = [...d.coupons.filter((c) => c.id !== id), { id, pharmacy: { id: input.pharmacyId, name: "", address: "" }, code: input.code, description: input.description, discount: input.discount, validUntil: input.validUntil }];
       },
-      async resolver(id) {
-        d.reportes = d.reportes.map((r) => (r.id === id ? { ...r, resolvido: true } : r));
+      async remove(id) {
+        d.coupons = d.coupons.filter((c) => c.id !== id);
+      },
+    },
+    categories: {
+      async list() {
+        return d.categories;
+      },
+      async save(input) {
+        const id = input.id ?? ++nextId;
+        d.categories = [...d.categories.filter((c) => c.id !== id), { id, name: input.name }];
+      },
+      async remove(id) {
+        d.categories = d.categories.filter((c) => c.id !== id);
+      },
+    },
+    reports: {
+      async create(r) {
+        const p = d.prices.find((x) => x.id === r.priceId);
+        d.reports.push({ id: ++nextId, priceId: r.priceId, userId: r.userId, comment: r.comment, medicine: "", pharmacy: p?.pharmacy.name ?? "", amount: p?.amount ?? 0, createdAt: new Date(), resolved: false });
+      },
+      async list() {
+        return d.reports;
+      },
+      async markResolved(id) {
+        d.reports = d.reports.map((r) => (r.id === id ? { ...r, resolved: true } : r));
       },
     },
   };

@@ -1,110 +1,110 @@
-import type { Bula } from "@/domain/bula";
-import type { Cupom } from "@/domain/cupom";
-import type { Farmacia, FarmaciaProxima } from "@/domain/farmacia";
-import type { Categoria, Medicamento, ResultadoBusca, TipoMedicamento } from "@/domain/medicamento";
-import type { Preco } from "@/domain/preco";
-import type { ReportePreco } from "@/domain/reporte";
+import type { PackageInsert } from "@/domain/bula";
+import type { Coupon } from "@/domain/cupom";
+import type { Pharmacy, NearbyPharmacy } from "@/domain/farmacia";
+import type { Category, Medicine, SearchResult, MedicineType } from "@/domain/medicamento";
+import type { Price } from "@/domain/preco";
+import type { PriceReport } from "@/domain/reporte";
 
-export interface MedicamentoInput {
+export interface MedicineInput {
   id?: number;
-  nomeComercial: string;
-  principioAtivo: string;
-  categoriaId: number | null;
-  tipo: TipoMedicamento;
-  fabricante: string;
-  apresentacao: string;
-  imagemUrl?: string | null;
-  imagemCredito?: string | null;
-  imagemFonte?: string | null;
+  brandName: string;
+  activeIngredient: string;
+  categoryId: number | null;
+  type: MedicineType;
+  manufacturer: string;
+  presentation: string;
+  imageUrl?: string | null;
+  imageCredit?: string | null;
+  imageSource?: string | null;
 }
 
-export type BulaInput = Omit<Bula, "medicamentoId">;
+export type PackageInsertInput = Omit<PackageInsert, "medicineId">;
 
-export interface FarmaciaInput {
+export interface PharmacyInput {
   id?: number;
-  nome: string;
-  endereco: string;
-  telefone: string | null;
-  parceira: boolean;
+  name: string;
+  address: string;
+  phone: string | null;
+  isPartner: boolean;
   lat: number;
   lng: number;
 }
 
-export interface PrecoInput {
+export interface PriceInput {
   id?: number;
-  medicamentoId: number;
-  farmaciaId: number;
-  valor: number;
+  medicineId: number;
+  pharmacyId: number;
+  amount: number;
 }
 
-export interface CupomInput {
+export interface CouponInput {
   id?: number;
-  farmaciaId: number;
-  codigo: string;
-  descricao: string;
-  desconto: string;
-  validade: Date;
+  pharmacyId: number;
+  code: string;
+  description: string;
+  discount: string;
+  validUntil: Date;
 }
 
-export interface CategoriaInput {
+export interface CategoryInput {
   id?: number;
-  nome: string;
+  name: string;
 }
 
-export type PrecoComMedicamento = Preco & { medicamento: string };
+export type PriceWithMedicine = Price & { medicine: string };
 
-export interface MedicamentoRepository {
+export interface MedicineRepository {
   /** Busca por nome comercial ou princípio ativo (sem acento/maiúsculas). `q` vazio = todos. */
-  buscar(q: string, categoriaId?: number): Promise<ResultadoBusca[]>;
-  obterPorId(id: number): Promise<Medicamento | null>;
-  listarPorPrincipioAtivo(principioAtivo: string): Promise<ResultadoBusca[]>;
-  salvar(m: MedicamentoInput): Promise<number>;
-  excluir(id: number): Promise<void>;
+  search(q: string, categoryId?: number): Promise<SearchResult[]>;
+  getById(id: number): Promise<Medicine | null>;
+  listByActiveIngredient(activeIngredient: string): Promise<SearchResult[]>;
+  save(m: MedicineInput): Promise<number>;
+  remove(id: number): Promise<void>;
 }
 
-export interface BulaRepository {
-  obter(medicamentoId: number): Promise<Bula | null>;
-  salvar(b: Bula): Promise<void>;
+export interface PackageInsertRepository {
+  get(medicineId: number): Promise<PackageInsert | null>;
+  save(b: PackageInsert): Promise<void>;
 }
 
-export interface PrecoRepository {
-  listarPorMedicamento(medicamentoId: number): Promise<Preco[]>;
-  listarTodos(): Promise<PrecoComMedicamento[]>;
-  salvar(p: PrecoInput): Promise<void>;
-  excluir(id: number): Promise<void>;
+export interface PriceRepository {
+  listByMedicine(medicineId: number): Promise<Price[]>;
+  listAll(): Promise<PriceWithMedicine[]>;
+  save(p: PriceInput): Promise<void>;
+  remove(id: number): Promise<void>;
 }
 
-export interface FarmaciaRepository {
-  proximas(lat: number, lng: number, raioKm: number): Promise<FarmaciaProxima[]>;
-  listar(): Promise<Farmacia[]>;
-  salvar(f: FarmaciaInput): Promise<void>;
-  excluir(id: number): Promise<void>;
+export interface PharmacyRepository {
+  nearby(lat: number, lng: number, radiusKm: number): Promise<NearbyPharmacy[]>;
+  list(): Promise<Pharmacy[]>;
+  save(f: PharmacyInput): Promise<void>;
+  remove(id: number): Promise<void>;
 }
 
-export interface CupomRepository {
-  listar(): Promise<Cupom[]>;
-  salvar(c: CupomInput): Promise<void>;
-  excluir(id: number): Promise<void>;
+export interface CouponRepository {
+  list(): Promise<Coupon[]>;
+  save(c: CouponInput): Promise<void>;
+  remove(id: number): Promise<void>;
 }
 
-export interface CategoriaRepository {
-  listar(): Promise<Categoria[]>;
-  salvar(c: CategoriaInput): Promise<void>;
-  excluir(id: number): Promise<void>;
+export interface CategoryRepository {
+  list(): Promise<Category[]>;
+  save(c: CategoryInput): Promise<void>;
+  remove(id: number): Promise<void>;
 }
 
-export interface ReporteRepository {
-  criar(r: { precoId: number; userId: string; comentario: string }): Promise<void>;
-  listar(): Promise<ReportePreco[]>;
-  resolver(id: number): Promise<void>;
+export interface ReportRepository {
+  create(r: { priceId: number; userId: string; comment: string }): Promise<void>;
+  list(): Promise<PriceReport[]>;
+  markResolved(id: number): Promise<void>;
 }
 
-export interface Repositorios {
-  medicamentos: MedicamentoRepository;
-  bulas: BulaRepository;
-  precos: PrecoRepository;
-  farmacias: FarmaciaRepository;
-  cupons: CupomRepository;
-  categorias: CategoriaRepository;
-  reportes: ReporteRepository;
+export interface Repositories {
+  medicines: MedicineRepository;
+  packageInserts: PackageInsertRepository;
+  prices: PriceRepository;
+  pharmacies: PharmacyRepository;
+  coupons: CouponRepository;
+  categories: CategoryRepository;
+  reports: ReportRepository;
 }

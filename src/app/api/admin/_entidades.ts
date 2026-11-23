@@ -1,33 +1,33 @@
-import { criarCasosAdmin, exigirAdmin, type CasosAdmin } from "@/application/casos-de-uso/admin";
-import { NaoEncontradoError } from "@/domain/erros";
-import type { UsuarioAtual } from "@/domain/usuario";
-import { obterContainer } from "@/infrastructure/container";
-import { paraCategoria, paraCupom, paraFarmacia, paraMedicamento, paraPreco } from "./_entradas";
+import { createAdminUseCases, requireAdmin, type AdminUseCases } from "@/application/casos-de-uso/admin";
+import { NotFoundError } from "@/domain/erros";
+import type { CurrentUser } from "@/domain/usuario";
+import { getContainer } from "@/infrastructure/container";
+import { toCategory, toCoupon, toPharmacy, toMedicine, toPrice } from "./_entradas";
 
-type U = UsuarioAtual | null;
-type Corpo = Record<string, unknown>;
+type U = CurrentUser | null;
+type Body = Record<string, unknown>;
 
-interface OperacoesEntidade {
-  listar: (u: U) => Promise<unknown>;
-  salvar?: (u: U, corpo: Corpo) => Promise<unknown>;
-  excluir?: (u: U, id: number) => Promise<void>;
-  obter?: (u: U, id: number) => Promise<unknown>;
-  resolver?: (u: U, id: number) => Promise<void>;
+interface EntityOperations {
+  list: (u: U) => Promise<unknown>;
+  save?: (u: U, body: Body) => Promise<unknown>;
+  remove?: (u: U, id: number) => Promise<void>;
+  get?: (u: U, id: number) => Promise<unknown>;
+  markResolved?: (u: U, id: number) => Promise<void>;
 }
 
-function operacoes(c: CasosAdmin): Record<string, OperacoesEntidade> {
+function operations(c: AdminUseCases): Record<string, EntityOperations> {
   return {
     medicamentos: {
-      listar: c.listarMedicamentos,
-      salvar: async (u, corpo) => ({ id: await c.salvarMedicamento(u, paraMedicamento(corpo)) }),
-      excluir: c.excluirMedicamento,
-      obter: async (u, id) => ({ bula: await c.obterBula(u, id) }),
+      list: c.listMedicines,
+      save: async (u, body) => ({ id: await c.saveMedicine(u, toMedicine(body)) }),
+      remove: c.deleteMedicine,
+      get: async (u, id) => ({ packageInsert: await c.getPackageInsert(u, id) }),
     },
-    categorias: { listar: c.listarCategorias, salvar: (u, corpo) => c.salvarCategoria(u, paraCategoria(corpo)), excluir: c.excluirCategoria },
-    farmacias: { listar: c.listarFarmacias, salvar: (u, corpo) => c.salvarFarmacia(u, paraFarmacia(corpo)), excluir: c.excluirFarmacia },
-    precos: { listar: c.listarPrecos, salvar: (u, corpo) => c.salvarPreco(u, paraPreco(corpo)), excluir: c.excluirPreco },
-    cupons: { listar: c.listarCupons, salvar: (u, corpo) => c.salvarCupom(u, paraCupom(corpo)), excluir: c.excluirCupom },
-    reportes: { listar: c.listarReportes, resolver: c.resolverReporte },
+    categorias: { list: c.listCategories, save: (u, body) => c.saveCategory(u, toCategory(body)), remove: c.deleteCategory },
+    farmacias: { list: c.listPharmacies, save: (u, body) => c.savePharmacy(u, toPharmacy(body)), remove: c.deletePharmacy },
+    precos: { list: c.listPrices, save: (u, body) => c.savePrice(u, toPrice(body)), remove: c.deletePrice },
+    cupons: { list: c.listCoupons, save: (u, body) => c.saveCoupon(u, toCoupon(body)), remove: c.deleteCoupon },
+    reportes: { list: c.listReports, markResolved: c.resolveReport },
   };
 }
 
@@ -35,16 +35,16 @@ function operacoes(c: CasosAdmin): Record<string, OperacoesEntidade> {
  * Confirma que é admin (401/403) antes de olhar a entidade ou o corpo;
  * depois resolve a entidade da URL (desconhecida → 404).
  */
-export async function prepararAdmin(entidade: string) {
-  const { repos, usuarioAtual } = await obterContainer();
-  const usuario = await usuarioAtual();
-  exigirAdmin(usuario);
-  const ops = operacoes(criarCasosAdmin(repos))[entidade];
-  if (!ops) throw new NaoEncontradoError("Recurso não encontrado");
-  return { ops, usuario };
+export async function prepareAdmin(entity: string) {
+  const { repos, currentUser } = await getContainer();
+  const user = await currentUser();
+  requireAdmin(user);
+  const ops = operations(createAdminUseCases(repos))[entity];
+  if (!ops) throw new NotFoundError("Recurso não encontrado");
+  return { ops, user };
 }
 
-export function exigirOperacao<T>(op: T | undefined): T {
-  if (!op) throw new NaoEncontradoError("Operação não disponível");
+export function requireOperation<T>(op: T | undefined): T {
+  if (!op) throw new NotFoundError("Operação não disponível");
   return op;
 }

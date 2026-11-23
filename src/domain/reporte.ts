@@ -1,20 +1,20 @@
 import { DomainError } from "./erros";
 
-export interface ReportePreco {
+export interface PriceReport {
   id: number;
-  precoId: number;
-  medicamento: string;
-  farmacia: string;
-  valor: number;
-  comentario: string;
-  criadoEm: Date;
-  resolvido: boolean;
+  priceId: number;
+  medicine: string;
+  pharmacy: string;
+  amount: number;
+  comment: string;
+  createdAt: Date;
+  resolved: boolean;
 }
 
-export const LIMITE_COMENTARIO = 500;
+export const COMMENT_LIMIT = 500;
 
-export function normalizarComentario(c: string): string {
-  const texto = (c ?? "").trim();
-  if (texto.length > LIMITE_COMENTARIO) throw new DomainError("Comentário muito longo");
-  return texto;
+export function normalizeComment(c: string): string {
+  const text = (c ?? "").trim();
+  if (text.length > COMMENT_LIMIT) throw new DomainError("Comentário muito longo");
+  return text;
 }
