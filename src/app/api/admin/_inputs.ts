@@ -3,7 +3,7 @@ import type { CategoryInput, CouponInput, PharmacyInput, PriceInput } from "@/ap
 import { ANVISA_INSERTS_URL } from "@/domain/package-insert";
 import { DomainError } from "@/domain/errors";
 import type { MedicineType } from "@/domain/medicine";
-import { dateFromDay } from "@/infrastructure/mappers";
+import { dateFromDay } from "@/domain/coupon";
 
 type Body = Record<string, unknown>;
 

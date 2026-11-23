@@ -25,3 +25,7 @@ export function validateCoupon(input: { code: string; discount: string; validUnt
   if (!input.discount?.trim()) throw new DomainError("Informe o desconto");
   if (!(input.validUntil instanceof Date) || Number.isNaN(input.validUntil.getTime())) throw new DomainError("Validade inválida");
 }
+
+export function dateFromDay(day: string): Date {
+  return new Date(`${day}T12:00:00-03:00`);
+}

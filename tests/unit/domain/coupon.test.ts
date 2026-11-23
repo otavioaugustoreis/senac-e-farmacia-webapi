@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCouponActive, type Coupon } from "@/domain/coupon";
+import { dateFromDay, dayInSaoPaulo, isCouponActive, type Coupon } from "@/domain/coupon";
 
 const coupon = (validUntil: string): Coupon => ({
   id: 1, pharmacy: { id: 1, name: "F", address: "Rua A, 1" }, code: "X10", description: "", discount: "10%", validUntil: new Date(validUntil),
@@ -23,5 +23,16 @@ describe("isCouponActive", () => {
     const result = isCouponActive(c, today);
     // Assert
     expect(result).toBe(true);
+  });
+});
+
+describe("dateFromDay", () => {
+  it("keeps the same calendar day in São Paulo", () => {
+    // Arrange
+    const day = "2026-11-20";
+    // Act
+    const date = dateFromDay(day);
+    // Assert
+    expect(dayInSaoPaulo(date)).toBe(day);
   });
 });

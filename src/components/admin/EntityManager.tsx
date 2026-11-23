@@ -2,23 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Pencil, Plus, Trash2, X } from "lucide-react";
-import { ENTITY_CONFIG, optionLabel, type Field, type Entity, type OptionSource, type FormValues } from "./entities";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Item = any;
-
-const fieldClass = "w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20";
-
-async function apiRequest(url: string, init?: RequestInit) {
-  const r = await fetch(url, init);
-  if (r.status === 204) return null;
-  const body = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(body.errorMessage ?? "Não foi possível concluir");
-  return body;
-}
+import { ENTITY_CONFIG, type Entity, type OptionSource, type FormValues } from "./entities";
+import { adminApi, type Item } from "./admin-api";
+import { FormField, fieldClass } from "./FormField";
 
 export function EntityManager({ entity }: { entity: Entity }) {
   const cfg = ENTITY_CONFIG[entity];
+  const api = useMemo(() => adminApi(entity), [entity]);
   const [items, setItems] = useState<Item[] | null>(null);
   const [options, setOptions] = useState<Partial<Record<OptionSource, Item[]>>>({});
   const [values, setValues] = useState<FormValues | null>(null);
@@ -27,44 +17,56 @@ export function EntityManager({ entity }: { entity: Entity }) {
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState("");
 
-  const load = useCallback(async () => {
+  const reload = useCallback(async () => {
     try {
-      setItems(await apiRequest(`/api/admin/${entity}`));
+      setItems(await api.list());
     } catch (e) {
       setErrorMessage((e as Error).message);
     }
-  }, [entity]);
+  }, [api]);
 
   useEffect(() => {
     let isActive = true;
-    apiRequest(`/api/admin/${entity}`)
+    api.list()
       .then((list) => isActive && setItems(list))
       .catch((e: Error) => isActive && setErrorMessage(e.message));
     const sources = [...new Set(cfg.fields.map((c) => c.source).filter(Boolean))] as OptionSource[];
-    for (const f of sources) {
-      apiRequest(`/api/admin/${f}`)
+    for (const source of sources) {
+      adminApi(source).list()
         .catch(() => [])
-        .then((list) => isActive && setOptions((o) => ({ ...o, [f]: list })));
+        .then((list) => isActive && setOptions((o) => ({ ...o, [source]: list })));
     }
     return () => { isActive = false; };
-  }, [entity, cfg.fields]);
+  }, [api, cfg.fields]);
 
   const visible = useMemo(() => {
     const t = filter.trim().toLowerCase();
     return (items ?? []).filter((i) => !t || cfg.searchText(i).toLowerCase().includes(t));
   }, [items, filter, cfg]);
 
+  const capitalized = `${cfg.singular[0].toUpperCase()}${cfg.singular.slice(1)}`;
+
+  async function run(action: () => Promise<unknown>, success?: string) {
+    try {
+      await action();
+      if (success) setNotice(success);
+      await reload();
+      return true;
+    } catch (e) {
+      setErrorMessage((e as Error).message);
+      return false;
+    }
+  }
+
   async function open(item?: Item) {
     setErrorMessage(null);
     setNotice(null);
-    const base = item ? cfg.toForm(item) : cfg.toForm({});
-    if (item && cfg.loadsPackageInsert) {
-      const { packageInsert } = (await apiRequest(`/api/admin/${entity}/${item.id}`).catch(() => ({ packageInsert: null }))) ?? {};
-      for (const k of ["usedFor", "contraindications", "sideEffects", "warnings", "anvisaLink"]) {
-        base[`packageInsert.${k}`] = packageInsert?.[k] ?? "";
-      }
+    const form = cfg.toForm(item ?? {});
+    if (item && cfg.detailToForm) {
+      const detail = await api.detail(item.id).catch(() => null);
+      Object.assign(form, cfg.detailToForm(detail));
     }
-    setValues(base);
+    setValues(form);
   }
 
   async function save(e: React.FormEvent) {
@@ -72,41 +74,16 @@ export function EntityManager({ entity }: { entity: Entity }) {
     if (!values) return;
     setSaving(true);
     setErrorMessage(null);
-    try {
-      await apiRequest(`/api/admin/${entity}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cfg.toBody(values)),
-      });
-      setValues(null);
-      setNotice(`${cfg.singular[0].toUpperCase()}${cfg.singular.slice(1)} salvo.`);
-      await load();
-    } catch (e2) {
-      setErrorMessage((e2 as Error).message);
-    } finally {
-      setSaving(false);
-    }
+    if (await run(() => api.save(cfg.toBody(values)), `${capitalized} salvo.`)) setValues(null);
+    setSaving(false);
   }
 
   async function remove(item: Item) {
     if (!confirm(`Excluir este ${cfg.singular}? Esta ação não pode ser desfeita.`)) return;
-    try {
-      await apiRequest(`/api/admin/${entity}/${item.id}`, { method: "DELETE" });
-      setNotice(`${cfg.singular[0].toUpperCase()}${cfg.singular.slice(1)} excluído.`);
-      await load();
-    } catch (e) {
-      setErrorMessage((e as Error).message);
-    }
+    await run(() => api.remove(item.id), `${capitalized} excluído.`);
   }
 
-  async function markResolved(item: Item) {
-    try {
-      await apiRequest(`/api/admin/${entity}/${item.id}`, { method: "PATCH" });
-      await load();
-    } catch (e) {
-      setErrorMessage((e as Error).message);
-    }
-  }
+  const markResolved = (item: Item) => run(() => api.resolve(item.id));
 
   const editable = cfg.fields.length > 0;
 
@@ -173,7 +150,7 @@ export function EntityManager({ entity }: { entity: Entity }) {
                 ))}
               </dl>
               <div className="mt-3 flex gap-2">
-                {entity === "reportes" ? (
+                {cfg.actions === "resolve" ? (
                   !item.resolved && (
                     <button onClick={() => markResolved(item)} className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-full bg-mint-100 px-3 text-sm font-semibold text-brand-800">
                       <CheckCircle2 className="size-4" aria-hidden /> Marcar como resolvido
@@ -213,7 +190,7 @@ export function EntityManager({ entity }: { entity: Entity }) {
                 <tr key={item.id} className={item.resolved ? "text-muted" : ""}>
                   {cfg.columns.map((c) => <td key={c.label} className="px-4 py-2.5">{c.value(item)}</td>)}
                   <td className="whitespace-nowrap px-4 py-2.5 text-right">
-                    {entity === "reportes" ? (
+                    {cfg.actions === "resolve" ? (
                       !item.resolved && (
                         <button onClick={() => markResolved(item)} className="inline-flex items-center gap-1 rounded-full bg-mint-100 px-3 py-1 text-xs font-semibold text-brand-800">
                           <CheckCircle2 className="size-4" aria-hidden /> Marcar como resolvido
@@ -236,41 +213,3 @@ export function EntityManager({ entity }: { entity: Entity }) {
   );
 }
 
-function FormField({ field: c, value, options, update, title }: {
-  field: Field; value: string | boolean | undefined; options?: Item[]; update: (v: string | boolean) => void; title?: string;
-}) {
-  const wide = c.type === "textarea" || c.group;
-  return (
-    <>
-      {title && <h3 className="mt-2 text-sm font-semibold text-brand-800 sm:col-span-2">{title}</h3>}
-      {c.type === "checkbox" ? (
-        <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
-          <input type="checkbox" checked={value === true} onChange={(e) => update(e.target.checked)} className="size-4 accent-brand-700" />
-          {c.label}
-        </label>
-      ) : (
-        <label className={`block text-sm font-medium ${wide ? "sm:col-span-2" : ""}`}>
-          {c.label}{c.required && <span className="text-red-600"> *</span>}
-          {c.type === "textarea" ? (
-            <textarea rows={2} value={String(value ?? "")} onChange={(e) => update(e.target.value)} className={`${fieldClass} mt-1`} />
-          ) : c.type === "select" ? (
-            <select required={c.required} value={String(value ?? "")} onChange={(e) => update(e.target.value)} className={`${fieldClass} mt-1`}>
-              <option value="">{c.required ? "Selecione…" : "— Nenhuma —"}</option>
-              {c.fixedOptions?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              {c.source && options?.map((o) => <option key={o.id} value={o.id}>{optionLabel(c.source!, o)}</option>)}
-            </select>
-          ) : (
-            <input
-              type={c.type === "number" ? "number" : c.type === "date" ? "date" : "text"}
-              step={c.step}
-              required={c.required}
-              value={String(value ?? "")}
-              onChange={(e) => update(e.target.value)}
-              className={`${fieldClass} mt-1`}
-            />
-          )}
-        </label>
-      )}
-    </>
-  );
-}

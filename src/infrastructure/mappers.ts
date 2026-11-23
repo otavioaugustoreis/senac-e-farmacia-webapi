@@ -1,5 +1,5 @@
 import type { PackageInsert } from "@/domain/package-insert";
-import { dayInSaoPaulo, type Coupon } from "@/domain/coupon";
+import { dateFromDay, dayInSaoPaulo, type Coupon } from "@/domain/coupon";
 import type { Pharmacy, NearbyPharmacy } from "@/domain/pharmacy";
 import { buildImage, type Medicine, type SearchResult, type MedicineType } from "@/domain/medicine";
 import type { Price } from "@/domain/price";
@@ -91,10 +91,6 @@ export function pointEwkt(lat: number, lng: number): string {
 export interface CouponRow {
   id: number; codigo: string; descricao: string; desconto: string; validade: string;
   farmacias: { id: number; nome: string; endereco: string } | null;
-}
-
-export function dateFromDay(day: string): Date {
-  return new Date(`${day}T12:00:00-03:00`);
 }
 
 export function toDayString(d: Date): string {

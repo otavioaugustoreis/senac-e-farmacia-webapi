@@ -28,8 +28,11 @@ export interface EntityConfig {
   toForm: (i: Item) => FormValues;
   toBody: (v: FormValues) => Record<string, unknown>;
   searchText: (i: Item) => string;
-  loadsPackageInsert?: boolean;
+  actions: "crud" | "resolve";
+  detailToForm?: (detail: Item) => FormValues;
 }
+
+const PACKAGE_INSERT_KEYS = ["usedFor", "contraindications", "sideEffects", "warnings", "anvisaLink"] as const;
 
 const s = (v: unknown) => (v === null || v === undefined ? "" : String(v));
 const isoDay = (iso: string) => s(iso).slice(0, 10);
@@ -46,7 +49,8 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   medicamentos: {
     title: "Medicamentos",
     singular: "medicamento",
-    loadsPackageInsert: true,
+    actions: "crud",
+    detailToForm: (d) => Object.fromEntries(PACKAGE_INSERT_KEYS.map((k) => [`packageInsert.${k}`, s(d?.packageInsert?.[k])])),
     fields: [
       { name: "brandName", label: "Nome comercial", type: "text", required: true },
       { name: "activeIngredient", label: "Princípio ativo", type: "text", required: true },
@@ -85,6 +89,7 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   },
 
   precos: {
+    actions: "crud",
     title: "Preços",
     singular: "preço",
     fields: [
@@ -104,6 +109,7 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   },
 
   farmacias: {
+    actions: "crud",
     title: "Farmácias",
     singular: "farmácia",
     fields: [
@@ -128,6 +134,7 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   },
 
   cupons: {
+    actions: "crud",
     title: "Cupons",
     singular: "cupom",
     fields: [
@@ -151,6 +158,7 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   },
 
   categorias: {
+    actions: "crud",
     title: "Categorias",
     singular: "categoria",
     fields: [{ name: "name", label: "Nome", type: "text", required: true }],
@@ -161,6 +169,7 @@ export const ENTITY_CONFIG: Record<Entity, EntityConfig> = {
   },
 
   reportes: {
+    actions: "resolve",
     title: "Reportes de preço",
     singular: "reporte",
     fields: [],

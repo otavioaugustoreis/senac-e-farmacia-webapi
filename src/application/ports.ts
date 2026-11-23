@@ -1,3 +1,4 @@
+import type { Role } from "@/domain/user";
 import type { PackageInsert } from "@/domain/package-insert";
 import type { Coupon } from "@/domain/coupon";
 import type { Pharmacy, NearbyPharmacy } from "@/domain/pharmacy";
@@ -106,4 +107,12 @@ export interface Repositories {
   coupons: CouponRepository;
   categories: CategoryRepository;
   reports: ReportRepository;
+}
+
+export type AuthResult = { ok: true } | { ok: false; errorMessage: string };
+
+export interface AuthService {
+  signIn(email: string, password: string): Promise<AuthResult & { role?: Role }>;
+  signUp(name: string, email: string, password: string): Promise<AuthResult>;
+  signOut(): Promise<void>;
 }

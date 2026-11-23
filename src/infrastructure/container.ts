@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Repositories } from "@/application/ports";
+import type { AuthService, Repositories } from "@/application/ports";
 import type { CurrentUser } from "@/domain/user";
+import { createAuthService } from "./auth";
 import { createRepositories } from "./repositories/index";
 import { createServerSupabase } from "./supabase/server";
 
@@ -26,6 +27,10 @@ export async function readCurrentUser(db: SupabaseClient): Promise<CurrentUser |
     name: (profile?.nome as string | null) ?? null,
     role: profile?.role === "admin" ? "admin" : "user",
   };
+}
+
+export async function getAuthService(): Promise<AuthService> {
+  return createAuthService(await createServerSupabase());
 }
 
 export async function getContainer(): Promise<Container> {
