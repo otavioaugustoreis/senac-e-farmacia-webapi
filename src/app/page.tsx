@@ -5,7 +5,6 @@ import { buscarMedicamentos } from "@/application/casos-de-uso/buscar-medicament
 import { montarVitrine } from "@/application/casos-de-uso/montar-vitrine";
 import { obterContainer } from "@/infrastructure/container";
 import { CartaoMedicamento } from "@/components/CartaoMedicamento";
-import { Frasco } from "@/components/Ilustracoes";
 import { MaisBuscados } from "@/components/MaisBuscados";
 import { visualDaCategoria } from "@/components/visual";
 import { formatData } from "@/lib/format";
@@ -95,10 +94,8 @@ export default async function Home() {
             </div>
             <Link href="/busca" className="w-fit rounded-full bg-marca-900 px-4 py-2 text-sm font-semibold text-white">Ver genéricos</Link>
           </div>
-          <div className="absolute bottom-4 right-4 flex items-end gap-2">
-            <Frasco categoria="Anti-inflamatórios" rotulo="Genérico" className="h-24 w-16" />
-            <Frasco categoria="Antibióticos" rotulo="Similar" className="h-28 w-20" />
-          </div>
+          <Image src="/genericos.svg" alt="Caixa de referência por R$ 42,90 ao lado do genérico por R$ 8,90: 79% de economia"
+            width={600} height={450} unoptimized className="pointer-events-none absolute bottom-4 right-4 h-auto w-[38%] max-w-[11rem]" />
         </div>
         <div className="relative flex min-h-[13rem] overflow-hidden rounded-[var(--radius-card)] bg-[#e6f3ea] p-6">
           <div className="relative z-10 flex max-w-[58%] flex-col justify-between gap-4">

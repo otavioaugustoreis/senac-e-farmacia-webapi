@@ -25,7 +25,7 @@ export function Header({ menuUsuario }: Props) {
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] bg-marca-900 px-4 py-3 text-white sm:px-6 sm:py-4">
         <Logo claro />
 
-        <form action="/busca" role="search" autoComplete="off" className="order-3 flex w-full md:order-none md:w-auto md:max-w-2xl md:flex-1">
+        <form action="/busca" role="search" autoComplete="off" className="hidden md:flex md:max-w-2xl md:flex-1">
           <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-tinta">
             <Search className="size-4 shrink-0 text-suave" aria-hidden />
             <Suspense fallback={<CampoBuscaVazio />}><CampoBusca /></Suspense>

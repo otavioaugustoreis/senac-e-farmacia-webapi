@@ -50,6 +50,11 @@ body {
   outline-offset: 2px;
 }
 
+/* Campo dentro de um contêiner que já mostra o anel de foco (focus-within) */
+[data-anel-externo]:focus-visible {
+  outline: none;
+}
+
 /* Leaflet fica abaixo da navegação fixa */
 .leaflet-container {
   z-index: 0;

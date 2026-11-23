@@ -4,8 +4,9 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useCallback, useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { Info, LocateFixed, MapPin, Phone } from "lucide-react";
+import { Info, LocateFixed, MapPin, Phone, Search, X } from "lucide-react";
 import type { ResultadoProximas } from "@/application/casos-de-uso/farmacias-proximas";
+import { filtrarFarmacias, type FarmaciaProxima } from "@/domain/farmacia";
 import { formatKm } from "@/lib/format";
 import { lerLocalSalvo, MENSAGEM_FALHA, obterLocalizacao, type MotivoFalha } from "@/lib/localizacao-navegador";
 import type { LocalSalvo } from "@/lib/localizacao-regras";
@@ -28,14 +29,17 @@ const PINO_VOCE = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-/** Enquadra a origem e as farmácias (ex.: Campinas e São Paulo no mesmo mapa). */
-function Enquadrar({ dados }: { dados: ResultadoProximas }) {
+/** Enquadra a origem e as farmácias (ex.: Campinas e São Paulo no mesmo mapa); com filtro, só o resultado. */
+function Enquadrar({ origem, farmacias, filtrando }: { origem: { lat: number; lng: number }; farmacias: FarmaciaProxima[]; filtrando: boolean }) {
   const mapa = useMap();
+  const chave = `${origem.lat},${origem.lng}|${filtrando}|${farmacias.map((f) => f.id).join(",")}`;
   useEffect(() => {
-    const pontos: [number, number][] = [[dados.origem.lat, dados.origem.lng], ...dados.farmacias.slice(0, 5).map((f) => [f.lat, f.lng] as [number, number])];
-    if (pontos.length === 1) mapa.setView(pontos[0], 14);
+    const alvo = farmacias.slice(0, 5).map((f) => [f.lat, f.lng] as [number, number]);
+    const pontos: [number, number][] = filtrando && alvo.length > 0 ? alvo : [[origem.lat, origem.lng], ...alvo];
+    if (pontos.length === 1) mapa.setView(pontos[0], 15);
     else mapa.fitBounds(pontos, { padding: [40, 40], maxZoom: 15 });
-  }, [mapa, dados]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- a chave resume origem, filtro e ids
+  }, [mapa, chave]);
   return null;
 }
 
@@ -63,6 +67,7 @@ async function resolverLocal(pedirDeNovo: boolean): Promise<{ local: LocalSalvo 
 export default function MapaFarmacias() {
   const [estado, setEstado] = useState<Estado>({ fase: "localizando" });
   const [tentativa, setTentativa] = useState(0);
+  const [termo, setTermo] = useState("");
 
   useEffect(() => {
     let ativo = true;
@@ -101,6 +106,8 @@ export default function MapaFarmacias() {
 
   const { dados, local, falha } = estado;
   const { origem, farmacias } = dados;
+  const visiveis = filtrarFarmacias(farmacias, termo);
+  const filtrando = termo.trim() !== "";
   const lugar = local?.cidade ?? "sua localização";
 
   return (
@@ -131,6 +138,22 @@ export default function MapaFarmacias() {
         </button>
       </div>
 
+      <div role="search" className="flex items-center gap-2 rounded-full bg-white px-4 ring-1 ring-black/10 focus-within:ring-2 focus-within:ring-marca-600">
+        <Search className="size-4 shrink-0 text-suave" aria-hidden />
+        <input data-anel-externo type="search" value={termo} onChange={(e) => setTermo(e.target.value)} enterKeyHint="search" autoComplete="off"
+          placeholder="Buscar farmácia por nome ou bairro" aria-label="Buscar farmácia por nome ou bairro"
+          className="h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-suave sm:text-sm [&::-webkit-search-cancel-button]:appearance-none" />
+        {filtrando && (
+          <>
+            <span className="shrink-0 text-xs text-suave" aria-live="polite">{visiveis.length} de {farmacias.length}</span>
+            <button type="button" onClick={() => setTermo("")} aria-label="Limpar busca"
+              className="grid size-8 shrink-0 place-items-center rounded-full text-suave hover:bg-black/5">
+              <X className="size-4" aria-hidden />
+            </button>
+          </>
+        )}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
         <div className="h-[55dvh] max-h-[480px] min-h-[300px] overflow-hidden rounded-[var(--radius-card)] ring-1 ring-black/5 lg:h-[560px] lg:max-h-none">
           <MapContainer center={[origem.lat, origem.lng]} zoom={13} scrollWheelZoom={false} className="h-full w-full">
@@ -138,11 +161,11 @@ export default function MapaFarmacias() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Enquadrar dados={dados} />
+            <Enquadrar origem={origem} farmacias={visiveis} filtrando={filtrando} />
             <Marker position={[origem.lat, origem.lng]} icon={PINO_VOCE}>
               <Popup>{origem.padrao ? "Av. Paulista (referência)" : `Você está aqui${local?.cidade ? ` · ${local.cidade}` : ""}`}</Popup>
             </Marker>
-            {farmacias.map((f) => (
+            {visiveis.map((f) => (
               <Marker key={f.id} position={[f.lat, f.lng]} icon={f.parceira ? PINO_PARCEIRA : PINO_FARMACIA}>
                 <Popup>
                   <strong>{f.nome}</strong>
@@ -155,8 +178,12 @@ export default function MapaFarmacias() {
           </MapContainer>
         </div>
         <ul className="space-y-2 lg:max-h-[560px] lg:overflow-y-auto">
-          {farmacias.length === 0 && <li className="rounded-2xl bg-white p-4 text-suave ring-1 ring-black/5">Nenhuma farmácia encontrada.</li>}
-          {farmacias.map((f) => (
+          {visiveis.length === 0 && (
+            <li className="rounded-2xl bg-white p-4 text-sm text-suave ring-1 ring-black/5">
+              {filtrando ? <>Nenhuma farmácia com “{termo.trim()}”. Tente outro nome ou bairro.</> : "Nenhuma farmácia encontrada."}
+            </li>
+          )}
+          {visiveis.map((f) => (
             <li key={f.id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
               <div className="flex items-start justify-between gap-2">
                 <p className="font-semibold">{f.nome}</p>

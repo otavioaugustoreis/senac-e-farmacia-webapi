@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450" font-family="Inter, 'Plus Jakarta Sans', Arial, sans-serif">
+  <defs>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#12402B" flood-opacity="0.16"/>
+    </filter>
+    <linearGradient id="boxSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F2EFE8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- blob de fundo -->
+  <ellipse cx="320" cy="250" rx="250" ry="170" fill="#E9E3D3" opacity="0.7"/>
+  <ellipse cx="310" cy="425" rx="200" ry="14" fill="#12402B" opacity="0.10"/>
+
+  <!-- Caixa de referência (atrás) -->
+  <g transform="rotate(-7 170 260)" filter="url(#sh)">
+    <rect x="70" y="140" width="200" height="250" rx="20" fill="url(#boxSide)"/>
+    <path d="M 70 160 A 20 20 0 0 1 90 140 L 250 140 A 20 20 0 0 1 270 160 L 270 196 L 70 196 Z" fill="#7B4FC9"/>
+    <circle cx="104" cy="168" r="12" fill="#FFFFFF" opacity="0.3"/>
+    <rect x="124" y="162" width="96" height="12" rx="6" fill="#FFFFFF" opacity="0.55"/>
+    <rect x="94" y="222" width="130" height="18" rx="9" fill="#3E2C6B" opacity="0.85"/>
+    <rect x="94" y="252" width="100" height="10" rx="5" fill="#CFC9BB"/>
+    <rect x="94" y="272" width="118" height="10" rx="5" fill="#CFC9BB"/>
+    <rect x="94" y="320" width="84" height="10" rx="5" fill="#CFC9BB"/>
+    <rect x="94" y="340" width="60" height="10" rx="5" fill="#CFC9BB"/>
+  </g>
+  <!-- etiqueta referência -->
+  <g transform="translate(46,86) rotate(-10)" filter="url(#sh)">
+    <path d="M 0 0 L 132 0 A 14 14 0 0 1 146 14 L 146 44 A 14 14 0 0 1 132 58 L 0 58 L -22 29 Z" fill="#FFFFFF"/>
+    <circle cx="-4" cy="29" r="6" fill="#E9E3D3"/>
+    <text x="74" y="38" font-size="24" font-weight="700" fill="#9AA39E" text-anchor="middle">R$ 42,90</text>
+    <line x1="18" y1="30" x2="132" y2="30" stroke="#E8743B" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Caixa genérico (frente) -->
+  <g transform="rotate(4 390 260)" filter="url(#sh)">
+    <rect x="280" y="100" width="230" height="300" rx="22" fill="url(#boxSide)"/>
+    <rect x="304" y="132" width="150" height="20" rx="10" fill="#12402B"/>
+    <rect x="304" y="164" width="110" height="11" rx="5.5" fill="#CFC9BB"/>
+    <rect x="304" y="185" width="132" height="11" rx="5.5" fill="#CFC9BB"/>
+    <!-- comprimidos no blister -->
+    <g>
+      <circle cx="322" cy="236" r="14" fill="#E3F3EA" stroke="#1D7A52" stroke-width="3"/>
+      <circle cx="362" cy="236" r="14" fill="#E3F3EA" stroke="#1D7A52" stroke-width="3"/>
+      <circle cx="402" cy="236" r="14" fill="#E3F3EA" stroke="#1D7A52" stroke-width="3"/>
+    </g>
+    <!-- faixa amarela de genérico -->
+    <path d="M 280 300 L 510 300 L 510 378 A 22 22 0 0 1 488 400 L 302 400 A 22 22 0 0 1 280 378 Z" fill="#F7C92B"/>
+    <circle cx="336" cy="350" r="30" fill="#1F4FA8"/>
+    <text x="336" y="363" font-size="38" font-weight="900" fill="#FFFFFF" text-anchor="middle">G</text>
+    <rect x="380" y="334" width="106" height="11" rx="5.5" fill="#1F4FA8" opacity="0.75"/>
+    <rect x="380" y="354" width="80" height="11" rx="5.5" fill="#1F4FA8" opacity="0.45"/>
+  </g>
+
+  <!-- etiqueta genérico -->
+  <g transform="translate(244,266) rotate(-6)" filter="url(#sh)">
+    <path d="M 0 0 L 150 0 A 16 16 0 0 1 166 16 L 166 54 A 16 16 0 0 1 150 70 L 0 70 L -26 35 Z" fill="#12402B"/>
+    <circle cx="-4" cy="35" r="7" fill="#3FA374"/>
+    <text x="84" y="48" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">R$ 8,90</text>
+  </g>
+
+  <!-- selo -79% -->
+  <g transform="translate(514,104) rotate(12)" filter="url(#sh)">
+    <circle r="58" fill="#E8743B"/>
+    <circle r="50" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="5 6" opacity="0.55"/>
+    <text y="11" font-size="31" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">-79%</text>
+  </g>
+
+  <!-- detalhes -->
+  <g transform="translate(560,300) rotate(30)">
+    <rect x="-30" y="-12" width="60" height="24" rx="12" fill="#FFFFFF"/>
+    <path d="M 0 -12 L 18 -12 A 12 12 0 0 1 18 12 L 0 12 Z" fill="#1D7A52"/>
+  </g>
+  <path d="M 230 46 L 235 61 L 250 66 L 235 71 L 230 86 L 225 71 L 210 66 L 225 61 Z" fill="#E0A100"/>
+  <path d="M 40 300 L 44 312 L 56 316 L 44 320 L 40 332 L 36 320 L 24 316 L 36 312 Z" fill="#7B4FC9"/>
+</svg>

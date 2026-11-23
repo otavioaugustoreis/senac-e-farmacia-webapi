@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { buscarMedicamentos, listarCategorias } from "@/application/casos-de-uso/buscar-medicamentos";
 import { obterContainer } from "@/infrastructure/container";
 import { CartaoMedicamento } from "@/components/CartaoMedicamento";
@@ -27,6 +28,15 @@ export default async function BuscaPage({ searchParams }: { searchParams: Promis
 
   return (
     <div>
+      {/* No celular a busca mora aqui (aba "Buscar"); no computador fica no cabeçalho. */}
+      <form action="/busca" role="search" autoComplete="off" className="mb-5 md:hidden">
+        {filtro && <input type="hidden" name="categoria" value={filtro} />}
+        <label className="flex items-center gap-2 rounded-full bg-white px-4 ring-1 ring-black/10 focus-within:ring-2 focus-within:ring-marca-600">
+          <Search className="size-4 shrink-0 text-suave" aria-hidden />
+          <input data-anel-externo key={q} name="q" type="search" enterKeyHint="search" defaultValue={q} placeholder="Nome ou princípio ativo"
+            aria-label="Buscar medicamento" className="h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-suave" />
+        </label>
+      </form>
       <h1 className="text-2xl font-bold text-marca-900">
         {q.trim() ? <>Resultados para “{q.trim()}”</> : "Todos os medicamentos"}
         {nomeCategoria && <span className="font-serif font-normal italic text-suave"> em {nomeCategoria}</span>}
