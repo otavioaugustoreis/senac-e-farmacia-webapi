@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224 720" width="1224" height="720" font-family="Inter, 'Plus Jakarta Sans', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F3F1E7"/>
+      <stop offset="1" stop-color="#FBEADB"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6E2A0B"/>
+      <stop offset="0.35" stop-color="#B5561F"/>
+      <stop offset="0.6" stop-color="#C9682B"/>
+      <stop offset="1" stop-color="#5E2208"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0B2E1E"/>
+      <stop offset="0.45" stop-color="#1D5A3D"/>
+      <stop offset="1" stop-color="#0B2E1E"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1EEE6"/>
+    </linearGradient>
+    <linearGradient id="paperDark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E6E2D7"/>
+      <stop offset="1" stop-color="#F7F5EF"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#12402B" flood-opacity="0.14"/>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <clipPath id="frame"><rect width="1224" height="720" rx="56"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <!-- Fundo -->
+    <rect width="1224" height="720" fill="url(#bg)"/>
+    <circle cx="150" cy="120" r="210" fill="#FFFFFF" opacity="0.55"/>
+    <circle cx="1080" cy="700" r="260" fill="#D9EEE3" opacity="0.8"/>
+    <circle cx="640" cy="380" r="250" fill="#FFFFFF" opacity="0.45"/>
+    <!-- pontilhado decorativo -->
+    <g fill="#12402B" opacity="0.12">
+      <circle cx="960" cy="380" r="4"/><circle cx="990" cy="380" r="4"/><circle cx="1020" cy="380" r="4"/>
+      <circle cx="960" cy="410" r="4"/><circle cx="990" cy="410" r="4"/><circle cx="1020" cy="410" r="4"/>
+      <circle cx="960" cy="440" r="4"/><circle cx="990" cy="440" r="4"/><circle cx="1020" cy="440" r="4"/>
+    </g>
+
+    <!-- Bula sanfonada -->
+    <g filter="url(#shadow)">
+      <polygon points="250,250 330,226 330,566 250,590" fill="url(#paper)"/>
+      <polygon points="330,226 410,250 410,590 330,566" fill="url(#paperDark)"/>
+      <polygon points="410,250 490,226 490,566 410,590" fill="url(#paper)"/>
+    </g>
+    <!-- conteúdo da bula -->
+    <g>
+      <!-- painel 1 -->
+      <g transform="translate(250,250) skewY(-16.7)">
+        <rect x="14" y="30" width="34" height="8" rx="4" fill="#E8743B"/>
+        <rect x="14" y="48" width="52" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="60" width="46" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="72" width="54" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="110" width="40" height="8" rx="4" fill="#1D7A52"/>
+        <rect x="14" y="128" width="54" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="140" width="44" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="152" width="50" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="164" width="36" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="202" width="30" height="8" rx="4" fill="#7B4FC9"/>
+        <rect x="14" y="220" width="52" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="232" width="48" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="244" width="54" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="256" width="40" height="5" rx="2.5" fill="#CFC9BB"/>
+        <rect x="14" y="294" width="38" height="8" rx="4" fill="#E0A100"/>
+        <rect x="14" y="312" width="50" height="5" rx="2.5" fill="#CFC9BB"/>
+      </g>
+      <!-- painel 2 -->
+      <g transform="translate(330,226) skewY(16.7)">
+        <rect x="14" y="40" width="52" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="52" width="44" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="64" width="50" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="100" width="36" height="8" rx="4" fill="#E8743B" opacity="0.85"/>
+        <rect x="14" y="118" width="54" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="130" width="40" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="142" width="48" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="190" width="42" height="8" rx="4" fill="#1D7A52" opacity="0.85"/>
+        <rect x="14" y="208" width="50" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="220" width="54" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="232" width="38" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="270" width="52" height="5" rx="2.5" fill="#C4BEAF"/>
+        <rect x="14" y="282" width="46" height="5" rx="2.5" fill="#C4BEAF"/>
+      </g>
+    </g>
+
+    <!-- Lupa sobre a bula -->
+    <g transform="translate(300,420) rotate(-20)">
+      <rect x="-9" y="52" width="18" height="78" rx="9" fill="#12402B"/>
+      <circle cx="0" cy="0" r="58" fill="#FFFFFF" fill-opacity="0.55" stroke="#12402B" stroke-width="14"/>
+      <rect x="-30" y="-22" width="40" height="9" rx="4.5" fill="#1D7A52"/>
+      <rect x="-30" y="-4" width="56" height="7" rx="3.5" fill="#9AA79F"/>
+      <rect x="-30" y="12" width="46" height="7" rx="3.5" fill="#9AA79F"/>
+      <path d="M -36 -34 A 46 46 0 0 1 -6 -48" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+    </g>
+
+    <!-- Sombra do frasco -->
+    <ellipse cx="640" cy="640" rx="150" ry="20" fill="#12402B" opacity="0.18" filter="url(#soft)"/>
+
+    <!-- Frasco âmbar -->
+    <g transform="rotate(-5 640 420)">
+      <!-- gargalo -->
+      <rect x="548" y="200" width="184" height="40" rx="10" fill="#5E2208"/>
+      <!-- tampa -->
+      <rect x="532" y="128" width="216" height="92" rx="20" fill="url(#cap)"/>
+      <g stroke="#0A2A1B" stroke-width="4" opacity="0.55">
+        <line x1="556" y1="140" x2="556" y2="208"/><line x1="580" y1="140" x2="580" y2="208"/>
+        <line x1="604" y1="140" x2="604" y2="208"/><line x1="628" y1="140" x2="628" y2="208"/>
+        <line x1="652" y1="140" x2="652" y2="208"/><line x1="676" y1="140" x2="676" y2="208"/>
+        <line x1="700" y1="140" x2="700" y2="208"/><line x1="724" y1="140" x2="724" y2="208"/>
+      </g>
+      <rect x="548" y="136" width="70" height="10" rx="5" fill="#FFFFFF" opacity="0.18"/>
+      <!-- corpo -->
+      <rect x="512" y="232" width="256" height="400" rx="54" fill="url(#amber)"/>
+      <rect x="532" y="262" width="22" height="330" rx="11" fill="#FFFFFF" opacity="0.22"/>
+      <rect x="566" y="262" width="8" height="330" rx="4" fill="#FFFFFF" opacity="0.12"/>
+      <!-- rótulo -->
+      <rect x="512" y="330" width="256" height="220" fill="#FBF6EC"/>
+      <rect x="512" y="330" width="256" height="46" fill="#12402B"/>
+      <!-- marca -->
+      <g transform="translate(540,353)">
+        <circle r="13" fill="#FFFFFF" opacity="0.15"/>
+        <rect x="-9" y="-4.5" width="18" height="9" rx="4.5" fill="none" stroke="#FFFFFF" stroke-width="2.6" transform="rotate(-45)"/>
+        <line x1="-2.5" y1="2.5" x2="2.5" y2="-2.5" stroke="#FFFFFF" stroke-width="2.6" transform="rotate(0)"/>
+      </g>
+      <text x="562" y="360" font-size="17" font-weight="700" fill="#FFFFFF">E-Farmácia</text>
+      <text x="536" y="420" font-size="34" font-weight="800" fill="#12402B" letter-spacing="-0.5">Dipirona</text>
+      <text x="537" y="448" font-size="17" font-weight="500" fill="#5C6B63">500 mg · 30 comprimidos</text>
+      <rect x="536" y="470" width="118" height="32" rx="16" fill="#FFE3A3"/>
+      <text x="595" y="492" font-size="15" font-weight="800" fill="#7A5500" text-anchor="middle" letter-spacing="1">GENÉRICO</text>
+      <!-- folhinha -->
+      <path d="M 728 520 C 728 488 750 470 752 470 C 754 490 748 514 728 520 Z" fill="#1D7A52"/>
+      <path d="M 712 526 C 700 502 708 482 710 480 C 724 494 728 512 712 526 Z" fill="#3FA374"/>
+      <rect x="512" y="544" width="256" height="6" fill="#E8743B"/>
+    </g>
+
+    <!-- Card de comparação de preços -->
+    <g filter="url(#shadow)">
+      <rect x="800" y="96" width="350" height="226" rx="30" fill="#FFFFFF"/>
+    </g>
+    <text x="830" y="140" font-size="16" font-weight="600" fill="#7A8580">Comparando 12 farmácias</text>
+    <!-- linha referência -->
+    <rect x="830" y="162" width="290" height="60" rx="18" fill="#F6F3EC"/>
+    <circle cx="858" cy="192" r="12" fill="#FDE1D2"/>
+    <circle cx="858" cy="192" r="5" fill="#E8743B"/>
+    <text x="882" y="198" font-size="18" font-weight="600" fill="#3E4A44">Referência</text>
+    <text x="1104" y="198" font-size="18" font-weight="600" fill="#9AA39E" text-anchor="end">R$ 19,90</text>
+    <line x1="1024" y1="192" x2="1106" y2="192" stroke="#E8743B" stroke-width="2.5"/>
+    <!-- linha genérico -->
+    <rect x="830" y="234" width="290" height="62" rx="18" fill="#E3F3EA" stroke="#1D7A52" stroke-width="2"/>
+    <circle cx="858" cy="265" r="12" fill="#1D7A52"/>
+    <path d="M 852 265 L 857 270 L 865 260" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="882" y="271" font-size="18" font-weight="700" fill="#12402B">Genérico</text>
+    <text x="1104" y="273" font-size="24" font-weight="800" fill="#12402B" text-anchor="end">R$ 8,75</text>
+    <!-- selo de economia -->
+    <g transform="translate(1112,104) rotate(10)">
+      <circle r="50" fill="#E8743B"/>
+      <circle r="44" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 5" opacity="0.5"/>
+      <text y="4" font-size="25" font-weight="800" fill="#FFFFFF" text-anchor="middle">-56%</text>
+      <text y="22" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.9">ECONOMIA</text>
+    </g>
+
+    <!-- Chip de localização -->
+    <g filter="url(#shadow)">
+      <rect x="92" y="604" width="348" height="84" rx="42" fill="#FFFFFF"/>
+    </g>
+    <circle cx="136" cy="646" r="28" fill="#12402B"/>
+    <path d="M 136 628 C 125 628 118 636 118 645 C 118 656 136 668 136 668 C 136 668 154 656 154 645 C 154 636 147 628 136 628 Z" fill="#FFFFFF"/>
+    <circle cx="136" cy="645" r="6" fill="#12402B"/>
+    <text x="178" y="641" font-size="20" font-weight="800" fill="#12402B">3 farmácias perto</text>
+    <text x="178" y="666" font-size="16" font-weight="500" fill="#7A8580">a partir de 450 m · aberta agora</text>
+    <circle cx="414" cy="646" r="6" fill="#3FC37F"/>
+
+    <!-- Chip bula oficial -->
+    <g filter="url(#shadow)">
+      <rect x="196" y="160" width="208" height="54" rx="27" fill="#12402B"/>
+    </g>
+    <circle cx="224" cy="187" r="13" fill="#3FA374"/>
+    <path d="M 218 187 L 222.5 191.5 L 230 183" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="246" y="193" font-size="16" font-weight="700" fill="#FFFFFF">Bula organizada</text>
+
+    <!-- Cápsulas e comprimidos flutuando -->
+    <g transform="translate(860,470) rotate(-32)" filter="url(#shadow)">
+      <rect x="-62" y="-24" width="124" height="48" rx="24" fill="#FFFFFF"/>
+      <path d="M 0 -24 L 38 -24 A 24 24 0 0 1 38 24 L 0 24 Z" fill="#E8743B"/>
+      <rect x="-46" y="-15" width="36" height="7" rx="3.5" fill="#FFFFFF" opacity="0.9"/>
+      <rect x="10" y="-15" width="30" height="7" rx="3.5" fill="#FFFFFF" opacity="0.35"/>
+    </g>
+    <g transform="translate(110,370) rotate(28)" filter="url(#shadow)">
+      <rect x="-48" y="-19" width="96" height="38" rx="19" fill="#FFFFFF"/>
+      <path d="M 0 -19 L 29 -19 A 19 19 0 0 1 29 19 L 0 19 Z" fill="#7B4FC9"/>
+      <rect x="8" y="-11" width="24" height="6" rx="3" fill="#FFFFFF" opacity="0.35"/>
+    </g>
+    <g transform="translate(1010,560)" filter="url(#shadow)">
+      <circle r="38" fill="#F2B51D"/>
+      <circle r="38" fill="none" stroke="#D99A00" stroke-width="4"/>
+      <line x1="-24" y1="0" x2="24" y2="0" stroke="#C78C00" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="-12" cy="-18" rx="10" ry="5" fill="#FFFFFF" opacity="0.45" transform="rotate(-25 -12 -18)"/>
+    </g>
+    <g transform="translate(1150,450)">
+      <circle r="20" fill="#FFFFFF" stroke="#E5E0D4" stroke-width="3"/>
+      <line x1="-11" y1="0" x2="11" y2="0" stroke="#D5CFC1" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(470,120) rotate(-18)">
+      <rect x="-30" y="-12" width="60" height="24" rx="12" fill="#FFFFFF"/>
+      <path d="M 0 -12 L 18 -12 A 12 12 0 0 1 18 12 L 0 12 Z" fill="#1D7A52"/>
+    </g>
+
+    <!-- Brilhos -->
+    <g fill="#E0A100">
+      <path d="M 790 380 L 796 398 L 814 404 L 796 410 L 790 428 L 784 410 L 766 404 L 784 398 Z"/>
+      <path d="M 470 640 L 474 652 L 486 656 L 474 660 L 470 672 L 466 660 L 454 656 L 466 652 Z"/>
+    </g>
+    <g fill="#E8743B">
+      <path d="M 90 250 L 94 262 L 106 266 L 94 270 L 90 282 L 86 270 L 74 266 L 86 262 Z"/>
+    </g>
+    <path d="M 1180 640 L 1184 652 L 1196 656 L 1184 660 L 1180 672 L 1176 660 L 1164 656 L 1176 652 Z" fill="#7B4FC9"/>
+  </g>
+</svg>

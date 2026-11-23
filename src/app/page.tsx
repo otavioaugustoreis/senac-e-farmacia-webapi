@@ -1,10 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, CalendarClock, MapPin } from "lucide-react";
 import { buscarMedicamentos } from "@/application/casos-de-uso/buscar-medicamentos";
 import { montarVitrine } from "@/application/casos-de-uso/montar-vitrine";
 import { obterContainer } from "@/infrastructure/container";
 import { CartaoMedicamento } from "@/components/CartaoMedicamento";
-import { Frasco, PainelHero } from "@/components/Ilustracoes";
+import { Frasco } from "@/components/Ilustracoes";
 import { MaisBuscados } from "@/components/MaisBuscados";
 import { visualDaCategoria } from "@/components/visual";
 import { formatData } from "@/lib/format";
@@ -40,7 +41,10 @@ export default async function Home() {
             Comparar preços <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
-        <PainelHero economia={v.numeros.economiaMediaPercentual} />
+        <div className="self-center overflow-hidden rounded-[1.75rem]">
+          <Image src="/hero-efarmacia.svg" alt="Comparação de preço da dipirona: genérico 56% mais barato que o de referência, farmácias próximas e bula organizada"
+            width={1224} height={720} priority unoptimized className="h-auto w-full" />
+        </div>
       </section>
 
       {/* Categorias */}
