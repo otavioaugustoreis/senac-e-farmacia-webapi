@@ -105,7 +105,7 @@ describe.skipIf(!url || !chave)("repositórios Supabase (leitura anônima)", () 
     expect(resultado[0].farmacia.nome).toBeTruthy();
   });
 
-  it("lê bula e cupons com farmácia", async () => {
+  it("lê bula e cupons com farmácia e endereço", async () => {
     // Arrange
     const { bulas, cupons } = repos();
     // Act
@@ -115,6 +115,7 @@ describe.skipIf(!url || !chave)("repositórios Supabase (leitura anônima)", () 
     expect(lista.length).toBeGreaterThan(0);
     expect(lista[0].validade).toBeInstanceOf(Date);
     expect(lista[0].farmacia.nome).toBeTruthy();
+    expect(lista[0].farmacia.endereco).toBeTruthy();
   });
 
   it("não deixa visitante anônimo gravar preço", async () => {

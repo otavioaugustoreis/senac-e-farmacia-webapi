@@ -10,6 +10,7 @@ import { CartaoMedicamento } from "@/components/CartaoMedicamento";
 import { ReportarPreco } from "@/components/ReportarPreco";
 import { SeloTipo } from "@/components/visual";
 import { FotoMedicamento } from "@/components/FotoMedicamento";
+import { UsarCupom } from "@/components/UsarCupom";
 import { formatBRL, formatData } from "@/lib/format";
 
 type Props = { params: Promise<{ id: string }> };
@@ -152,9 +153,12 @@ export default async function MedicamentoPage({ params }: Props) {
               <h2 id="titulo-cupons" className="flex items-center gap-2 font-bold text-marca-900"><Ticket className="size-5" aria-hidden /> Cupons das farmácias</h2>
               <ul className="mt-3 space-y-2">
                 {d.cupons.map((c) => (
-                  <li key={c.id} className="rounded-xl bg-white p-3 text-sm">
-                    <p className="font-semibold">{c.farmacia.nome}: <span className="font-mono text-marca-700">{c.codigo}</span></p>
-                    <p className="text-xs text-suave">{c.descricao} · até {formatData(c.validade)}</p>
+                  <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white p-3 text-sm">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{c.desconto} · {c.farmacia.nome}</p>
+                      <p className="text-xs text-suave">{c.descricao} · até {formatData(c.validade)}</p>
+                    </div>
+                    <UsarCupom cupom={{ ...c, validade: formatData(c.validade) }} compacto />
                   </li>
                 ))}
               </ul>

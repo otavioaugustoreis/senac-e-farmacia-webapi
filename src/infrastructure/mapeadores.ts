@@ -91,7 +91,7 @@ export function pontoEwkt(lat: number, lng: number): string {
 
 export interface LinhaCupom {
   id: number; codigo: string; descricao: string; desconto: string; validade: string;
-  farmacias: { id: number; nome: string } | null;
+  farmacias: { id: number; nome: string; endereco: string } | null;
 }
 
 /** `validade` é um dia (date) no calendário de São Paulo; meio-dia evita virar o dia por fuso. */
@@ -106,7 +106,7 @@ export function paraDia(d: Date): string {
 export function paraCupom(l: LinhaCupom): Cupom {
   return {
     id: l.id, codigo: l.codigo, descricao: l.descricao, desconto: l.desconto, validade: dataDoDia(l.validade),
-    farmacia: l.farmacias ?? { id: 0, nome: "" },
+    farmacia: l.farmacias ?? { id: 0, nome: "", endereco: "" },
   };
 }
 

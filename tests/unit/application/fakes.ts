@@ -36,7 +36,7 @@ export function preco(id: number, medicamentoId: number, farmaciaId: number, val
 }
 
 export function cupom(id: number, farmaciaId: number, validade: string): Cupom {
-  return { id, farmacia: { id: farmaciaId, nome: `Farmácia ${farmaciaId}` }, codigo: `CUPOM${id}`, descricao: "", desconto: "10%", validade: new Date(validade) };
+  return { id, farmacia: { id: farmaciaId, nome: `Farmácia ${farmaciaId}`, endereco: "Rua Exemplo, 100" }, codigo: `CUPOM${id}`, descricao: "", desconto: "10%", validade: new Date(validade) };
 }
 
 export function dadosVazios(): Dados {
@@ -125,7 +125,7 @@ export function criarFakes(d: Dados): Repositorios {
       },
       async salvar(input) {
         const id = input.id ?? ++proximoId;
-        d.cupons = [...d.cupons.filter((c) => c.id !== id), { id, farmacia: { id: input.farmaciaId, nome: "" }, codigo: input.codigo, descricao: input.descricao, desconto: input.desconto, validade: input.validade }];
+        d.cupons = [...d.cupons.filter((c) => c.id !== id), { id, farmacia: { id: input.farmaciaId, nome: "", endereco: "" }, codigo: input.codigo, descricao: input.descricao, desconto: input.desconto, validade: input.validade }];
       },
       async excluir(id) {
         d.cupons = d.cupons.filter((c) => c.id !== id);

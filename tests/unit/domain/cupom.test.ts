@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { cupomVigente, type Cupom } from "@/domain/cupom";
 
 const cupom = (validade: string): Cupom => ({
-  id: 1, farmacia: { id: 1, nome: "F" }, codigo: "X10", descricao: "", desconto: "10%", validade: new Date(validade),
+  id: 1, farmacia: { id: 1, nome: "F", endereco: "Rua A, 1" }, codigo: "X10", descricao: "", desconto: "10%", validade: new Date(validade),
 });
 const hoje = new Date("2026-11-20T15:00:00-03:00");
 

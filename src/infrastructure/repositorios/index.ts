@@ -98,7 +98,7 @@ export function criarRepositorios(db: SupabaseClient): Repositorios {
 
     cupons: {
       async listar() {
-        const linhas = verificar(await db.from("cupons").select("*, farmacias(id, nome)").order("validade"));
+        const linhas = verificar(await db.from("cupons").select("*, farmacias(id, nome, endereco)").order("validade"));
         return (linhas as unknown as LinhaCupom[]).map(paraCupom);
       },
       async salvar(c) {

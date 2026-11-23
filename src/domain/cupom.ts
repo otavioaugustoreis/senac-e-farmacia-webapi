@@ -2,7 +2,7 @@ import { DomainError } from "./erros";
 
 export interface Cupom {
   id: number;
-  farmacia: { id: number; nome: string };
+  farmacia: { id: number; nome: string; endereco: string };
   codigo: string;
   descricao: string;
   desconto: string;
