@@ -1,4 +1,4 @@
-import { listActiveCoupons } from "@/application/casos-de-uso/listar-cupons-vigentes";
+import { listActiveCoupons } from "@/application/use-cases/list-active-coupons";
 import { getContainer } from "@/infrastructure/container";
 import { json, handle } from "../_http";
 

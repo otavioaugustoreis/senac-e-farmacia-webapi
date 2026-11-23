@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setContainerForTests } from "@/infrastructure/container";
-import type { CurrentUser } from "@/domain/usuario";
+import type { CurrentUser } from "@/domain/user";
 import { GET as getMedicamentos } from "@/app/api/medicamentos/route";
 import { GET as getMedicamento } from "@/app/api/medicamentos/[id]/route";
 import { GET as getCategorias } from "@/app/api/categorias/route";
 import { GET as getProximas } from "@/app/api/farmacias/proximas/route";
 import { GET as getCupons } from "@/app/api/cupons/route";
 import { POST as postReporte } from "@/app/api/reportes/route";
-import { GET as getAdmin, POST as postAdmin } from "@/app/api/admin/[entidade]/route";
-import { DELETE as deleteAdmin, PATCH as patchAdmin } from "@/app/api/admin/[entidade]/[id]/route";
+import { GET as getAdmin, POST as postAdmin } from "@/app/api/admin/[entity]/route";
+import { DELETE as deleteAdmin, PATCH as patchAdmin } from "@/app/api/admin/[entity]/[id]/route";
 import { admin, createFakes, coupon, emptyData, pharmacy, med, price, regularUser, type DashboardData } from "../../unit/application/fakes";
 
 let payload: DashboardData;
@@ -37,7 +37,7 @@ beforeEach(() => {
 afterEach(() => setContainerForTests(null));
 
 describe("GET /api/medicamentos", () => {
-  it("devolve 200 com os resultados da busca", async () => {
+  it("returns 200 with the search results", async () => {
     // Arrange
     const request = req("/api/medicamentos?q=dipirona");
     // Act
@@ -49,7 +49,7 @@ describe("GET /api/medicamentos", () => {
 });
 
 describe("GET /api/medicamentos/:id", () => {
-  it("devolve 404 com { erro } para id inexistente", async () => {
+  it("returns 404 with { errorMessage } for an unknown id", async () => {
     // Arrange
     const request = req("/api/medicamentos/999");
     // Act
@@ -59,7 +59,7 @@ describe("GET /api/medicamentos/:id", () => {
     expect(await response.json()).toEqual({ errorMessage: "Medicamento não encontrado" });
   });
 
-  it("devolve 400 para id não numérico", async () => {
+  it("returns 400 for a non-numeric id", async () => {
     // Arrange
     const request = req("/api/medicamentos/abc");
     // Act
@@ -68,7 +68,7 @@ describe("GET /api/medicamentos/:id", () => {
     expect(response.status).toBe(400);
   });
 
-  it("devolve 200 com o detalhe", async () => {
+  it("returns 200 with the detail", async () => {
     // Arrange
     const request = req("/api/medicamentos/1");
     // Act
@@ -82,7 +82,7 @@ describe("GET /api/medicamentos/:id", () => {
 });
 
 describe("GET /api/categorias e /api/cupons", () => {
-  it("devolve categorias e cupons vigentes", async () => {
+  it("returns categories and active coupons", async () => {
     // Arrange
     const routes = [getCategorias, getCupons];
     // Act
@@ -95,7 +95,7 @@ describe("GET /api/categorias e /api/cupons", () => {
 });
 
 describe("GET /api/farmacias/proximas", () => {
-  it("usa o ponto padrão com lat inválida", async () => {
+  it("uses the default point with an invalid lat", async () => {
     // Arrange
     const request = req("/api/farmacias/proximas?lat=x");
     // Act
@@ -105,7 +105,7 @@ describe("GET /api/farmacias/proximas", () => {
     expect((await response.json()).origin.isDefault).toBe(true);
   });
 
-  it("usa a posição enviada quando válida", async () => {
+  it("uses the given position when valid", async () => {
     // Arrange
     const request = req("/api/farmacias/proximas?lat=-23.5&lng=-46.6");
     // Act
@@ -116,7 +116,7 @@ describe("GET /api/farmacias/proximas", () => {
 });
 
 describe("POST /api/reportes", () => {
-  it("devolve 401 sem login", async () => {
+  it("returns 401 without login", async () => {
     // Arrange
     const request = jsonRequest("/api/reportes", "POST", { priceId: 10, comment: "mudou" });
     // Act
@@ -125,7 +125,7 @@ describe("POST /api/reportes", () => {
     expect(response.status).toBe(401);
   });
 
-  it("devolve 201 para usuário logado", async () => {
+  it("returns 201 for a signed-in user", async () => {
     // Arrange
     user = regularUser;
     const request = jsonRequest("/api/reportes", "POST", { priceId: 10, comment: "mudou" });
@@ -136,7 +136,7 @@ describe("POST /api/reportes", () => {
     expect(payload.reports).toHaveLength(1);
   });
 
-  it("devolve 400 para JSON inválido", async () => {
+  it("returns 400 for invalid JSON", async () => {
     // Arrange
     user = regularUser;
     const request = req("/api/reportes", { method: "POST", body: "{" });
@@ -148,7 +148,7 @@ describe("POST /api/reportes", () => {
 });
 
 describe("/api/admin", () => {
-  it("devolve 401 sem login", async () => {
+  it("returns 401 without login", async () => {
     // Arrange
     const request = req("/api/admin/precos");
     // Act
@@ -157,7 +157,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(401);
   });
 
-  it("devolve 403 para usuário comum", async () => {
+  it("returns 403 for a regular user", async () => {
     // Arrange
     user = regularUser;
     const request = jsonRequest("/api/admin/precos", "POST", { medicineId: 1, pharmacyId: 1, amount: 9 });
@@ -167,7 +167,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(403);
   });
 
-  it("devolve 401 ao criar cupom sem login (antes de validar o corpo)", async () => {
+  it("returns 401 when creating a coupon without login (before validating the body)", async () => {
     // Arrange
     const request = jsonRequest("/api/admin/cupons", "POST", {});
     // Act
@@ -176,7 +176,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(401);
   });
 
-  it("devolve 403 ao criar cupom como usuário comum", async () => {
+  it("returns 403 when a regular user creates a coupon", async () => {
     // Arrange
     user = regularUser;
     const request = jsonRequest("/api/admin/cupons", "POST", { pharmacyId: 1, code: "X", discount: "5%", validUntil: "2026-12-31" });
@@ -186,7 +186,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(403);
   });
 
-  it("devolve 403 para operação não suportada por usuário comum", async () => {
+  it("returns 403 for an unsupported operation by a regular user", async () => {
     // Arrange
     user = regularUser;
     const request = req("/api/admin/reportes/1", { method: "DELETE" });
@@ -196,7 +196,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(403);
   });
 
-  it("devolve 400 para preço zero do admin", async () => {
+  it("returns 400 for a zero price from the admin", async () => {
     // Arrange
     user = admin;
     const request = jsonRequest("/api/admin/precos", "POST", { medicineId: 1, pharmacyId: 1, amount: 0 });
@@ -207,7 +207,7 @@ describe("/api/admin", () => {
     expect((await response.json()).errorMessage).toBe("O preço deve ser maior que zero");
   });
 
-  it("grava preço válido do admin com 200", async () => {
+  it("saves a valid admin price with 200", async () => {
     // Arrange
     user = admin;
     const request = jsonRequest("/api/admin/precos", "POST", { medicineId: "2", pharmacyId: "1", amount: "7,49" });
@@ -218,7 +218,7 @@ describe("/api/admin", () => {
     expect(payload.prices.some((p) => p.medicineId === 2 && p.amount === 7.49)).toBe(true);
   });
 
-  it("devolve 404 para entidade desconhecida", async () => {
+  it("returns 404 for an unknown entity", async () => {
     // Arrange
     user = admin;
     const request = req("/api/admin/usuarios");
@@ -228,7 +228,7 @@ describe("/api/admin", () => {
     expect(response.status).toBe(404);
   });
 
-  it("exclui com 204", async () => {
+  it("deletes with 204", async () => {
     // Arrange
     user = admin;
     const request = req("/api/admin/precos/10", { method: "DELETE" });
@@ -239,7 +239,7 @@ describe("/api/admin", () => {
     expect(payload.prices.some((p) => p.id === 10)).toBe(false);
   });
 
-  it("resolve reporte com PATCH 204", async () => {
+  it("resolves a report with PATCH 204", async () => {
     // Arrange
     user = admin;
     payload.reports = [{ id: 5, priceId: 10, userId: "u1", comment: "", medicine: "", pharmacy: "", amount: 1, createdAt: new Date(), resolved: false }];
@@ -251,7 +251,7 @@ describe("/api/admin", () => {
     expect(payload.reports[0].resolved).toBe(true);
   });
 
-  it("cria cupom convertendo a validade 'aaaa-mm-dd'", async () => {
+  it("creates a coupon converting the 'yyyy-mm-dd' expiry date", async () => {
     // Arrange
     user = admin;
     const request = jsonRequest("/api/admin/cupons", "POST", { pharmacyId: 1, code: "novo5", description: "", discount: "5%", validUntil: "2026-12-31" });

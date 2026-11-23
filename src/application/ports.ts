@@ -1,9 +1,9 @@
-import type { PackageInsert } from "@/domain/bula";
-import type { Coupon } from "@/domain/cupom";
-import type { Pharmacy, NearbyPharmacy } from "@/domain/farmacia";
-import type { Category, Medicine, SearchResult, MedicineType } from "@/domain/medicamento";
-import type { Price } from "@/domain/preco";
-import type { PriceReport } from "@/domain/reporte";
+import type { PackageInsert } from "@/domain/package-insert";
+import type { Coupon } from "@/domain/coupon";
+import type { Pharmacy, NearbyPharmacy } from "@/domain/pharmacy";
+import type { Category, Medicine, SearchResult, MedicineType } from "@/domain/medicine";
+import type { Price } from "@/domain/price";
+import type { PriceReport } from "@/domain/report";
 
 export interface MedicineInput {
   id?: number;

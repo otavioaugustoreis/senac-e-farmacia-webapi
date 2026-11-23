@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Logo } from "./Logo";
-import { CurrentLocation } from "./LocalizacaoAtual";
-import { SearchField, EmptySearchField } from "./CampoBusca";
+import { CurrentLocation } from "./CurrentLocation";
+import { SearchField, EmptySearchField } from "./SearchField";
 
 interface Props {
   userMenu: React.ReactNode;
@@ -11,8 +11,8 @@ interface Props {
 
 export function Header({ userMenu }: Props) {
   return (
-    <header id="topo" className="relative z-10 scroll-mt-4 pt-3">
-      <p className="rounded-full bg-menta-100 px-4 py-1.5 text-center text-xs font-medium text-marca-800">
+    <header id="top" className="relative z-10 scroll-mt-4 pt-3">
+      <p className="rounded-full bg-mint-100 px-4 py-1.5 text-center text-xs font-medium text-brand-800">
         <span aria-hidden>💊 </span>
         <span className="sm:hidden">Dados de demonstração · </span>
         <span className="hidden sm:inline">Dados de demonstração · Economize com genéricos e use os </span>
@@ -22,12 +22,12 @@ export function Header({ userMenu }: Props) {
         </Link>
       </p>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] bg-marca-900 px-4 py-3 text-white sm:px-6 sm:py-4">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] bg-brand-900 px-4 py-3 text-white sm:px-6 sm:py-4">
         <Logo light />
 
         <form action="/busca" role="search" autoComplete="off" className="hidden md:flex md:max-w-2xl md:flex-1">
-          <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-tinta">
-            <Search className="size-4 shrink-0 text-suave" aria-hidden />
+          <div className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 text-ink">
+            <Search className="size-4 shrink-0 text-muted" aria-hidden />
             <Suspense fallback={<EmptySearchField />}><SearchField /></Suspense>
           </div>
         </form>

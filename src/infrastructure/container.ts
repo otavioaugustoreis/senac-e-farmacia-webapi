@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Repositories } from "@/application/ports";
-import type { CurrentUser } from "@/domain/usuario";
-import { createRepositories } from "./repositorios";
+import type { CurrentUser } from "@/domain/user";
+import { createRepositories } from "./repositories/index";
 import { createServerSupabase } from "./supabase/server";
 
 export interface Container {

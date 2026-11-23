@@ -21,7 +21,7 @@ const link = "inline-flex items-center gap-1.5 rounded py-1.5 text-white/85 tran
 
 export function Footer() {
   return (
-    <footer className="mb-4 mt-10 overflow-hidden rounded-[var(--radius-card)] bg-marca-900 text-white">
+    <footer className="mb-4 mt-10 overflow-hidden rounded-[var(--radius-card)] bg-brand-900 text-white">
       {/* Marca + atalhos principais */}
       <div className="flex flex-col gap-5 border-b border-white/10 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -29,7 +29,7 @@ export function Footer() {
           <p className="mt-2 max-w-sm text-sm text-white/70">Bula organizada, preços comparados e farmácias perto de você, num só lugar.</p>
         </div>
         <div className="hidden flex-wrap gap-3 md:flex">
-          <Link href="/busca" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-marca-900 transition hover:bg-menta-100">
+          <Link href="/busca" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-brand-900 transition hover:bg-mint-100">
             <Search className="size-4" aria-hidden /> Buscar medicamento
           </Link>
           <Link href="/farmacias" className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-white/30 transition hover:bg-white/10">
@@ -68,13 +68,13 @@ export function Footer() {
           </ul>
         </div>
 
-        <section aria-labelledby="titulo-emergencia">
-          <h2 id="titulo-emergencia" className={title}>Em caso de emergência</h2>
+        <section aria-labelledby="title-emergency">
+          <h2 id="title-emergency" className={title}>Em caso de emergência</h2>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-1 2xl:grid-cols-2">
             {EMERGENCY_CONTACTS.map((e) => (
               <li key={e.name}>
                 <a href={`tel:${e.tel}`} className="group flex items-center gap-3 rounded-2xl bg-white/10 p-3 transition hover:bg-white/15">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-marca-800">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-brand-800">
                     <Phone className="size-4" aria-hidden />
                   </span>
                   <span className="min-w-0">
@@ -89,8 +89,8 @@ export function Footer() {
         </section>
       </div>
 
-      <div className="mx-6 flex items-start gap-3 rounded-2xl bg-alerta/15 p-4 sm:mx-8">
-        <ShieldAlert className="mt-0.5 size-5 shrink-0 text-alerta" aria-hidden />
+      <div className="mx-6 flex items-start gap-3 rounded-2xl bg-warning/15 p-4 sm:mx-8">
+        <ShieldAlert className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden />
         <p className="text-sm leading-snug text-white/90">
           <strong className="font-semibold text-white">{HEALTH_NOTICE}</strong>{" "}
           Antes de trocar um medicamento por genérico ou similar, confirme com um profissional.
@@ -99,7 +99,7 @@ export function Footer() {
 
       <div className="mt-6 flex flex-col gap-3 border-t border-white/10 px-6 py-4 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p>© {new Date().getFullYear()} E-Farmácia · Projeto Integrador I — Senac · Preços, farmácias e cupons são dados de demonstração.</p>
-        <a href="#topo" className="inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold text-white/80 ring-1 ring-white/20 transition hover:bg-white/10 hover:text-white">
+        <a href="#top" className="inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold text-white/80 ring-1 ring-white/20 transition hover:bg-white/10 hover:text-white">
           Voltar ao topo <ArrowUp className="size-3.5" aria-hidden />
         </a>
       </div>

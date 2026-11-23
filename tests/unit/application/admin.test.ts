@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createAdminUseCases, requireAdmin } from "@/application/casos-de-uso/admin";
-import { DomainError, UnauthenticatedError, ForbiddenError } from "@/domain/erros";
+import { createAdminUseCases, requireAdmin } from "@/application/use-cases/admin";
+import { DomainError, UnauthenticatedError, ForbiddenError } from "@/domain/errors";
 import { admin, createFakes, emptyData, pharmacy, med, regularUser } from "./fakes";
 
 function scenario() {
@@ -10,8 +10,8 @@ function scenario() {
   return d;
 }
 
-describe("exigirAdmin", () => {
-  it("lança NaoAutenticadoError sem usuário", () => {
+describe("requireAdmin", () => {
+  it("throws UnauthenticatedError without a user", () => {
     // Arrange
     const user = null;
     // Act
@@ -20,7 +20,7 @@ describe("exigirAdmin", () => {
     expect(action).toThrow(UnauthenticatedError);
   });
 
-  it("lança ProibidoError para usuário comum", () => {
+  it("throws ForbiddenError for a regular user", () => {
     // Arrange
     const user = regularUser;
     // Act
@@ -30,8 +30,8 @@ describe("exigirAdmin", () => {
   });
 });
 
-describe("salvarPreco", () => {
-  it("recusa usuário comum", async () => {
+describe("savePrice", () => {
+  it("rejects a regular user", async () => {
     // Arrange
     const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
@@ -40,7 +40,7 @@ describe("salvarPreco", () => {
     await expect(action).rejects.toBeInstanceOf(ForbiddenError);
   });
 
-  it("recusa valor zero", async () => {
+  it("rejects a zero amount", async () => {
     // Arrange
     const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
@@ -49,7 +49,7 @@ describe("salvarPreco", () => {
     await expect(action).rejects.toBeInstanceOf(DomainError);
   });
 
-  it("grava preço válido do admin", async () => {
+  it("saves a valid admin price", async () => {
     // Arrange
     const payload = scenario();
     const useCases = createAdminUseCases(createFakes(payload));
@@ -61,8 +61,8 @@ describe("salvarPreco", () => {
   });
 });
 
-describe("salvarMedicamento", () => {
-  it("grava medicamento e bula juntos", async () => {
+describe("saveMedicine", () => {
+  it("saves the medicine and its package insert together", async () => {
     // Arrange
     const payload = scenario();
     const useCases = createAdminUseCases(createFakes(payload));
@@ -76,7 +76,7 @@ describe("salvarMedicamento", () => {
     expect(payload.packageInserts.find((b) => b.medicineId === id)?.usedFor).toBe("Dor");
   });
 
-  it("recusa medicamento sem nome", async () => {
+  it("rejects a medicine without a name", async () => {
     // Arrange
     const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
@@ -86,8 +86,8 @@ describe("salvarMedicamento", () => {
   });
 });
 
-describe("salvarFarmacia", () => {
-  it("recusa coordenadas inválidas", async () => {
+describe("savePharmacy", () => {
+  it("rejects invalid coordinates", async () => {
     // Arrange
     const useCases = createAdminUseCases(createFakes(scenario()));
     // Act
@@ -97,8 +97,8 @@ describe("salvarFarmacia", () => {
   });
 });
 
-describe("resolverReporte", () => {
-  it("marca o reporte como resolvido", async () => {
+describe("resolveReport", () => {
+  it("marks the report as resolved", async () => {
     // Arrange
     const payload = scenario();
     payload.reports = [{ id: 5, priceId: 1, userId: "u1", comment: "", medicine: "", pharmacy: "", amount: 1, createdAt: new Date(), resolved: false }];

@@ -1,4 +1,4 @@
-import { getMedicineDetail } from "@/application/casos-de-uso/detalhar-medicamento";
+import { getMedicineDetail } from "@/application/use-cases/get-medicine-detail";
 import { getContainer } from "@/infrastructure/container";
 import { json, parseId, handle, type RouteContext } from "../../_http";
 

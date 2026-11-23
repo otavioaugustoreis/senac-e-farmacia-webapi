@@ -1,4 +1,4 @@
-import { nearbyPharmacies } from "@/application/casos-de-uso/farmacias-proximas";
+import { nearbyPharmacies } from "@/application/use-cases/nearby-pharmacies";
 import { getContainer } from "@/infrastructure/container";
 import { json, handle } from "../../_http";
 

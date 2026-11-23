@@ -1,4 +1,4 @@
-import { DomainError, UnauthenticatedError, NotFoundError, ForbiddenError } from "@/domain/erros";
+import { DomainError, UnauthenticatedError, NotFoundError, ForbiddenError } from "@/domain/errors";
 
 export type RouteContext<T extends Record<string, string>> = { params: Promise<T> };
 

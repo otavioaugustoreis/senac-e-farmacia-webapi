@@ -1,14 +1,14 @@
 import type { Repositories } from "@/application/ports";
-import type { PackageInsert } from "@/domain/bula";
-import type { Coupon } from "@/domain/cupom";
-import type { Pharmacy } from "@/domain/farmacia";
-import type { Category, Medicine, SearchResult } from "@/domain/medicamento";
-import type { Price } from "@/domain/preco";
-import type { PriceReport } from "@/domain/reporte";
-import type { CurrentUser } from "@/domain/usuario";
-import { lowestPrice } from "@/domain/preco";
-import { normalizeText } from "@/domain/texto";
-import { buildImage } from "@/domain/medicamento";
+import type { PackageInsert } from "@/domain/package-insert";
+import type { Coupon } from "@/domain/coupon";
+import type { Pharmacy } from "@/domain/pharmacy";
+import type { Category, Medicine, SearchResult } from "@/domain/medicine";
+import type { Price } from "@/domain/price";
+import type { PriceReport } from "@/domain/report";
+import type { CurrentUser } from "@/domain/user";
+import { lowestPrice } from "@/domain/price";
+import { normalizeText } from "@/domain/text";
+import { buildImage } from "@/domain/medicine";
 
 export interface DashboardData {
   categories: Category[];

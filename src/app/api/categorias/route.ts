@@ -1,4 +1,4 @@
-import { listCategories } from "@/application/casos-de-uso/buscar-medicamentos";
+import { listCategories } from "@/application/use-cases/search-medicines";
 import { getContainer } from "@/infrastructure/container";
 import { json, handle } from "../_http";
 

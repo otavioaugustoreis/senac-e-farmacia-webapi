@@ -78,16 +78,16 @@ Variáveis em `.env.local` (nunca commitar):
 ```bash
 npx supabase link --project-ref <ref>
 npx supabase db push --remote                                  # aplica as migrações
-npx supabase db query --remote -f supabase/tests/verificacao.sql   # verifica busca, mapa e RLS
-node --env-file=.env.local scripts/configurar-auth.mjs <url-do-site>
-node --env-file=.env.local scripts/criar-admin.mjs <email-do-admin>  # imprime a senha
+npx supabase db query --remote -f supabase/tests/verification.sql   # verifica busca, mapa e RLS
+node --env-file=.env.local scripts/configure-auth.mjs <url-do-site>
+node --env-file=.env.local scripts/create-admin.mjs <email-do-admin>  # imprime a senha
 ```
 
 ## Testes
 
 ```bash
 npm test                         # unitários + integração (padrão AAA: Arrange, Act, Assert)
-node --env-file=.env.local scripts/verificar-fluxos.mjs http://localhost:3000   # ponta a ponta
+node --env-file=.env.local scripts/verify-flows.mjs http://localhost:3000   # ponta a ponta
 ```
 
 ## Equipe

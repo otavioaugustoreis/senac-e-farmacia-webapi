@@ -1,4 +1,4 @@
-import { reportPrice } from "@/application/casos-de-uso/reportar-preco";
+import { reportPrice } from "@/application/use-cases/report-price";
 import { getContainer } from "@/infrastructure/container";
 import { json, readJson, handle } from "../_http";
 
