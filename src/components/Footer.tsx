@@ -1,53 +1,108 @@
 import Link from "next/link";
-import { ExternalLink, ShieldAlert } from "lucide-react";
+import { ArrowRight, ArrowUp, ExternalLink, MapPin, Phone, Search, ShieldAlert } from "lucide-react";
 import { BULARIO_LINK, CMED_LINK } from "@/lib/links";
 import { Logo } from "./Logo";
 
 export const AVISO_SAUDE = "O E-Farmácia informa, não substitui a orientação de médico ou farmacêutico.";
 
+const EMERGENCIAS = [
+  { nome: "SAMU", detalhe: "Urgência médica", numero: "192", tel: "192" },
+  { nome: "Disque-Intoxicação", detalhe: "Anvisa · 24 horas", numero: "0800 722 6001", tel: "08007226001" },
+];
+
+const EXPLORAR = [
+  { href: "/busca", rotulo: "Buscar medicamentos" },
+  { href: "/farmacias", rotulo: "Farmácias próximas" },
+  { href: "/cupons", rotulo: "Cupons de desconto" },
+];
+
+const titulo = "text-xs font-semibold uppercase tracking-wider text-white/55";
+const link = "inline-flex items-center gap-1.5 rounded py-1.5 text-white/85 transition hover:text-white focus-visible:outline-2 focus-visible:outline-white";
+
 export function Footer() {
   return (
-    <footer className="mb-4 mt-6 rounded-[var(--radius-card)] bg-marca-900 p-6 text-white sm:p-8">
-      <div className="flex items-start gap-3 rounded-2xl bg-white/10 p-4">
-        <ShieldAlert className="mt-0.5 size-5 shrink-0 text-alerta" aria-hidden />
-        <p className="text-sm font-semibold leading-snug sm:text-base">{AVISO_SAUDE}</p>
-      </div>
-
-      <div className="mt-6 grid gap-6 sm:grid-cols-3">
+    <footer className="mb-4 mt-10 overflow-hidden rounded-[var(--radius-card)] bg-marca-900 text-white">
+      {/* Marca + atalhos principais */}
+      <div className="flex flex-col gap-5 border-b border-white/10 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <Logo claro />
-          <p className="mt-2 text-sm text-white/70">Bula, preços e farmácias próximas num só lugar.</p>
+          <p className="mt-2 max-w-sm text-sm text-white/70">Bula organizada, preços comparados e farmácias perto de você, num só lugar.</p>
         </div>
-        <nav aria-label="Rodapé">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-white/60">Navegação</h2>
-          <ul className="mt-2 grid grid-cols-2 gap-x-4 text-sm sm:grid-cols-1">
-            <li><Link href="/busca" className="inline-block py-1.5 hover:underline">Buscar medicamentos</Link></li>
-            <li><Link href="/farmacias" className="inline-block py-1.5 hover:underline">Farmácias próximas</Link></li>
-            <li><Link href="/cupons" className="inline-block py-1.5 hover:underline">Cupons</Link></li>
-            <li><Link href="/entrar" className="inline-block py-1.5 hover:underline">Entrar</Link></li>
-          </ul>
-        </nav>
-        <div>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-white/60">Fontes oficiais</h2>
-          <ul className="mt-2 text-sm">
-            <li>
-              <a href={BULARIO_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 py-1.5 hover:underline">
-                Bulário Eletrônico da Anvisa <ExternalLink className="size-3.5" aria-hidden />
-              </a>
-            </li>
-            <li>
-              <a href={CMED_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 py-1.5 hover:underline">
-                Preços de referência CMED <ExternalLink className="size-3.5" aria-hidden />
-              </a>
-            </li>
-            <li><Link href="/creditos" className="inline-block py-1.5 hover:underline">Créditos das imagens</Link></li>
-          </ul>
+        <div className="hidden flex-wrap gap-3 md:flex">
+          <Link href="/busca" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-marca-900 transition hover:bg-menta-100">
+            <Search className="size-4" aria-hidden /> Buscar medicamento
+          </Link>
+          <Link href="/farmacias" className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-white/30 transition hover:bg-white/10">
+            <MapPin className="size-4" aria-hidden /> Farmácias perto de mim
+          </Link>
         </div>
       </div>
 
-      <p className="mt-6 border-t border-white/10 pt-4 text-xs text-white/60">
-        Preços, farmácias e cupons exibidos são dados de demonstração · Projeto Integrador I — Senac
-      </p>
+      <div className="grid gap-8 p-6 sm:p-8 md:grid-cols-[1fr_1fr_1.3fr]">
+        {/* No celular a barra inferior já faz esse papel. */}
+        <nav aria-label="Explorar" className="hidden md:block">
+          <h2 className={titulo}>Explorar</h2>
+          <ul className="mt-3 text-sm">
+            {EXPLORAR.map((i) => (
+              <li key={i.href}><Link href={i.href} className={link}>{i.rotulo}</Link></li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 className={titulo}>Fontes oficiais</h2>
+          <ul className="mt-3 text-sm">
+            <li>
+              <a href={BULARIO_LINK} target="_blank" rel="noreferrer" className={link}>
+                Bulário Eletrônico da Anvisa <ExternalLink className="size-3.5 opacity-70" aria-hidden />
+                <span className="sr-only">(abre em nova aba)</span>
+              </a>
+            </li>
+            <li>
+              <a href={CMED_LINK} target="_blank" rel="noreferrer" className={link}>
+                Preços de referência CMED <ExternalLink className="size-3.5 opacity-70" aria-hidden />
+                <span className="sr-only">(abre em nova aba)</span>
+              </a>
+            </li>
+            <li><Link href="/creditos" className={link}>Créditos das imagens</Link></li>
+          </ul>
+        </div>
+
+        <section aria-labelledby="titulo-emergencia">
+          <h2 id="titulo-emergencia" className={titulo}>Em caso de emergência</h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-1 2xl:grid-cols-2">
+            {EMERGENCIAS.map((e) => (
+              <li key={e.nome}>
+                <a href={`tel:${e.tel}`} className="group flex items-center gap-3 rounded-2xl bg-white/10 p-3 transition hover:bg-white/15">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-marca-800">
+                    <Phone className="size-4" aria-hidden />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-base font-bold leading-tight">{e.numero}</span>
+                    <span className="block text-xs text-white/70">{e.nome} · {e.detalhe}</span>
+                  </span>
+                  <ArrowRight className="ml-auto size-4 shrink-0 opacity-0 transition group-hover:opacity-70" aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <div className="mx-6 flex items-start gap-3 rounded-2xl bg-alerta/15 p-4 sm:mx-8">
+        <ShieldAlert className="mt-0.5 size-5 shrink-0 text-alerta" aria-hidden />
+        <p className="text-sm leading-snug text-white/90">
+          <strong className="font-semibold text-white">{AVISO_SAUDE}</strong>{" "}
+          Antes de trocar um medicamento por genérico ou similar, confirme com um profissional.
+        </p>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 border-t border-white/10 px-6 py-4 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <p>© {new Date().getFullYear()} E-Farmácia · Projeto Integrador I — Senac · Preços, farmácias e cupons são dados de demonstração.</p>
+        <a href="#topo" className="inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold text-white/80 ring-1 ring-white/20 transition hover:bg-white/10 hover:text-white">
+          Voltar ao topo <ArrowUp className="size-3.5" aria-hidden />
+        </a>
+      </div>
     </footer>
   );
 }

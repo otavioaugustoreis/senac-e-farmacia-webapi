@@ -9,7 +9,7 @@ interface Props {
 
 export function Header({ menuUsuario }: Props) {
   return (
-    <header className="relative z-10 pt-3">
+    <header id="topo" className="relative z-10 scroll-mt-4 pt-3">
       <p className="rounded-full bg-menta-100 px-4 py-1.5 text-center text-xs font-medium text-marca-800">
         <span aria-hidden>💊 </span>
         <span className="sm:hidden">Dados de demonstração · </span>
